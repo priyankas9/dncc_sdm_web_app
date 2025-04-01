@@ -539,6 +539,19 @@ Route::group([
 
     Route::resource('hotspots', 'HotspotController');
 });
+/**
+ * Site SSettings Routes
+ */
+Route::group([
+    'name' => 'site',
+    'prefix' => 'site',
+    'middleware' => 'auth',
+    'namespace' => 'Site'
+], function () {
+    Route::resource('/site-setting', 'SiteSettingController');
+
+    Route::get('/site-setting/data', 'SiteSettingController@getData');
+});
 Route::group(['middleware' => ['auth']], function () {
     /**
      * Logout Routes
