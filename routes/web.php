@@ -257,6 +257,22 @@ Route::group([
 
     Route::get('generate-report/{year?}/{serviceprovider?}', 'KpiDashboardController@generateReport');
     Route::resource('/kpi-dashboard', 'KpiDashboardController');
+    
+    /**
+     *
+
+     * Desludging Schedule & Desludging Schedule Reintegration Routes
+     */
+    Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
+    Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
+    Route::resource('/desludging-reintegration', 'DesludgingReintegrationController');
+    Route::get('/desludging-schedule/data', 'DesludgingScheduleController@getData');
+    Route::get('/desludging-schedule/export', 'DesludgingScheduleController@export');
+    Route::post('/desludging-schedule/submit-application', 'DesludgingScheduleController@submitApplication');
+    Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
+    Route::resource('/desludging-schedule', 'DesludgingScheduleController');
+
+    Route::get('/set-emptying-date', 'DesludgingScheduleController@setEmptyingDate')->name('set.emptying.date');
 
     /**
      * Kpi Target Routes
