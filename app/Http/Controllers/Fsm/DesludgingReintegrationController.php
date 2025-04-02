@@ -47,7 +47,13 @@ class DesludgingReintegrationController extends Controller
        order by  final_result.next_emptying_date ASC";
       $buildingResults = DB::SELECT($query);
       // Add the action column
-     
+      foreach ($buildingResults as $key => $building) {
+        $buildingResults[$key]->action =
+            '<a href="/view/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">View</a> ' .
+            '<a href="/edit/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Edit</a> ' .
+            '<a href="/delete/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;" onclick="return confirm(\'Are you sure you want to delete this item?\')">Delete</a> ' .
+            '<a href="/download/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Download</a>';
+    }
       return DataTables::of($buildingResults)->make(true);
     }
 }

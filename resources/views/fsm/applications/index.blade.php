@@ -179,8 +179,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             <th>House Number</th>
                             <th>Containment ID</th>
                             <th>Application Date</th>
+                            <th>Supervisory Assessment Date</th>
                             <th>Proposed Emptying Date</th>
                             <th>Street Code</th>
+                            <th>Supervisory Assessment Status</th>
                             <th>Emptying Status</th>
                             <th>Sludge Collection Status</th>
                             <th>Feedback Status</th>
@@ -286,6 +288,11 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         }
                     },
                     {
+                        data: 'supervisory_assessment_date',
+                        name: 'supervisory_assessment_date',
+                        
+                    },
+                    {
                         data: 'proposed_emptying_date',
                         name: 'proposed_emptying_date',
                         render: function(data) {
@@ -296,7 +303,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         data: 'road_code',
                         name: 'road_code'
                     },
-                
+                    {
+                        data: 'supervisory_assessment_status',
+                        name: 'supervisory_assessment_status',
+                    },
                     {
                         data: 'emptying_status',
                         name: 'emptying_status'
