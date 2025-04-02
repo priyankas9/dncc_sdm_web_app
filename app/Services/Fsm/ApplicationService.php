@@ -829,9 +829,11 @@ class ApplicationService
                 if (Auth::user()->can('Edit Application')){
                     $content .= '<a title="Edit  Application Details" href="' . route('application.edit', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status? ' anchor-disabled' : '') . '"><i class="fa fa-edit"></i></a> ';
                 }
+
                 if (Auth::user()->can('View Application')){
                     $content .= '<a title="View Application Details" href="' . route('application.show', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-list"></i></a> ';
                 }
+                
                 if (Auth::user()->can('Edit Emptying') && $model->emptying_status){
                     $content .= '<a title="Edit Emptying Service Details" href="' . route("emptying.edit", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->sludge_collection_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-recycle"></i></a> ';
                 }
@@ -841,10 +843,14 @@ class ApplicationService
                 if (Auth::user()->can('Edit Feedback') && $model->feedback_status){
                     $content .= '<a title="Edit Feedback Details" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-pencil"></i></a> ';
                 }
-
+                if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status){
+                   
+                    $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-truck-moving"></i></a> ';
+                }
 
                 if (Auth::user()->can('View Application History')){
                 $content .= '<a title="History" href="' . route('application.history', $model->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-history"></i></a> ';
+                
                 if (Auth::user()->can('Delete Application')){
                     $content .= '<a title="Delete"  class="delete btn btn-danger  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
                 }
@@ -860,6 +866,38 @@ class ApplicationService
 
                 return $content;
             })
+
+
+            ->editColumn('supervisory_assessment_status', function($model) {
+                $content = '<div class="application-quick__actions">';
+                $content .= $model->supervisory_assessment_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
+                
+                if ($model->supervisory_assessment_status !== true) {
+                    if (Auth::user()->can('View Emptying') && $model->emptying) {
+                        // Disabled link when status is true
+                        $content .= '<a title="Add Supervisory Assessment" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
+                                       <i class="fa-solid fa-clipboard-list"></i>
+                                    </a> ';
+                    }
+                }
+                if ($model->supervisory_assessment_status == true) {
+                    $content .= '<a title="View Emptying Service Details" href="#" class="btn btn-info btn-sm mb-1 disabled">
+                   <i class="fa-solid fa-clipboard-list"></i>
+                </a> ';
+              
+                }
+                 else {
+                    if (Auth::user()->can('Add Emptying')) {
+                        $content .= '<a title="Add Supervisory Assessment" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
+                       <i class="fa-solid fa-clipboard-list"></i>
+                    </a> ';
+                    }
+                }
+                
+                $content .= '</div>';
+                return $content;
+            })
+            
             ->editColumn('emptying_status',function($model){
                 $content = '<div class="application-quick__actions">';
                 $content .= $model->emptying_status?'<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
@@ -916,7 +954,7 @@ class ApplicationService
             ->editColumn('service_provider_id',function ($model){
                  return $model->service_provider()->withTrashed()->first()->company_name??'Not Assigned';
             })
-            ->rawColumns(['emptying_status','feedback_status','sludge_collection_status','action'])
+            ->rawColumns(['emptying_status','feedback_status','sludge_collection_status','action','supervisory_assessment_status'])
 
             ->make(true);
     }
