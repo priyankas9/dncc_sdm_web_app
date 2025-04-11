@@ -12,12 +12,14 @@ window.$ = window.jQuery = $;
 import 'datatables.net-bs4/js/dataTables.bootstrap4.min.js';
 import 'datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js';
 import 'datatables.net-fixedcolumns-bs4/js/fixedColumns.bootstrap4.min.js';
-
-
-
 import 'swiper/swiper-bundle.min.js';
 
-
+/**
+ * FullCalendar Import
+ */
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid'; // Import the DayGrid plugin
+// CSS for FullCalendar is now loaded via CDN in the Blade file
 
 window.moment = require('moment');
 window.daterangepicker = require('daterangepicker');
@@ -32,15 +34,10 @@ require('jquery-autocomplete');
 require('multiple-select');
 window.autoComplete = require('pixabay-javascript-autocomplete');
 window.interact = require('interactjs');
-window.GLightbox  = require('glightbox');
+window.GLightbox = require('glightbox');
 window.AOS = require('aos');
+
 /**
- window.toastr = require('toastr');
- window.Swal = require('sweetalert2');
-
- window.select2 = require('select2');
- /**
-
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
  * components and automatically register them with their "basename".
@@ -50,7 +47,6 @@ window.AOS = require('aos');
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
-
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

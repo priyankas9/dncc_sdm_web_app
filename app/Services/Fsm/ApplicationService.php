@@ -152,6 +152,14 @@ class ApplicationService
             ["title" => "Application Details",
                 "fields" => [
                     new FormField(
+                        label: 'Supervisory Assessment Date',
+                        labelFor: 'supervisory_assessment_date',
+                        inputType: 'date',
+                        inputId: 'supervisory_asssessment_date',
+                        required: true,
+                        placeholder: 'Supervisory Assessment Date',
+                    ),
+                    new FormField(
                         label: 'Proposed Emptying Date',
                         labelFor: 'proposed_emptying_date',
                         inputType: 'date',
@@ -296,6 +304,14 @@ class ApplicationService
                     inputId: 'road_code',
                     selectValues: [],
                     placeholder: 'Street Name/ Street Code',
+                ),
+                new FormField(
+                    label: 'Supervisory Assessment Date',
+                    labelFor: 'supervisory_assessment_date',
+                    labelClass: 'col-md-2 col-form-label ',
+                    inputType: 'date',
+                    inputId: 'supervisory_assessment_date',
+                    placeholder: 'Supervisory Assessment Date',
                 ),
                 new FormField(
                     label: 'Proposed Emptying Date',
@@ -463,6 +479,13 @@ class ApplicationService
 
             ["title" => "Application Details",
                 "fields" => [
+                    new FormField(
+                        label: 'Supervisory Assessment Date',
+                        labelFor: 'supervisory_assessment_date',
+                        inputType: 'label',
+                        inputId: 'supervisory_assessment_date',
+                        labelValue: date('m/d/Y', strtotime($application->supervisory_assessment_date)),
+                    ),
                     new FormField(
                         label: 'Proposed Emptying Date',
                         labelFor: 'proposed_emptying_date',
@@ -633,6 +656,16 @@ class ApplicationService
     
             ["title" => "Application Details",
                 "fields" => [
+                    new FormField(
+                        label: 'Supervisory Assessment Date',
+                        labelFor: 'supervisory_assessment_date',
+                        inputType: 'date',
+                        inputId: 'supervisory_assessment_date',
+                        inputValue: Carbon::parse($application->supervisory_assessment_date)->format('Y-m-d'), // Correct date format for HTML date input
+                        required: true,
+                        disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
+                        placeholder: 'Supervisory Assessment Date',
+                    ),
                     new FormField(
                         label: 'Proposed Emptying Date',
                         labelFor: 'proposed_emptying_date',
@@ -1055,7 +1088,7 @@ class ApplicationService
                     $application->customer_name = $request->customer_name??$owner->owner_name;
                     $application->customer_contact = $request->customer_contact??$owner->owner_contact;
                     $application->customer_gender = $request->customer_gender??$owner->owner_gender;
-
+                    dd($application);
                     $owner->fill([
                             "owner_name" => $request->customer_name??$owner->owner_name,
                             "owner_gender" => $request->customer_gender??$owner->owner_gender,
@@ -1079,7 +1112,9 @@ class ApplicationService
                         $application->applicant_gender = $request->customer_gender??$owner->owner_gender??null;
                     };
                     $application->emergency_desludging_status = $request->emergency_desludging_status ?? $request->emergency_desludging_status ?? null;
-                    $application->save();
+                    $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
+                   dd($application);
+                   $application->save();
                 });
             } catch (\Throwable $e) {
                 return redirect()->back()->withInput()->with('error',"Error! Application couldn't be created. ".$e);

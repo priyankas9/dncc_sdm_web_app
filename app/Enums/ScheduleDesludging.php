@@ -11,9 +11,11 @@ use BenSampo\Enum\Enum;
  */
 final class ScheduleDesludging extends Enum
 {
-    const confirm =   0;
-    const disagree =   1;
-    const finaldisagree = 2;
-    const reschedule =   3;
+    const confirmedschedule =   1;
+    const rescheduled = 2;
+    const emptiedscheduled =   3;
+    const rejectedonce =   4;
+    const rejectedtwice =   5;
+
    
 }

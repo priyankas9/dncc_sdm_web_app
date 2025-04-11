@@ -42,7 +42,7 @@ class DesludgingReintegrationController extends Controller
                       ON b.bin = bc.bin 
                       AND b.deleted_at IS NULL
                   LEFT JOIN building_info.owners AS o ON o.bin = b.bin AND o.deleted_at IS  NULL
-                  WHERE  (c.status = '1') 
+                  WHERE  (c.status = '4' OR c.status = '5') 
       AND (b.wasa_status IS NULL OR b.wasa_status = false) AND c.deleted_at IS NULL) final_result 
        order by  final_result.next_emptying_date ASC";
       $buildingResults = DB::SELECT($query);

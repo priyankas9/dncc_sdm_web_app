@@ -46,7 +46,7 @@ class Application extends Model
      *
      * @var String
      */
-    protected $dates = ['created_at','updated_at','deleted_at','application_date','proposed_emptying_date'];
+    protected $dates = ['created_at','updated_at','deleted_at','application_date','proposed_emptying_date','supervisory_assessment_date'];
 
     /**
      * The fillable fields for mass assignment.
@@ -67,6 +67,7 @@ class Application extends Model
         'service_provider_id',
         'emergency_desludging_status',
         'containment_id',
+        'supervisory_assessment_date',
     ];
 
     /**

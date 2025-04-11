@@ -216,10 +216,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         success: function (response) {
             // Clear existing options in the select dropdown
             $('#service_provider_id').empty();
-
             // Add a default "Select" option
             $('#service_provider_id').append('<option value="">Select a Service Provider</option>');
-
             // Append options to the select dropdown
             $.each(response, function (id, name) {
                 $('#service_provider_id').append('<option value="' + id + '">' + name + '</option>');
@@ -230,7 +228,6 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         }
     });
 });
-
         @if (!empty($reportBtnLink))
             var yearSelect = document.getElementById("year_select");
             var monthSelect = document.getElementById("month_select");
