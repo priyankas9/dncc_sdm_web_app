@@ -104,7 +104,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             'fsm/sludge-collection/*','fsm/sludge-collection',
                             'fsm/feedback','fsm/feedback/*',
                             'fsm/help-desks/*','fsm/help-desks',
-                            'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test'
+                            'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test',
+                            'fsm/pdf-generation/*','fsm/pdf-generation'
                         )
                             ? 'menu-is-opening menu-open'
                             : '' }}">
@@ -270,9 +271,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         <li class="nav-item">
                          <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                                <p>Scheduled Desludging Reintegration</p>
+                                <p>Scheduled<br> Desludging <br>Reintegration</p>
                           </a>
                         </li>
+                     
                         @can('List Applications')
                         <li class="nav-item">
                             <a href="{{ route('application.index') }}" class="nav-link {{ request()->is('fsm/application/*','fsm/application') ? 'active' : '' }}">
@@ -319,7 +321,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             </ul>
             </li>
             @endif
-            
+            <li class="nav-item">
+                <a href="{{ action('Pdf\PdfGenerationController@index') }}" class="nav-link {{ request()->is('pdf/pdf-generation') ? 'active' : '' }}">
+                <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
+                    <p>PDF Generation</p>
+                </a>
+            </li>
             @if(Auth::user()->hasanyPermissionInGroup(['Sewer Connection']) || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
             <li class="nav-item">
                 <a href="{{ action('SewerConnection\SewerConnectionController@index') }}" class="nav-link {{ request()->is('sewerconnection/sewerconnection') ? 'active' : '' }}">

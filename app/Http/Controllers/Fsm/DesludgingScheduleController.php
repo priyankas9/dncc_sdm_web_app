@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
 use App\Models\Fsm\ServiceProvider;
+use App\Models\Fsm\TreatmentPlant;
 use Illuminate\Http\Request;
 use App\Services\Fsm\DesludgingScheduleService;
 use Carbon\Carbon;
@@ -28,14 +29,23 @@ class DesludgingScheduleController extends Controller
     public function index()
     {
         $page_title = "Desludging Schedule";
-        $serviceProvider = ServiceProvider::withTrashed()->pluck("company_name", "id")->toArray();
-
+        $serviceProvider = ServiceProvider::pluck("company_name", "id")->toArray();
         return view('fsm.desludging-schedule.index', compact('page_title', 'serviceProvider'));
     }
     public function getData(Request $request)
     {   
-        
         return $this->desludgingScheduleService->getAllData($request);
+    }
+    public function getServiceProviderData(Request $request)
+    {
+        $serviceprovider = ServiceProvider::pluck("company_name", "id")->toArray();
+        return view('fsm.desludging-schedule.confirm', compact('page_title', 'serviceProvider'));
+    }
+    public function callPriority()
+    {
+        $id = [];
+        // $this->setPriority($id);
+        $this->set_emptying_date();
     }
     public function fetchSiteSettings()
     {
@@ -45,33 +55,9 @@ class DesludgingScheduleController extends Controller
     }
     public function getContainments()
     {
-        // Fetch all containments that have non-null priority and fstp_distance
-        $containments = Containment::whereNotNull('priority')
-            ->whereNotNull('fstp_distance')
-            ->whereNotNull('priority')
-            ->orderBy('priority')
-            ->orderBy('fstp_distance')
-            ->get();
-        return $containments;
-    }
-    public function setPrioritySequence()
-    {
-        // Fetch site settings for desludging wards
-        $wardsForDesludging = DB::table('sdm_sitesettings')
-            ->where('name', 'Wards for Schedule Desludging')
-            ->pluck('value');
-        // Fetch containments
-        $containments = DB::select('
-        SELECT DISTINCT ON (final_result.id) final_result.*
+        $fetch_id = "SELECT DISTINCT ON (final_result.id) final_result.*
         FROM (
             SELECT 
-                c.priority,
-                c.fstp_distance,
-                c.closest_fstp_id,
-                c.construction_date,
-                c.last_emptied_date,
-                c.next_emptying_date,
-                c.status,
                 c.id
             FROM fsm.containments c
             LEFT JOIN building_info.build_contains bc 
@@ -82,12 +68,33 @@ class DesludgingScheduleController extends Controller
             LEFT JOIN building_info.buildings b 
                 ON b.bin = bc.bin 
                 AND b.deleted_at IS NULL
-            WHERE (c.status IS NULL OR c.status = 1 OR c.emptied_status = false)
-                AND (b.wasa_status IS NULL OR b.wasa_status = false) 
-                AND c.deleted_at IS NULL
+            WHERE   
+			    b.wasa_status = false
+			AND c.emptied_status = false
+			AND (c.status = 0 OR c.status = 4)
+			AND
+            c.deleted_at IS NULL
         ) final_result
-            ');
-            $updates = [];
+        ORDER BY final_result.id;";
+
+        $containment_id = DB::select($fetch_id);
+        // Fetch all containments that have non-null priority and fstp_distance
+        $containments = Containment::whereIN('id',array_column($containment_id,'id'))->get();
+        return $containments;
+
+    }
+    public function setPriority($id)
+    {
+        // fetch all containments passed from $id
+        if(empty($id))
+        {
+            $containments = Containment::whereNULL('deleted_at')->get();
+        }
+        else
+        {
+            $containments = Containment::find($id);
+        }
+        $updates = [];
         foreach ($containments as $containment) {
             $constructionDate = Carbon::parse($containment->construction_date);
             $lastEmptiedDate = $containment->last_emptied_date ? Carbon::parse($containment->last_emptied_date) : null;
@@ -120,8 +127,7 @@ class DesludgingScheduleController extends Controller
             $oldfstp_distance = $containment->fstp_distance;
             $oldfstp_id = $containment->closest_fstp_id;
             // Fetch all FSTPs with specified conditions
-            $fstps = DB::table('fsm.treatment_plants')
-                ->whereIn('type', [3]) //filterbytextnotid
+            $fstps = TreatmentPlant::whereIn('type', ['3','4']) //filterbytextnotid
                 ->where('status', true)
                 ->get();
             if ($fstps->count() == 1) {
@@ -150,11 +156,12 @@ class DesludgingScheduleController extends Controller
                     $distances[$fstp->id] = $distanceResult->distance;
                 }
                 if (!empty($distances)) {
+                    // if multiple FSTP, select the fstp closest
                     $containment->fstp_distance = min($distances);
-                    // $containment->closest_fstp_id = array_search($containment->fstp_distance, $distances);
+                    $containment->closest_fstp_id = array_search($containment->fstp_distance, $distances);
                 } else {
                     $containment->fstp_distance = null;
-                    // $containment->closest_fstp_id = null;
+                    $containment->closest_fstp_id = null;
                 }
             }
             if ($oldfstp_distance != $containment->fstp_distance || $oldfstp_id != $containment->closest_fstp_id || $old_priority != $containment->priority) {
@@ -178,87 +185,223 @@ class DesludgingScheduleController extends Controller
                 }
             }
         }
+
     }
-    public function setEmptyingDate()
+    public function set_emptying_date()
     {
-        try {
-            $site_settings = $this->fetchSiteSettings()->keyBy('name');
-            $this->setPrioritySequence();
-            $containments = $this->getContainments();
-            $trip_capacity = $site_settings['Trip Capacity Per Day']->value;
-    
-            // Parse the start date in the 'Y-m-d' format
-            $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
-            $counter = 0;
-    
-            // Convert Weekend and Holiday Dates from string to array
-            $weekends = explode(',', $site_settings['Weekend']->value);
-            $holiday_dates = explode(',', $site_settings['Holiday Dates']->value);
-            $containmentupdates = [];
-            do {
-                $currentDate = Carbon::parse($start_date);
-              
-                // Skip weekends and holidays efficiently
-                while (in_array( date("l", strtotime($currentDate)), $weekends) || in_array($currentDate->format('Y-m-d'), $holiday_dates)) {
+       
+        // call set_priority function with $id as null if count(prioirty) in containments is zero
+        try{
+        // fetch all values required from site settings
+        $site_settings = $this->fetchSiteSettings()->keyBy('name');
+        $containments = $this->getContainments();
+        $priorityCount = $containments->whereNotNull('priority')->count();
+        if ($priorityCount === 0) {
+            $this->setPriority(null);
+        }
+        $today = Carbon::now(); // Get today's date
+        $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
+        if($today->diff($start_date)->invert == true)
+        {
+            $start_date = $today->addDays($site_settings['Schedule Regeneration Period']->value)->format('Y-m-d');  
+        }
+        $counter = 0;
+        $weekends = explode(',', $site_settings['Weekend']->value);
+        $holiday_dates = explode(',', $site_settings['Holiday Dates']->value);
+        $containmentupdates = [];
+        do{
+            
+            $set_date = $start_date;
+             // Skip weekends and holidays efficiently
+             if (in_array( date("l", strtotime($set_date)), $weekends) || 
+                    in_array($set_date, $holiday_dates)) {
+                    $set_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');
+            }
+            $remaining_trips = $this->trips_allocated($set_date);
+           
+            $selected_containments = $this->fetchContainmentsInRange($counter, $counter + (int)$remaining_trips, $containments);
+            foreach ($selected_containments as $containment) {
+                $containmentupdates[] = [
+                    'id' => $containment->id,
+                    'next_emptying_date' => $start_date
+                ]; 
+            }
+            $counter += $remaining_trips;
+            $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
+
+        }while ($counter <= count($containments));
+        
+        if (!empty($containmentupdates)) {
+            foreach (array_chunk($containmentupdates, 500) as $chunk) {
+                foreach ($chunk as $update) {
+                    Containment::where('id', $update['id'])->update([
+                        'next_emptying_date' => $update['next_emptying_date']
+                    ]);
                     
-                    $currentDate->addDay();
-                }
-    
-                $start_date = $currentDate->format('Y-m-d');
-                
-                // Select containments in range based on trips per day
-                $selected_containments = $this->fetchContainmentsInRange($counter, $counter + (int)$trip_capacity, $containments);
-                foreach ($selected_containments as $containment) {
-                    $containmentupdates[] = [
-                        'id' => $containment->id,
-                        'next_emptying_date' => $start_date
-                    ]; 
-                }
-                $counter += $trip_capacity;
-                $currentDate->addDay();  // Move to the next day after processing
-                $start_date = $currentDate->format('Y-m-d');
-    
-            } while ($counter <= count($containments));
-            if (!empty($containmentupdates)) {
-                foreach (array_chunk($containmentupdates, 500) as $chunk) {
-                    foreach ($chunk as $update) {
-                        Containment::where('id', $update['id'])->update([
-                            'next_emptying_date' => $update['next_emptying_date']
-                        ]);
-                        
-                    }
                 }
             }
-            // Return success response
-            return response()->json(['status' => 'success', 'message' => 'Next emptying dates have been successfully regenerated.']);
-        } catch (\Exception $e) {
-            // Return error response in case of failure
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
-    }
+        return response()->json(['status' => 'success', 'message' => 'Next emptying dates have been successfully regenerated.']);
+        }
+        catch (\Exception $e) {
+            \Log::error('Error in set_emptying_date: ', ['error' => $e->getMessage()]);
+            return response()->json(['status' => 'error', 'message' => 'Failed to set emptying date. Please try again.']);
+        }
+}
+
     public function fetchContainmentsInRange($start, $end, $containments)
     {
         return $containments->slice($start , $end - $start );
+    }
+
+    public function test()
+    {
+        dd($this->trips_allocated_range('2023-10-01','2023-10-31'));
+    }
+    public function trips_allocated_range ($start_date, $end_date)
+    {
+        $current_date = $start_date;
+        $trips_allocated = [];
+        while ($current_date){
+            $remaining_trips = $this->trips_allocated($current_date);
+            $trips_allocated[$current_date] = $remaining_trips;
+            $current_date = Carbon::createFromFormat('Y-m-d', $current_date)->addDay()->format('Y-m-d');
+            if ($current_date > $end_date) {
+                break;
+            }
+        }
+        dd($trips_allocated);
+    }
+    public function trips_allocated($date)
+    {
+        // count total number of applications with emptying status false that is set for the passed date
+        $confirmed_applications = Application::where('proposed_emptying_date',$date)->count();
+        // pluck corresponding containment ids
+        $confirmed_application_ids = Application::where('emptying_status',false)->pluck('containment_id');
+        // count total no. of containments auto scheduled through service chain excluding those already confirmed in application page
+        $auto_scheduled_applications = Containment::where('emptied_status','true')->whereNOTIN('id',$confirmed_application_ids)->where('next_emptying_date',$date)->count();
+        // ->where('status','3') need to add this later, count only those that matches status  emptied & scheduled again through system itself
+        // return sum of both i.e. total trips that have been pre-alloted
+        $daily_trip_capacity = $this->fetchSiteSettings()->keyBy('name')['Trip Capacity Per Day']->value;
+        $remaining_trips = (integer)$daily_trip_capacity - (integer)$auto_scheduled_applications - (integer)$confirmed_applications;
+        return $remaining_trips;       
+
     }
     public function export(Request $request)
     {
         $data = $request->all();
         return $this->desludgingScheduleService->download($data);
     }
+    // public function submitApplication(Request $request)
+    // {   
+      
+    //     // Validate the incoming data
+    //     $request->validate([
+    //         'applicant_name' => 'required|string|max:255',
+    //         'applicant_gender' => 'required|string|max:50',
+    //         'applicant_contact' => 'required|string|max:20',
+    //         'service_provider_id' => 'required',
+    //         'proposed_emptying_date' => 'nullable|date',
+    //         //'supervisory_assessment_date' => 'nullable|date|before:proposed_emptying_date',
+    //     ]);
+
+    //     // try {
+    //         // Save the application
+    //         $application = new Application();
+    //         $application->bin = $request->bin;
+    //         $application->customer_name = $request->customer_name ?? null;
+    //         $application->customer_gender = $request->customer_gender ?? null;
+    //         $application->customer_contact = $request->customer_contact ?? null;
+    //         $application->applicant_name = $request->applicant_name ?? null;
+    //         $application->applicant_gender = $request->applicant_gender ?? null;
+    //         $application->applicant_contact = $request->applicant_contact ?? null;
+    //         $application->proposed_emptying_date = $request->proposed_emptying_date ?? null;
+    //         $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? null;
+    //         $application->service_provider_id = $request->service_provider_id ?? null;
+           
+    //         $application->save();
+
+    //         // Get containment_id from the build_contains table using the provided bin
+    //         $containment = DB::table('building_info.build_contains')
+    //             ->where('bin', $request->bin)
+    //             ->first();
+    //             if (!$containment) {
+    //                 return response()->json(['status' => 'error', 'message' => 'Containment not found for the provided bin.']);
+    //             }
+    //         $nextEmptyingDate = Containment::where('id', $containment->containment_id)
+    //             ->get();
+            
+    //         // Determine the correct status
+    //         $EmptyingDate = $nextEmptyingDate->next_emptying_date ;
+    //        dd($EmptyingDate);
+    //         $proposedEmptyingDate = $request->proposed_emptying_date ?? null;
+    //         $status = ($EmptyingDate === $proposedEmptyingDate) ? 1 : 2;
+    //             dd($status,$proposedEmptyingDate,$EmptyingDate);
+    //         // Update containment status
+    //         DB::table('fsm.containments')
+    //             ->where('id', $containment->containment_id)
+    //             ->update(['status' => $status]);
+
+    //             return response()->json(['status' =>'success', 'message' =>'Application submitted successfully.']);
+    //     // } catch (\Exception $e) {
+    //     //     \Log::error('Error submitting application: ', ['error' => $e->getMessage()]);
+    //     //     return response()->json(['status' => 'error', 'message' => 'Failed to submit application. Please try again.']);
+    //     // }
+    // }
+    public function disagreeEmptying(Request $request, $bin)
+    {   
+    // Find the containment_id from the build_contains table using the bin
+            $buildContain = DB::table('building_info.build_contains')
+                ->where('bin', $bin)
+                ->first();
+
+            if (!$buildContain) {
+                return response()->json(['error' => 'Containment not found for the provided bin'], 404);
+            }
+
+            // Find the corresponding containment in the fsm.containments table
+            $containment = DB::table('fsm.containments')
+                ->where('id', $buildContain->containment_id)
+                ->first();
+
+            if (!$containment) {
+                return response()->json(['error' => 'Containment not found'], 404);
+            }
+
+            $message = null;
+            $newStatus = $containment->status; // default no change
+
+            if (is_null($containment->status) || $containment->status == 0) {
+                $newStatus = 4;
+                $message = "If you disagree once, your request will be noted, but you can still rejoin the desludging schedule during the regeneration process";
+            } 
+            elseif ($containment->status == 4) {
+                $newStatus = 5;
+                $message = "If you disagree twice, you will be permanently removed from the desludging schedule.";
+            }
+
+            // Only update if there's a change
+            if ($newStatus !== $containment->status) {
+                DB::table('fsm.containments')
+                    ->where('id', $buildContain->containment_id)
+                    ->update(['status' => $newStatus]);
+            }
+
+            // Return response
+            return response()->json(['success' => $message ?? "No change in status."]);
+    }
+
     public function submitApplication(Request $request)
     {
-        // Validate the incoming data
         $request->validate([
             'applicant_name' => 'required|string|max:255',
             'applicant_gender' => 'required|string|max:50',
             'applicant_contact' => 'required|string|max:20',
             'service_provider_id' => 'required',
             'proposed_emptying_date' => 'nullable|date',
-            'supervisory_assessment_date' => 'nullable|date|after:proposed_emptying_date',
         ]);
-
+    
         try {
-            // Save the application
             $application = new Application();
             $application->bin = $request->bin;
             $application->customer_name = $request->customer_name ?? null;
@@ -271,60 +414,37 @@ class DesludgingScheduleController extends Controller
             $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? null;
             $application->service_provider_id = $request->service_provider_id ?? null;
             $application->save();
-
-            // Get containment_id from the build_contains table using the provided bin
+    
+            // Get containment_id
             $containment = DB::table('building_info.build_contains')
                 ->where('bin', $request->bin)
                 ->first();
-
+    
             if (!$containment) {
                 return response()->json(['status' => 'error', 'message' => 'Containment not found for the provided bin.']);
             }
-
-            // Determine the correct status
-            $nextEmptyingDate = $containment->next_emptying_date ?? null;
+    
+            $containmentRecord = Containment::where('id', $containment->containment_id)->first();
+            $EmptyingDate = $containmentRecord->next_emptying_date ?? null;
             $proposedEmptyingDate = $request->proposed_emptying_date ?? null;
-            $status = ($nextEmptyingDate === $proposedEmptyingDate) ? 0 : 3;
-
-            // Update containment status
+            
+            $status = (
+                $EmptyingDate && $proposedEmptyingDate &&
+                Carbon::parse($EmptyingDate)->eq(Carbon::parse($proposedEmptyingDate))
+            ) ? 1 : 2;
+    
             DB::table('fsm.containments')
                 ->where('id', $containment->containment_id)
                 ->update(['status' => $status]);
-
+                if ($status === 2) {
+                    $this->set_emptying_date();
+                }
+        
             return response()->json(['status' => 'success', 'message' => 'Application submitted successfully.']);
         } catch (\Exception $e) {
             \Log::error('Error submitting application: ', ['error' => $e->getMessage()]);
             return response()->json(['status' => 'error', 'message' => 'Failed to submit application. Please try again.']);
         }
     }
-    public function disagreeEmptying(Request $request, $bin)
-    {
-        // Find the containment_id from the build_contains table using the bin
-        $buildContain = DB::table('building_info.build_contains')
-            ->where('bin', $bin)
-            ->first();
     
-        // If no record is found, return an error
-        if (!$buildContain) {
-            return response()->json(['error' => 'Containment not found for the provided bin'], 404);
-        }
-    
-        // Now, find the corresponding containment in the fsm.containments table using the containment_id
-        $containment = DB::table('fsm.containments')
-            ->where('id', $buildContain->containment_id)
-            ->first();
-    
-        // If containment is not found, return an error response
-        if (!$containment) {
-            return response()->json(['error' => 'Containment not found'], 404);
-        }
-    
-        // Update the `status` column to 1 in the fsm.containments table
-        DB::table('fsm.containments')
-            ->where('id', $buildContain->containment_id)
-            ->update(['status' => 1]);
-    
-        // Return a success response
-        return response()->json(['success' => 'Containment status updated to 2']);
-    }   
 }

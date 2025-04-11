@@ -7,7 +7,8 @@ use App\Http\Controllers\ChartController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Fsm\ApplicationController;
-
+use App\Http\Controllers\Fsm\DesludgingScheduleController;
+use App\Http\Controllers\Pdf\PdfGenerationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -231,7 +232,21 @@ Route::group([
     Route::resource('watersupplys', 'WaterSupplysController');
 });
 
+/**
+ * Pdf Generation Routes
+ */
+Route::group([
+    'name' => 'pdf',
+    'prefix' => 'pdf',
+    'namespace' => 'PdfGeneration',
+    'middleware' => 'auth'
+], function () {
+    Route::get('/pdf', [PdfGenerationController::class, 'index'])->name('pdf.index');
+    Route::get('pdf/data', 'PdfGenerationController@getData');
 
+    
+    // Route::resource('pdf/pdf-generation', 'PdfGenerationController');
+});
 /**
  * FSM Info Routes
  */
@@ -248,7 +263,7 @@ Route::group([
 
     Route::get('/treatment-plant-performance-test/data', 'TreatmentplantPerformanceTestController@getData');
     Route::resource('/treatment-plant-performance-test', 'TreatmentplantPerformanceTestController');
-
+    
 
     Route::get('fsmdashboard', 'FsmDashboardController@index')->name('fsmdashboard');
     Route::get('/store-kpi', 'KpiDashboardController@storekpi');
@@ -263,16 +278,19 @@ Route::group([
 
      * Desludging Schedule & Desludging Schedule Reintegration Routes
      */
+    Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
+    Route::get('/serviceprovider', [DesludgingScheduleController::class, 'getServiceProviderData']);
     Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
     Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
     Route::resource('/desludging-reintegration', 'DesludgingReintegrationController');
     Route::get('/desludging-schedule/data', 'DesludgingScheduleController@getData');
     Route::get('/desludging-schedule/export', 'DesludgingScheduleController@export');
     Route::post('/desludging-schedule/submit-application', 'DesludgingScheduleController@submitApplication');
-    Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
     Route::resource('/desludging-schedule', 'DesludgingScheduleController');
-
-    Route::get('/set-emptying-date', 'DesludgingScheduleController@setEmptyingDate')->name('set.emptying.date');
+    Route::post('/confirm-application', 'DesludgingScheduleController@confirmApplication')->name('desludging-schedule.confirm-application');
+    Route::get('/set-emptying-date', 'DesludgingScheduleController@set_emptying_date')->name('set.emptying.date');
+    Route::get('/test', 'DesludgingScheduleController@test');
+    
 
     /**
      * Kpi Target Routes

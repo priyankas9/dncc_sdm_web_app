@@ -62,7 +62,7 @@ class DesludgingScheduleService
                         ON b.bin = bc.bin 
                         AND b.deleted_at IS NULL
 					LEFT JOIN building_info.owners AS o ON o.bin = b.bin AND o.deleted_at IS  NULL
-                    WHERE  (c.status IS NULL ) 
+                    WHERE  (c.status IS NULL OR c.status = '4') 
         AND (b.wasa_status IS NULL OR b.wasa_status = false) AND c.deleted_at IS NULL) final_result 
          order by  final_result.next_emptying_date ASC";
         $buildingResults = DB::SELECT($query);
@@ -76,13 +76,11 @@ class DesludgingScheduleService
         }
         return Datatables::of($buildingResults)
             ->addColumn('action', function ($building) {
-                return
-                    // '<a title="Confirm for Assessment" href="' . action('Fsm\DesludgingScheduleController@setEmptyingDate', ['bin' => $building->bin]) . '" class="btn btn-sm mb-1" style="background-color: #17A2B8; color: white;"><i class="fa-regular fa-circle-check"></i></a> ' .
-                    '<button title="Confirm Emptying" class="btn btn-sm mb-1 btn-confirm-emptying" style="background-color: #17A2B8; color: white;" data-bin="' . $building->bin . '"  data-owner_contact="' . $building->owner_contact . '"  data-owner_name="' . $building->owner_name . '" data-next-emptying-date="' . $building->next_emptying_date . '"><i class="fa-solid fa-circle-check"></i></button> ' ;
-                    // '<button title="Remove from Desludging Schedule" class="btn btn-sm mb-1 btn-disagree-emptying" style="background-color: #17A2B8; color: white;" data-bin="' . $building->bin .  '"><i class="fa-solid fa-xmark"></i></button> ' ;
-                    // '<a title="Re-schedule Emptying Date" href="/delete/' . $building->bin . '" class="btn btn-sm mb-1" style="background-color: #17A2B8; color: white;"><i class="fa-regular fa-clock"></i></a> ' .
-                    // '<a title="Send Job Order for Emptying" href="/download/' . $building->bin . '" class="btn btn-sm mb-1" style="background-color: #17A2B8; color: white;"><i class="fa-regular fa-rectangle-list"></i></a>';
-            })
+            return
+                '<button title="Confirm Emptying" class="btn btn-sm mb-1 btn-confirm-emptying" style="background-color: #17A2B8; color: white;" data-bin="' . $building->bin . '"  data-owner_contact="' . $building->owner_contact . '"  data-owner_name="' . $building->owner_name . '" data-next-emptying-date="' . $building->next_emptying_date . '"><i class="fa-solid fa-circle-check"></i></button> ' .
+                '<button title="Reschedule Emptying" class="btn btn-sm mb-1 btn-reschedule-emptying" style="background-color: #17A2B8; color: white;" data-bin="' . $building->bin . '"  data-owner_contact="' . $building->owner_contact . '"  data-owner_name="' . $building->owner_name . '" data-next-emptying-date="' . $building->next_emptying_date . '"><i class="fa-solid fa-clock"></i></button> ' .
+                '<button title="Disagree for schedule desludging" class="btn btn-sm mb-1 btn-unconfirm-emptying" style="background-color: #17A2B8; color: white;" data-bin="' . $building->bin . '"  data-owner_contact="' . $building->owner_contact . '"  data-owner_name="' . $building->owner_name . '" data-next-emptying-date="' . $building->next_emptying_date . '"><i class="fa-solid fa-xmark"></i></button> ';
+        })
             ->rawColumns(['action']) // This is necessary if you want to render HTML in the 'action' column
             ->make(true);
     }
