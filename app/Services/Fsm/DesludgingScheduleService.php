@@ -39,19 +39,21 @@ class DesludgingScheduleService
 
     public function getAllData($data)
     {
-        $query = "
-      	SELECT DISTINCT final_result.id,final_result.*
-                FROM (
-                    SELECT 
+         // fetch id of all containments that meet criteria for setting emptying date
+        //  must not be emptied through the service delivery
+        // does not pay WASA bill
+        // status is either 0 or 4
+        $fetch_id = "SELECT * FROM (
+                    SELECT DISTINCT ON (c.id)
                         b.bin, 
-						b.house_number, 
-						b.house_locality, 
-						b.road_code, 
-						o.owner_name, 
-						o.owner_contact, 
-						c.next_emptying_date,
-						c.status,
-						c.id
+                        b.house_number, 
+                        b.house_locality, 
+                        b.road_code, 
+                        o.owner_name, 
+                        o.owner_contact, 
+                        c.next_emptying_date,
+                        c.status,
+                        c.id
                     FROM fsm.containments c
                     LEFT JOIN building_info.build_contains bc 
                         ON bc.containment_id = c.id 
@@ -61,12 +63,54 @@ class DesludgingScheduleService
                     LEFT JOIN building_info.buildings b 
                         ON b.bin = bc.bin 
                         AND b.deleted_at IS NULL
-					LEFT JOIN building_info.owners AS o ON o.bin = b.bin AND o.deleted_at IS  NULL
-                    WHERE  (c.status IS NULL OR c.status = '4') 
-        AND (b.wasa_status IS NULL OR b.wasa_status = false) AND c.deleted_at IS NULL) final_result 
-         order by  final_result.next_emptying_date ASC";
-        $buildingResults = DB::SELECT($query);
-        // Add the action column
+                    LEFT JOIN building_info.owners AS o 
+                        ON o.bin = b.bin AND o.deleted_at IS NULL
+                    LEFT JOIN fsm.applications a
+                        ON a.containment_id = c.id AND a.emptying_status = false
+                    WHERE   
+                        b.wasa_status = false
+                        OR (c.status != 5) -- rejected twice
+                        OR (c.status != 1) -- confirm scheduled
+                        OR (c.status != 2) -- re-scheduled
+                        OR c.deleted_at IS NULL
+                        OR a.id IS NOT NULL
+                    ORDER BY c.id
+                ) final_result
+                ORDER BY final_result.next_emptying_date;
+                ;";
+
+        $buildingResults = DB::select($fetch_id);
+         // $query = "
+      	// SELECT DISTINCT final_result.id,final_result.*
+        //         FROM (
+        //             SELECT 
+        //                 b.bin, 
+		// 				b.house_number, 
+		// 				b.house_locality, 
+		// 				b.road_code, 
+		// 				o.owner_name, 
+		// 				o.owner_contact, 
+		// 				c.next_emptying_date,
+		// 				c.status,
+		// 				c.id
+        //             FROM fsm.containments c
+        //             LEFT JOIN building_info.build_contains bc 
+        //                 ON bc.containment_id = c.id 
+        //                 AND bc.deleted_at IS NULL 
+        //                 AND bc.bin IS NOT NULL 
+        //                 AND bc.containment_id IS NOT NULL
+        //             LEFT JOIN building_info.buildings b 
+        //                 ON b.bin = bc.bin 
+        //                 AND b.deleted_at IS NULL
+		// 			LEFT JOIN building_info.owners AS o ON o.bin = b.bin AND o.deleted_at IS  NULL
+        //             -- WHERE  
+        //             -- (c.status IS NULL OR c.status = '4') AND
+        //             -- (b.wasa_status IS NULL OR b.wasa_status = false) AND c.deleted_at IS NULL) 
+        //             final_result 
+        //             order by  final_result.next_emptying_date ASC;";
+
+        // $buildingResults = DB::SELECT($query);
+        // // Add the action column
         foreach ($buildingResults as $key => $building) {
             $buildingResults[$key]->action =
                 '<a href="/view/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">View</a> ' .

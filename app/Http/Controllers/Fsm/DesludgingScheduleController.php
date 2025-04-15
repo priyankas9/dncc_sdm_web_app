@@ -7,6 +7,7 @@ use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
 use App\Models\Fsm\ServiceProvider;
 use App\Models\Fsm\TreatmentPlant;
+use App\Enums\TreatmentPlantType;
 use Illuminate\Http\Request;
 use App\Services\Fsm\DesludgingScheduleService;
 use Carbon\Carbon;
@@ -41,12 +42,7 @@ class DesludgingScheduleController extends Controller
         $serviceprovider = ServiceProvider::pluck("company_name", "id")->toArray();
         return view('fsm.desludging-schedule.confirm', compact('page_title', 'serviceProvider'));
     }
-    public function callPriority()
-    {
-        $id = [];
-        // $this->setPriority($id);
-        $this->set_emptying_date();
-    }
+  
     public function fetchSiteSettings()
     {
         $site_settings = DB::table('public.sdm_sitesettings')->whereNull('deleted_at')->get();
@@ -55,6 +51,10 @@ class DesludgingScheduleController extends Controller
     }
     public function getContainments()
     {
+        // fetch id of all containments that meet criteria for setting emptying date
+        //  must not be emptied through the service delivery
+        // does not pay WASA bill
+        // status is either 0 or 4
         $fetch_id = "SELECT DISTINCT ON (final_result.id) final_result.*
         FROM (
             SELECT 
@@ -78,8 +78,8 @@ class DesludgingScheduleController extends Controller
         ORDER BY final_result.id;";
 
         $containment_id = DB::select($fetch_id);
-        // Fetch all containments that have non-null priority and fstp_distance
-        $containments = Containment::whereIN('id',array_column($containment_id,'id'))->get();
+        // re-query all fetched ID's and order them by first priority then distance from FSTP
+        $containments = Containment::whereIN('id',array_column($containment_id,'id'))->ORDERBY('priority')->ORDERBY('fstp_distance')->get();
         return $containments;
 
     }
@@ -98,23 +98,33 @@ class DesludgingScheduleController extends Controller
         foreach ($containments as $containment) {
             $constructionDate = Carbon::parse($containment->construction_date);
             $lastEmptiedDate = $containment->last_emptied_date ? Carbon::parse($containment->last_emptied_date) : null;
+            // storing values already in db for comparison and update
+            $old_priority = $containment->priority;
+            $oldfstp_distance = $containment->fstp_distance;
+            $oldfstp_id = $containment->closest_fstp_id;
             $now = Carbon::now();
             // Determine priority
+            // if containment has not been emptied 
             if (is_null($lastEmptiedDate)) {
-                // Case 1: last emptied date is NULL
-                $yearsSinceConstruction = $constructionDate->diffInYears($now);
-                $old_priority = $containment->priority;
-                if ($yearsSinceConstruction > 3) {
+                // if we dont have containment construction date, we assume highest priority
+                if (is_null($constructionDate)) {
                     $containment->priority = 1;
-                } elseif ($yearsSinceConstruction > 1  && $yearsSinceConstruction <= 3) {
-                    $containment->priority = 2;
-                } else {
-                    $containment->priority = 3;
+                }
+                else
+                {
+                    // if construction date present, we use same logic as emptying date
+                    $yearsSinceConstruction = $constructionDate->diffInYears($now);
+                    if ($yearsSinceConstruction > 3) {
+                        $containment->priority = 1;
+                    } elseif ($yearsSinceConstruction > 1  && $yearsSinceConstruction <= 3) {
+                        $containment->priority = 2;
+                    } else {
+                        $containment->priority = 3;
+                    }
                 }
             } else {
-                // Case 2, 3, 4: last emptied date is not NULL
+                // priority logic according to last emptied
                 $yearsSinceLastEmptied = $lastEmptiedDate->diffInYears($now);
-
                 if ($yearsSinceLastEmptied > 3) {
                     $containment->priority = 1;
                 } elseif ($yearsSinceLastEmptied > 1 && $yearsSinceLastEmptied <= 3) {
@@ -124,35 +134,44 @@ class DesludgingScheduleController extends Controller
                 }
             }
             
-            $oldfstp_distance = $containment->fstp_distance;
-            $oldfstp_id = $containment->closest_fstp_id;
+           
             // Fetch all FSTPs with specified conditions
-            $fstps = TreatmentPlant::whereIn('type', ['3','4']) //filterbytextnotid
+            $treatment_plant_types = ['FSTP', 'Co-Treatment Plant'];
+
+            // Reverse map text values to IDs
+            $typeIds = array_keys(array_filter(TreatmentPlantType::toEnumArray(), function ($label) use ($treatment_plant_types) {
+                return in_array($label, $treatment_plant_types);
+            }));
+
+            $fstps = TreatmentPlant::whereIn('type', $typeIds)
                 ->where('status', true)
                 ->get();
-            if ($fstps->count() == 1) {
+            if ($fstps->count() == 0) {
+                return response()->json(['status' => 'error', 'message' => 'No FSTP or Co-Treatment Plants registered. Please register treatment plant and try again.']);
+            }
+            elseif ($fstps->count() == 1) {
                 $fstp = $fstps->first();
                 $distanceResult = DB::selectOne("
-                SELECT ST_Distance(
-                    ST_Transform(c.geom, 4326),
-                    ST_Transform(f.geom, 4326)
-                ) AS distance
+                SELECT ROUND(ST_Distance(
+                    ST_Transform(c.geom, 32646),
+                    ST_Transform(f.geom, 32646)
+                )::numeric , 6) AS distance
                 FROM fsm.containments c, fsm.treatment_plants f
                 WHERE c.id = ? AND f.id = ?
-            ", [$containment->id, $fstp->id]);
+                ", [$containment->id, $fstp->id]);
                 $containment->fstp_distance = $distanceResult->distance;
                 $containment->closest_fstp_id = $fstp->id;
             } else {
                 $distances = [];
                 foreach ($fstps as $fstp) {
                     $distanceResult = DB::selectOne("
-                    SELECT ST_Distance(
-                        ST_Transform(c.geom, 4326),
-                        ST_Transform(f.geom, 4326)
-                    ) AS distance
+                    SELECT ROUND(ST_Distance(
+                    ST_Transform(c.geom, 32646),
+                    ST_Transform(f.geom, 32646)
+                    )::numeric , 6) AS distance
                     FROM fsm.containments c, fsm.treatment_plants f
                     WHERE c.id = ? AND f.id = ?
-                ", [$containment->id, $fstp->id]);
+                    ", [$containment->id, $fstp->id]);
                     $distances[$fstp->id] = $distanceResult->distance;
                 }
                 if (!empty($distances)) {
@@ -190,8 +209,7 @@ class DesludgingScheduleController extends Controller
     public function set_emptying_date()
     {
        
-        // call set_priority function with $id as null if count(prioirty) in containments is zero
-        try{
+        // try{
         // fetch all values required from site settings
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $containments = $this->getContainments();
@@ -230,7 +248,6 @@ class DesludgingScheduleController extends Controller
             $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
 
         }while ($counter <= count($containments));
-        
         if (!empty($containmentupdates)) {
             foreach (array_chunk($containmentupdates, 500) as $chunk) {
                 foreach ($chunk as $update) {
@@ -242,11 +259,11 @@ class DesludgingScheduleController extends Controller
             }
         }
         return response()->json(['status' => 'success', 'message' => 'Next emptying dates have been successfully regenerated.']);
-        }
-        catch (\Exception $e) {
-            \Log::error('Error in set_emptying_date: ', ['error' => $e->getMessage()]);
-            return response()->json(['status' => 'error', 'message' => 'Failed to set emptying date. Please try again.']);
-        }
+        // }
+        // catch (\Exception $e) {
+        //     \Log::error('Error in set_emptying_date: ', ['error' => $e->getMessage()]);
+        //     return response()->json(['status' => 'error', 'message' => 'Failed to set emptying date. Please try again.']);
+        // }
 }
 
     public function fetchContainmentsInRange($start, $end, $containments)
@@ -256,7 +273,9 @@ class DesludgingScheduleController extends Controller
 
     public function test()
     {
-        dd($this->trips_allocated_range('2023-10-01','2023-10-31'));
+        $this->set_emptying_date();
+        $this->setPriority(null);
+        dd("doint");
     }
     public function trips_allocated_range ($start_date, $end_date)
     {
@@ -270,7 +289,6 @@ class DesludgingScheduleController extends Controller
                 break;
             }
         }
-        dd($trips_allocated);
     }
     public function trips_allocated($date)
     {
