@@ -2,7 +2,6 @@
 // Last Modified Date: 18-04-2024
 // Developed By: Innovative Solution Pvt. Ltd. (ISPL)  
 namespace App\Http\Controllers\Fsm;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Fsm\ApplicationRequest;
 use App\Models\BuildingInfo\Building;
@@ -63,14 +62,19 @@ class ApplicationController extends Controller
      *
      * @return View
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('fsm.applications.create',[
+        $bin = session('bin');
+        $action_type = $request->query('action_type');
+       
+        return view('fsm.applications.create', [
             'formAction' => $this->applicationService->getCreateFormAction(),
-            'formFields' => $this->applicationService->getCreateFormFields(),
-            'indexAction' => $this->applicationService->getIndexAction()
-        ]);
+            'formFields' => $this->applicationService->getCreateFormFields(), 
+            'indexAction' => $this->applicationService->getIndexAction(),'bin' => $bin,
+          
+        ], compact('action_type'));
     }
+
 
     /**
      * Get the building details for the selected address.
@@ -81,6 +85,7 @@ class ApplicationController extends Controller
      */
     public function buildingDetails(Request $request)
     {
+       
         return $this->applicationService->getBuildingDetails($request);
     }
 
