@@ -10,6 +10,7 @@ use App\Models\Fsm\ServiceProvider;
 use App\Models\LayerInfo\Ward;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Fsm\DesludgingScheduleController;
 use Box\Spout\Common\Type;
 use Box\Spout\Writer\Style\Color;
 use Box\Spout\Writer\Style\StyleBuilder;
@@ -62,7 +63,8 @@ class ApplicationService
                         inputType: 'multiple-select',
                         inputId: 'road_code',
                         selectValues: [],
-                        required: true
+                        required: true,
+                        inputValue: null,
                     ),
                     new FormField(
                         label: 'House Number / BIN',
@@ -70,7 +72,8 @@ class ApplicationService
                         inputType: 'multiple-select',
                         inputId: 'bin',
                         selectValues: [],
-                        required: true
+                        required: true,
+                        inputValue: null
                     ),
                     new FormField(
                         label: 'Containment ID',
@@ -78,7 +81,8 @@ class ApplicationService
                         inputType: 'text', 
                         inputId: 'containment_id',
                         selectValues: [],
-                        placeholder: 'Containment ID'
+                        placeholder: 'Containment ID',
+                        inputValue: null
                     ),     
                     new FormField(
                         label: 'Ward Number ',
@@ -87,6 +91,7 @@ class ApplicationService
                         inputId: 'ward',
                         placeholder: 'Ward Number ',
                         selectValues: Ward::orderBy('ward')->pluck('ward','ward')->toArray(),
+                        inputValue: null
                     ),
                 ]],
             ["title" => "Owner Details",
@@ -97,6 +102,7 @@ class ApplicationService
                         inputType: 'text',
                         inputId: 'customer_name',
                         placeholder: 'Owner Name',
+                        inputValue: null
                     ),
                     new FormField(
                         label: 'Owner Gender',
@@ -105,6 +111,7 @@ class ApplicationService
                         inputId: 'customer_gender',
                         selectValues: ["Male"=>"Male","Female"=>"Female","Others"=>"Others"],
                         placeholder: 'Owner Gender',
+                        inputValue: null
                     ),
                     new FormField(
                         label: 'Owner Contact (Phone)',
@@ -114,6 +121,7 @@ class ApplicationService
                         selectValues: [],
                         placeholder: 'Owner Contact (Phone)',
                         oninput: "validateOwnerContactInput(this)", 
+                        inputValue: null
                     )                    
                 ]],
             ["title" => "Applicant Details",
@@ -152,20 +160,23 @@ class ApplicationService
             ["title" => "Application Details",
                 "fields" => [
                     new FormField(
-                        label: 'Supervisory Assessment Date',
-                        labelFor: 'supervisory_assessment_date',
-                        inputType: 'date',
-                        inputId: 'supervisory_asssessment_date',
-                        required: true,
-                        placeholder: 'Supervisory Assessment Date',
-                    ),
-                    new FormField(
                         label: 'Proposed Emptying Date',
                         labelFor: 'proposed_emptying_date',
                         inputType: 'date',
                         inputId: 'proposed_emptying_date',
                         required: true,
                         placeholder: 'Proposed Emptying Date',
+                        inputValue: null,
+                        customValue: null
+                    ),
+                    new FormField(
+                        label: 'Supervisory Assessment Date',
+                        labelFor: 'supervisory_assessment_date', 
+                        inputType: 'date',
+                        inputId: 'supervisory_assessment_date', 
+                        required: true,
+                        placeholder: 'Supervisory Assessment Date',
+                        customValue: null
                     ),
                     new FormField(
                         label: 'Service Provider Name',
@@ -182,7 +193,7 @@ class ApplicationService
                         inputType: 'select',
                         inputId: 'emergency_desludging_status',
                         selectValues: array("1" => "Yes" , "0" => "No"),
-                        required: true,
+                        required: false,
                         placeholder: 'Emergency Desludging',
                     ),
                 ]],
@@ -196,6 +207,7 @@ class ApplicationService
                         required: false,
                         placeholder: 'Number of Households',
                         oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
+                        inputValue: null
 
                     ),
                     new FormField(
@@ -206,6 +218,7 @@ class ApplicationService
                         required: false,
                         placeholder: 'Population of Building',
                         oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
+                        inputValue: null
                     ),
                     new FormField(
                         label: 'Number of Toilets',
@@ -215,6 +228,7 @@ class ApplicationService
                         required: false,
                         placeholder: 'Number of Toilets',
                         oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
+                        inputValue: null
                     ),
                 ]],
         ];
@@ -371,11 +385,100 @@ class ApplicationService
      * @return array
      */
     public function getCreateFormFields()
-    {
+    {   
+        $nextEmptyingDate = session('next_emptying_date');
+        $bin = session('bin');
+        $ownerName = session('owner_name');
+        $ownerContact = session('owner_contact');
+        $containmentId = session('containment_id');
+        $ownerGender = session('owner_gender');
+        $ward = session('ward');
+        $population_served =  session('population_served');
+        $household_served = session('household_served');
+        $toilet_count = session('toilet_count');
+        $road_code = session('road_code');
+        $action_type = session('action_type');
+       
+        foreach ($this->createFormFields as &$section) {
+            foreach ($section['fields'] as &$field) {
+                if ($field->inputId === 'proposed_emptying_date') {
+                   
+                    if ( $action_type == "confirm") {
+                        $field->inputValue = $nextEmptyingDate;
+                       $field->disabled =  true;
+                    }
+                    else {
+                        $field->disabled = false;
+                    }
+                }
+                else if ($field->inputId === 'population_served') {
+                    $field->inputValue = $population_served;
+                    if (!empty($population_served)) {
+                       $field->disabled =  true;
+                    }
+                }
+               else if ($field->inputId === 'household_served') {
+                    $field->inputValue = $household_served;
+                    if (!empty($household_served)) {
+                       $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'toilet_count') {
+                    $field->inputValue = $toilet_count;
+                    if (!empty($toilet_count)) {
+                       $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'bin') {
+                    $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
+                    $field->selectedValue = $selectedBin;
+                    if (!empty($selectedBin)) {
+                         $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'customer_name') {
+                    $field->inputValue = $ownerName;
+                    if (!empty($ownerName)) {
+                       $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'road_code') {
+                    $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
+                    $field->selectedValue = $selectedRoadCode;
+                    if (!empty($selectedRoadCode)) {
+                         $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'customer_contact') {
+                    $field->inputValue = $ownerContact;
+                    if (!empty($ownerContact)) {
+                       $field->disabled =  true;
+                    }
+                }
+    
+                else if ($field->inputId === 'customer_gender') {
+                    $field->selectedValue = $ownerGender;
+                    if (!empty($ownerGender)) {
+                         $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'containment_id') {
+                    $field->inputValue = $containmentId;
+                    if (!empty($containmentId)) {
+                       $field->disabled =  true;
+                    }
+                }
+                else if ($field->inputId === 'ward') {
+                    $field->selectedValue = $ward;
+                    if (!empty($ward)) {
+                         $field->disabled =  true;
+                    }
+                }
+            }
+        }
+    
         return $this->createFormFields;
     }
-
-
     
     /**
      * Get form fields for showing application.
@@ -513,7 +616,6 @@ class ApplicationService
 
         return $this->showFormFields;
     }
-
     /**
      * Get form fields for editing application.
      *
@@ -702,7 +804,6 @@ class ApplicationService
         ];
         return $this->editFormFields;
     }
-
     /**
      * Get action/route for create form.
      *
@@ -712,7 +813,6 @@ class ApplicationService
     {
         return $this->createFormAction;
     }
-
     /**
      * Get action/route for index page of Applications.
      *
@@ -722,7 +822,6 @@ class ApplicationService
     {
         return $this->indexAction;
     }
-
     /**
      * Get action/route for create page of Applications.
      *
@@ -732,7 +831,6 @@ class ApplicationService
     {
         return $this->createRoute;
     }
-
     /**
      * Get action/route for exporting Applications.
      *
@@ -742,12 +840,10 @@ class ApplicationService
     {
         return $this->exportRoute;
     }
-
     public function getReportRoute()
     {
         return $this->reportRoute;
     }
-
     /**
      * Get action/route for edit form.
      *
@@ -758,7 +854,6 @@ class ApplicationService
         $this->editFormAction = route('application.update', $application);
         return $this->editFormAction;
     }
-
     /**
      * Get form fields for filter.
      *
@@ -768,7 +863,6 @@ class ApplicationService
     {
         return $this->filterFormFields;
     }
-
     /**
      * Get all the applications.
      *
@@ -801,7 +895,6 @@ class ApplicationService
             ->whereNull('applications.deleted_at');
         }
     }
-
     /**
      * Get Datatables of Applications.
      *
@@ -931,21 +1024,30 @@ class ApplicationService
                 return $content;
             })
             
-            ->editColumn('emptying_status',function($model){
+            ->editColumn('emptying_status', function($model) {
                 $content = '<div class="application-quick__actions">';
-                $content .= $model->emptying_status?'<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
+                $content .= $model->emptying_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
+            
                 if ($model->emptying_status == TRUE) {
-                    if (Auth::user()->can('View Emptying')){
-                        $content .= '<a title="View Emptying Service Details" href="' . route("emptying.show", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
+                    if (Auth::user()->can('View Emptying')) {
+                        $content .= '<a title="View Emptying Service Details" href="' 
+                                    . route("emptying.show", [$model->with('emptying')->where('id', $model->id)->first()->emptying->id]) 
+                                    . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
                     }
                 } else {
-                    if (Auth::user()->can('Add Emptying')){
-                        $content .= '<a title="Add Emptying Service Details" href="' . route("emptying.create-id", [$model->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
+                    if (Auth::user()->can('Add Emptying')) {
+                        // Disable "Add Emptying" if supervisory_assessment_status is false
+                        $disabledClass = $model->supervisory_assessment_status ? '' : ' anchor-disabled';
+                        $content .= '<a title="Add Emptying Service Details" href="' 
+                                    . route("emptying.create-id", [$model->id]) 
+                                    . '" class="btn btn-info btn-sm mb-1' . $disabledClass . '"><i class="fa fa-recycle"></i></a> ';
                     }
                 }
+            
                 $content .= '</div>';
                 return $content;
             })
+            
             ->editColumn('feedback_status',function ($model){
                 $content = '<div class="application-quick__actions">';
                 $content .= $model->feedback_status?'<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
@@ -991,78 +1093,6 @@ class ApplicationService
 
             ->make(true);
     }
-
-    /**
-     * Get building details of specified Application.
-     *
-     * @return JsonResponse
-     * @throws Exception
-     */
-    // public function getBuildingDetails(Request $request)
-    // {
-    //     try {
-    //         // Fetch building by BIN
-    //         $building = Building::where('bin', '=', $request->bin)->firstOrFail();
-           
-    //         // Filter containments based on the condition
-    //         // $containments = $building->containments()->whereHas('applications', function ($query) {
-    //         //     $query->whereNull('emptying_status')->orWhere('emptying_status', true);
-    //         // })->get();
-    //         $containmentIds = $building->containments->pluck('id');
-
-    //     // Get containment IDs from fsm.application table with conditions
-    //     $containments = $containmentIds->filter(function ($containmentId) {
-    //         return !DB::table('fsm.applications')
-    //             ->where('containment_id', $containmentId)
-    //             ->where(function ($query) {
-    //                 $query->where('emptying_status', true)
-    //                       ->orWhereNull('containment_id');
-    //             })
-    //             ->exists();
-    //         });
-
-
-    //         // Fetch additional related data
-    //         $owner = $building->owners;
-    //         $road = $building->roadlines;
-    //         $application = Application::orderBy('id', 'DESC')->where('bin', $request->bin)->first();
-    
-    //         // Check if containments are empty
-    //         if ($containments->isEmpty()) {
-    //             return JsonResponse::fromJsonString(json_encode([
-    //                 "error" => "There is no containment for this building!"
-    //             ]), 404);
-    //         }
-    
-    //         // Return the response
-    //         return JsonResponse::fromJsonString(json_encode([
-    //             'test' => $road,
-    //             "customer_name" => $owner->owner_name ?? null,
-    //             "customer_gender" => $owner->owner_gender ?? null,
-    //             "customer_contact" => $owner->owner_contact ?? null,
-    //             "road" => $road->code ?? null,
-    //             "ward" => $building->ward ?? null,
-    //             "containments" => $containments,
-    //             "household_served" => $building->household_served ?? null,
-    //             "population_served" => $building->population_served ?? null,
-    //             "toilet_count" => $building->toilet_count ?? null,
-    //             "status" => !$application || $application->emptying_status === null || $application->emptying_status
-    //         ]), 200);
-    
-    //     } catch (\Throwable $e) {
-    //         // Handle exceptions
-        
-    //         return JsonResponse::fromJsonString(json_encode([
-    //             "error" => "Error getting building details!",
-    //             "details" => $e->getMessage()
-    //         ]), 500);
-    //     }
-    // }
-    
-
-  
-
-
     /**
      * Store new application.
      *
@@ -1071,6 +1101,7 @@ class ApplicationService
      */
     public function createApplication(ApplicationRequest $request)
     {
+       
         $previous_application_status = Application::where('containment_id',$request->containment_id)->where('emptying_status',false)->whereNULL('deleted_at')->exists();
         if($previous_application_status)
         {
@@ -1088,7 +1119,7 @@ class ApplicationService
                     $application->customer_name = $request->customer_name??$owner->owner_name;
                     $application->customer_contact = $request->customer_contact??$owner->owner_contact;
                     $application->customer_gender = $request->customer_gender??$owner->owner_gender;
-                    dd($application);
+                    
                     $owner->fill([
                             "owner_name" => $request->customer_name??$owner->owner_name,
                             "owner_gender" => $request->customer_gender??$owner->owner_gender,
@@ -1113,8 +1144,22 @@ class ApplicationService
                     };
                     $application->emergency_desludging_status = $request->emergency_desludging_status ?? $request->emergency_desludging_status ?? null;
                     $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
-                   dd($application);
+                
                    $application->save();
+                   // 🧠 Set containment status based on next_emptying_date vs proposed_emptying_date
+                $containmentRecord = Containment::find($request->containment_id);
+                  if ($request->action_type == 'confirm')
+                  {
+                    $containmentRecord->status = 1;
+                    $containmentRecord->save();
+                  } 
+                  else if ($request-> action_type == 'reschedule')
+                    {
+                        $containmentRecord->status = 2;
+                        app(DesludgingScheduleController::class)->set_emptying_date();
+                        $containmentRecord->save();
+                    }
+                 
                 });
             } catch (\Throwable $e) {
                 return redirect()->back()->withInput()->with('error',"Error! Application couldn't be created. ".$e);

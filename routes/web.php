@@ -278,6 +278,7 @@ Route::group([
 
      * Desludging Schedule & Desludging Schedule Reintegration Routes
      */
+    Route::post('/schedule-desludging/trips-allocated-range', 'DesludgingScheduleController@trips_allocated_range')->name('schedule.tripsallocated.range');
     Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
     Route::get('/serviceprovider', [DesludgingScheduleController::class, 'getServiceProviderData']);
     Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
@@ -290,8 +291,8 @@ Route::group([
     Route::post('/confirm-application', 'DesludgingScheduleController@confirmApplication')->name('desludging-schedule.confirm-application');
     Route::get('/set-emptying-date', 'DesludgingScheduleController@set_emptying_date')->name('set.emptying.date');
     Route::get('/test', 'DesludgingScheduleController@test');
+    Route::post('/schedule/confirm', 'DesludgingScheduleController@redirectToApplication')->name('schedule.confirm');
     
-
     /**
      * Kpi Target Routes
      */

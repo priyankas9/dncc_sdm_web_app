@@ -23,6 +23,7 @@ class FormField
         $fileUrl,
         $required,
         $oninput,
+        $customValue,
         $autoComplete;
 
     public function __construct(
@@ -33,6 +34,7 @@ class FormField
         String $inputId = 'input-id',
         String $oninput = 'oninput',
         String $inputValue = null,
+        String $customValue  = null,
         String $inputClass = 'form-control',
         array $selectValues = [],
         String $selectedValue=null,
@@ -48,6 +50,7 @@ class FormField
         $this->labelFor = $labelFor;
         $this->labelClass = $labelClass;
         $this->labelValue = $labelValue;
+        $this->customValue = $customValue;
         $this->inputType = $inputType;
         $this->inputId = $inputId;
         $this->oninput = $oninput;
