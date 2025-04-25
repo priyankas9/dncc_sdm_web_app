@@ -94,7 +94,6 @@
         @php
             $inputType = 'text';  // Default input type
             $options = [];  // Placeholder for options
-
             // Clean up options if provided
             if (isset($details['options'])) {
                 if (is_string($details['options'])) {
@@ -105,12 +104,12 @@
                     $options = array_map('trim', $details['options']);
                 }
             }
-
             // Set input type based on data_type
             if (str_contains($details['data_type'], 'integer')) {
                 $inputType = 'number';
             } elseif (str_contains($details['data_type'], 'date')) {
                 $inputType = 'date';
+                
             } elseif (str_contains($details['data_type'], 'multi')) {
                 $inputType = 'multi';
             } elseif (str_contains($details['data_type'], 'minput')) {
@@ -119,7 +118,6 @@
                 $inputType = 'select';
             }
         @endphp
-
         @if ($inputType === 'text')
             {{-- Input for comma-separated holiday dates --}}
             {!! Form::text($key, old($key, $details['value']), [
@@ -129,6 +127,11 @@
         @elseif ($inputType === 'select')
             {!! Form::select($key, array_combine($options, $options), old($key, $details['value']), [
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
+            ]) !!}
+        @elseif ($inputType === 'date')
+            {!! Form::date($key, old($key, $details['value']), [
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
+                'onclick' => 'this.showPicker();'
             ]) !!}
         @elseif ($inputType === 'multi')
             {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
@@ -140,12 +143,10 @@
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
             ]) !!}
         @endif
-
         @if ($errors->has($key))
             <span class="invalid-feedback">{{ $errors->first($key) }}</span>
         @endif
     </div>
-
     <div class="col-sm-5">
         {!! Form::text($key . '_remark', old($key . '_remark', $details['remarks']), [
             'class' => 'form-control' . ($errors->has($key . '_remark') ? ' is-invalid' : ''),
@@ -155,18 +156,9 @@
             <span class="invalid-feedback">{{ $errors->first($key . '_remark') }}</span>
         @endif
     </div>
-</div>
-
-        @endforeach
-
-
     </div>
-
-
-
-
-
-
+        @endforeach
+    </div>
 </div><!-- /.box-body -->
 <div class="card-footer">
     <span id="editButton" class="btn btn-info">Edit</span>
@@ -175,8 +167,6 @@
 </div>
 {!! Form::close() !!}
 </div>
-
-
 </div><!-- /.box -->
 @stop
 @push('scripts')
@@ -189,10 +179,8 @@
             $('input').prop('readonly', readonly);
             $('select').prop('disabled', readonly);
         }
-
         // Initially set form fields as read-only
         toggleReadOnly(true);
-
         // Edit button click event
         $('#editButton').click(function() {
             $('input').removeAttr('readonly');
@@ -200,10 +188,8 @@
             $('#editButton').hide();
             $('#saveButton').show();
         });
-
         // Check for errors and update buttons accordingly
         var hasErrors = $('.alert-danger').length > 0;
-
         if (hasErrors) {
             $('input').removeAttr('readonly');
             $('select').removeAttr('disabled');
@@ -213,7 +199,6 @@
             $('#saveButton').hide();
             $('#editButton').show();
         }
-
         // Initialize select2 for multi-select fields
         $('.select2-multi').select2({
             placeholder: 'Select options',
@@ -222,7 +207,6 @@
             // Add inline style to selected options
             $(this).next('.select2-container').find('.select2-selection__choice').css('color', 'black');
         });
-
         // Handle form submission for multi-select fields
         $('form').on('submit', function(e) {
             const multiselectFields = $('select[multiple]');

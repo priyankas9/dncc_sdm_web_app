@@ -75,10 +75,22 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
             </table>
         </div>
     </div><!-- /.box-body -->
-
+    <form id="confirmEmptyingForm" method="POST" action="{{ route('schedule.confirm') }}" style="display: none;">
+    @csrf
+    <input type="hidden" name="ward">
+    <input type="hidden" name="containment_id">
+    <input type="hidden" name="bin">
+    <input type="hidden" name="owner_name">
+    <input type="hidden" name="owner_contact">
+    <input type="hidden" name="next_emptying_date">
+    <input type="hidden" name="owner_gender">
+    <input type="hidden" name="road_code">
+    <input type="hidden" name="household_served">
+    <input type="hidden" name="population_served">
+    <input type="hidden" name="toilet_count">
+    <input type="hidden" name="action_type" >
+    </form>
     <!-- Bootstrap Modal -->
-  @include('fsm.desludging-schedule.confirm')
-  @include('fsm.desludging-schedule.reschedule')
     @stop
     @push('scripts')
     <!-- Include SweetAlert2 from CDN -->
@@ -124,7 +136,14 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                     },
                     {
                         data: 'next_emptying_date',
-                        name: 'next_emptying_date'
+                        name: 'next_emptying_date',
+                        render: function(data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            const day = date.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., Monday
+                            const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); // e.g., 22 Apr 2024
+                            return `${formattedDate},${day}`;
+                        }
                     },
                     {
                         data: 'action',
@@ -146,7 +165,25 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 var searchData = $('input[type=search]').val();
                 window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData;
             });
-
+           
+            $(document).on('click', '.confirm-emptying-btn , .reschedule-emptying-btn', function (e) {
+                e.preventDefault();
+                const form = document.getElementById('confirmEmptyingForm');
+                form.querySelector('[name="ward"]').value = $(this).data('ward');
+                form.querySelector('[name="containment_id"]').value = $(this).data('containment_id');
+                form.querySelector('[name="bin"]').value = $(this).data('bin');
+                form.querySelector('[name="owner_name"]').value = $(this).data('owner_name');
+                form.querySelector('[name="owner_contact"]').value = $(this).data('owner_contact');
+                form.querySelector('[name="owner_gender"]').value = $(this).data('owner_gender');
+                form.querySelector('[name="next_emptying_date"]').value = $(this).data('next_emptying_date');
+                form.querySelector('[name="road_code"]').value = $(this).data('road_code');
+                form.querySelector('[name="population_served"]').value = $(this).data('population_served');
+                form.querySelector('[name="household_served"]').value = $(this).data('household_served');
+                form.querySelector('[name="toilet_count"]').value = $(this).data('toilet_count');
+                form.querySelector('[name="action_type"]').value = $(this).data('action_type');
+                form.submit();
+            });
+          
             $('#regenerate-btn').on('click', function(e) {
             e.preventDefault(); // Prevent default link behavior
             // Show the loader overlay
@@ -189,164 +226,6 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                     $('#loader-overlay').hide();
                 }
             });
-            });
-          
-            // When the modal is shown
-            $(document).on('click', '.btn-confirm-emptying', function() {
-                var bin = $(this).data('bin');
-                var nextEmptyingDate = $(this).data('next-emptying-date'); // Prefilled value (next emptying date)
-                
-                var owner_name = $(this).data('owner_name');
-                var owner_contact = $(this).data('owner_contact');
-                $('#binId_confirm').val(bin); // Set bin in hidden input field
-                $('#proposed_emptying_date').val(nextEmptyingDate);
-                $('#customer_name').val(owner_name);
-                $('#customer_contact').val(owner_contact);
-                // Prefill the proposed emptying date
-                $('#proposed_emptying_date').attr('min', nextEmptyingDate); // Set max date to prefilled next emptying date
-
-                $('#confirmEmptyingModal').modal('show');
-                if (nextEmptyingDate) {
-                // Convert to Date object and subtract one day
-                var maxDate = new Date(nextEmptyingDate);
-                maxDate.setDate(maxDate.getDate() - 1); // Subtract one day
-                // Format date as YYYY-MM-DD
-                var formattedDate = maxDate.toISOString().split('T')[0];
-                // Set max attribute
-                $('#supervisory_assessment_date').attr('max', formattedDate);
-              
-            }
-            });
-            $(document).on('click', '.btn-reschedule-emptying', function() 
-            {
-                var bin = $(this).data('bin');
-                var nextEmptyingDate = $(this).data('next-emptying-date'); // Prefilled value (next emptying date)
-                var owner_name = $(this).data('owner_name');
-                var owner_contact = $(this).data('owner_contact');
-                $('#binId_reschedule').val(bin); // Set bin in hidden input field
-                $('#proposed_emptying_dates').val(nextEmptyingDate);
-                $('#customer_names').val(owner_name);
-                $('#customer_contacts').val(owner_contact);
-                // Prefill the proposed emptying date
-                $('#proposed_emptying_dates').attr('min', nextEmptyingDate); // Set max date to prefilled next emptying date
-                $('#rescheduleEmptyingModals').modal('show');
-               
-            });
-            
-            // Handle the form submission with validation
-            $('#emptyingFormContainer').on('submit', function(e) {
-                e.preventDefault();
-                let form = $('#emptyingFormContainer');
-                let formData = form.serialize();
-                var prefilledEmptyingDate = $('#proposed_emptying_date').attr('max'); 
-                var userSelectedDate = $('#proposed_emptying_date').val(); 
-                
-                if (userSelectedDate < prefilledEmptyingDate) {
-                    Swal.fire({
-                        title: 'Invalid Date',
-                        text: 'The proposed emptying date must be after the prefilled next emptying date.',
-                        icon: 'error'
-                    });
-                    return;
-                }
-              
-                $.ajax({
-                    url: 'desludging-schedule/submit-application',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: 'Success',
-                                text: response.message,
-                                icon: 'success'
-                            }).then(function() {
-                                $('#confirmEmptyingModal').modal('hide');
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: response.message,
-                                icon: 'error'
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessages = '';
-
-                            $.each(errors, function(key, value) {
-                                errorMessages += value + '<br>';
-                            });
-
-                            Swal.fire({
-                                title: 'Validation Error',
-                                html: errorMessages,
-                                icon: 'error'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.',
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
-            });
-            //
-            $('#rescheduleFormContainer').on('submit', function(e) {
-                e.preventDefault();
-             
-                // Serialize form data manually
-                var formData = $('form').serialize();
-                $.ajax({
-                    url: 'desludging-schedule/submit-application',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: 'Success',
-                                text: response.message,
-                                icon: 'success'
-                            }).then(function() {
-                                $('#rescheduleEmptyingModalLabel').modal('hide');
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: response.message,
-                                icon: 'error'
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessages = '';
-
-                            $.each(errors, function(key, value) {
-                                errorMessages += value + '<br>';
-                            });
-
-                            Swal.fire({
-                                title: 'Validation Error',
-                                html: errorMessages,
-                                icon: 'error'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.',
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
             });
        
         //disagreeemptying

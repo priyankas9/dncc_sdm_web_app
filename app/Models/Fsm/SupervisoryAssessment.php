@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class SupervisoryAssessment extends Model
 {
     use HasFactory;
+    protected $table = 'fsm.supervisory_assessments';
 }

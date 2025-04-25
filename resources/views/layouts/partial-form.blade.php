@@ -3,7 +3,11 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 {{--
 A dynamic form layout
 --}}
-
+@php
+   $isConfirm = session('action_type') === 'confirm';
+    $isReschedule = session('action_type') === 'reschedule';
+   
+@endphp
 @if(!empty($cardForm))
     <div class="col-sm-12 col-md-8 col-lg-8">
     @foreach($formFields as $group)
@@ -50,17 +54,48 @@ A dynamic form layout
                                 {!! Form::radio($field->inputId,$field->labelValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
                             @endif
                             @if($field->inputType === 'multiple-select')
-                                {!! Form::select($field->inputId,$field->selectValues,$field->selectedValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
+                            {!! Form::select($field->inputId ,
+                                $field->selectValues,
+                                $field->selectedValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
+
+                            @if($field->disabled)
+                                <input type="hidden" name="{{ $field->inputId }}" value="{{ is_array($field->selectedValue) ? implode(',', $field->selectedValue) : $field->selectedValue }}">
+                            @endif
                             @endif
                             @if($field->inputType === 'date')
-                            {!! Form::date($field->inputId, $field->inputValue, [
-                                'onclick' => 'this.showPicker()', 
-                                'class' => $field->inputClass, 
-                                'disabled' => $field->disabled,
-                                'autocomplete' => 'off'
-                            ]) !!}
+                                @if($isConfirm)
+                                    {{-- Confirm state: Native date picker --}}
+                                    {!! Form::date($field->inputId, $field->inputValue, [
+                                        'onclick' => 'this.showPicker()', 
+                                        'class' => $field->inputClass, 
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off',
+                                        'max' => session('next_emptying_date'),
+                                    ]) !!}
+                                @elseif($isReschedule)
+                                    {{-- Reschedule state: Text input styled as date picker --}}
+                                    {!! Form::text($field->inputId, $field->inputValue, [
+                                        'class' => $field->inputClass . ' flatpickr-reschedule',
+                                        'id' => $field->inputId,
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off',
+                                        'placeholder' => 'mm/dd/yyyy',
+                                        'style' => 'background-color: #fff !important; cursor: pointer;'
+                                    ]) !!}
+                                @else
+                                    {{-- Default state: Native date picker --}}
+                                    {!! Form::date($field->inputId, $field->inputValue, [
+                                        'onclick' => 'this.showPicker()', 
+                                        'class' => $field->inputClass, 
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off'
+                                    ]) !!}
+                                @endif
 
-
+                                {{-- Hidden input when disabled --}}
+                                @if($field->disabled)
+                                    <input type="hidden" name="{{ $field->inputId }}" value="{{ $field->inputValue }}">
+                                @endif
                             @endif
                             @if($field->inputType === 'file_viewer')
                                     <div class="input-group mb-3">
@@ -112,6 +147,9 @@ A dynamic form layout
                                             </script>
                                         @endpush
                                     </div>
+                                @endif
+                                @if(isset($action_type))
+                                    <input type="hidden" name="action_type" value="{{ $action_type }}">
                                 @endif
                         </div>
                     </div>
