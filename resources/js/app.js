@@ -15,11 +15,10 @@ import 'datatables.net-fixedcolumns-bs4/js/fixedColumns.bootstrap4.min.js';
 import 'swiper/swiper-bundle.min.js';
 
 /**
- * FullCalendar Import
+ * Flatpickr Import
  */
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid'; // Import the DayGrid plugin
-// CSS for FullCalendar is now loaded via CDN in the Blade file
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 window.moment = require('moment');
 window.daterangepicker = require('daterangepicker');

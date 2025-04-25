@@ -455,7 +455,7 @@
 
                 var searchData = $('input[type=search]').val();
                 var bin = $('#bin_text').val();
-                 var house_number = $('#house_number').val();
+                var house_number = $('#house_number').val();
                 var structype = $('#structype_select').val();
                 var ward = $('#ward_select').val();
                 var roadcd = $('#road_code').val();

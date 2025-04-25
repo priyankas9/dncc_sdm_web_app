@@ -2,6 +2,7 @@
 Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 {{--Extend the main layout--}}
 @extends('layouts.dashboard')
+
 {{--Add sections for the main layout--}}
 @section('title', 'Add Application')
 {{--Add sections for the index layout--}}
@@ -15,7 +16,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     @include('layouts.partial-form',["submitButtonText" => 'Save',"cardForm"=>true])
     {!! Form::close() !!}
 @endsection
-
+@php
+   $isConfirm = session('action_type') === 'confirm';
+  
+@endphp
 @push('scripts')
 <script>
     function autoFillDetails() {
@@ -137,27 +141,35 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     }
 
     $(document).ready(function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('proposed_emptying_date').setAttribute('min', today);
+        // const today = new Date().toISOString().split('T')[0];
+        // document.getElementById('proposed_emptying_date').setAttribute('min', today);
+        let sessionBin = @json(session('bin'));
+        let sessionRoad = @json(session('road_code'));
 
-        $('#bin').prepend('<option selected=""></option>').select2({
-            ajax: {
-                url: "{{ route('building.get-house-numbers-containments') }}",
-                data: function (params) {
-                    return {
-                        search: params.term,
-                        road_code: $('#road_code').val(),
-                        page: params.page || 1
-                    };
-                },
-            },
-            placeholder: 'House Number / BIN',
-            allowClear: true,
-            closeOnSelect: true,
-            width: '100%'
-        });
+        let optionHtmlBIN = sessionBin
+            ? `<option selected value="${sessionBin}">${sessionBin}</option>`
+            : `<option selected></option>`;
+            $('#bin').html(optionHtmlBIN).select2({
+                    ajax: {
+                        url: "{{ route('building.get-house-numbers-containments') }}",
+                        data: function (params) {
+                            return {
+                                search: params.term,
+                                road_code: $('#road_code').val(),
+                                page: params.page || 1
+                            };
+                        },
+                    },
+                    placeholder: 'House Number / BIN',
+                    allowClear: true,
+                    closeOnSelect: true,
+                    width: '100%'
+                });
 
-        $('#road_code').prepend('<option selected=""></option>').select2({
+        let optionHtmlRoadcode = sessionRoad
+        ? `<option selected value="${sessionRoad}">${sessionRoad}</option>`
+        : `<option selected></option>`;
+        $('#road_code').html(optionHtmlRoadcode).select2({
             ajax: {
                 url: "{{ route('roadlines.get-road-names') }}",
                 data: function (params) {
@@ -204,6 +216,160 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 console.error('Error fetching service provider data:', error);
             }
         });
+        
+        let tripData = {}; // global store
+
+    flatpickr('.flatpickr-reschedule', {
+    dateFormat: 'Y-m-d',
+    allowInput: true,
+
+    onChange: function(selectedDates, dateStr, instance) {
+        // Restrict supervisory_assessment_date when proposed_emptying_date changes
+        if (instance.input.id === 'proposed_emptying_date') {
+            if (selectedDates.length) {
+                let selectedDate = selectedDates[0];
+                flatpickr("#supervisory_assessment_date").set('maxDate', selectedDate);
+            } else {
+                flatpickr("#supervisory_assessment_date").set('maxDate', null);
+            }
+        }
+    },
+
+    onReady: function (selectedDates, dateStr, instance) {
+        if (instance.input.id === 'proposed_emptying_date') {
+            // Inject legend at the top
+            const legendHTML = `
+                <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color: #FAA0A0; border-radius: 50%;"></span> Holiday
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color: #cce5ff; border-radius: 50%;"></span> Weekend
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color:rgb(245, 157, 130); border-radius: 50%;"></span> 1 Trip
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color: #fff3cd; border-radius: 50%;"></span> 2 Trips
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color: #d4edda; border-radius: 50%;"></span> 3+ Trips
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <span style="width: 10px; height: 10px; background-color: #f8d7da; border-radius: 50%;"></span> 0 Trips
+                        </span>
+                    </div>
+                </div>
+            `;
+            const calendarContainer = instance.calendarContainer;
+            calendarContainer.insertAdjacentHTML("afterbegin", legendHTML);
+            fetchAndDisplayTrips(instance);
+        }
+    },
+
+    onMonthChange: function (selectedDates, dateStr, instance) {
+        if (instance.input.id === 'proposed_emptying_date') {
+            fetchAndDisplayTrips(instance);
+        }
+    },
+
+    onDayCreate: function (dObj, dStr, fp, dayElem) {
+        const dateObj = dayElem.dateObj;
+        if (!dateObj) return;
+
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
+        if (tripData.hasOwnProperty(dateStr)) {
+            const { trips, is_holiday, is_weekend } = tripData[dateStr];
+
+            // Clear previous styles
+            dayElem.removeAttribute("style");
+            dayElem.style.cursor = "pointer";
+
+            // Set tooltip
+            let tooltip = `Trips Available: ${trips}`;
+            if (is_holiday) tooltip += " (Holiday)";
+            if (is_weekend) tooltip += " (Weekend)";
+            dayElem.setAttribute("title", tooltip);
+
+            // Priority coloring: Holiday > Weekend > Trips
+            if (is_holiday) {
+                dayElem.style.backgroundColor = "#FAA0A0"; // pink
+                dayElem.style.color = "#000000";
+            } else if (is_weekend) {
+                dayElem.style.backgroundColor = "#cce5ff"; // light blue
+                dayElem.style.color = "#004085";
+            } else if (trips === 0) {
+                dayElem.style.backgroundColor = "#f8d7da";
+                dayElem.style.color = "#721c24";
+            } else if (trips === 1) {
+                dayElem.style.backgroundColor = "rgb(245, 157, 130)";
+                dayElem.style.color = "#856404";
+            } else if (trips === 2) {
+                dayElem.style.backgroundColor = "#fff3cd";
+                dayElem.style.color = "#856404";
+            } else {
+                dayElem.style.backgroundColor = "#d4edda";
+                dayElem.style.color = "#155724";
+            }
+            dayElem.style.borderRadius = "50%";
+        }
+    }
+});
+
+    // Supervisory assessment date picker initialized separately
+    window.isConfirm = {{ $isConfirm ? 'true' : 'false' }};
+    if (window.isConfirm === false) {
+            flatpickr("#supervisory_assessment_date", {
+                dateFormat: 'Y-m-d',
+                allowInput: true
+            });
+        }
+
+        function fetchAndDisplayTrips(instance) {
+            const calendarContainer = instance.calendarContainer;
+            const dayElements = calendarContainer.querySelectorAll(".flatpickr-day");
+            if (dayElements.length === 0) return;
+
+            const firstVisibleDay = dayElements[0].dateObj;
+            const lastVisibleDay = dayElements[dayElements.length - 1].dateObj;
+
+            const startDateFormattedYMD = firstVisibleDay.toISOString().slice(0, 10);
+            const endDateFormattedYMD = lastVisibleDay.toISOString().slice(0, 10);
+
+            // Optional UI update
+            const formatDMY = (d) => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+            const displayTarget = document.getElementById("visible-range-display");
+            if (displayTarget) {
+                displayTarget.innerText = `Calendar Grid: ${formatDMY(firstVisibleDay)} - ${formatDMY(lastVisibleDay)}`;
+            }
+
+            $.ajax({
+                url: "{{ route('schedule.tripsallocated.range') }}",
+                type: 'POST',
+                data: {
+                    start_date: startDateFormattedYMD,
+                    end_date: endDateFormattedYMD
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (response) {
+                    tripData = response;
+                    console.log("✅ Trip data loaded:", tripData);
+                    instance.redraw(); // re-trigger onDayCreate
+                },
+                error: function (xhr, status, error) {
+                    console.error("❌ Failed to fetch trip data:", error);
+                }
+            });
+        }
+
     });
 </script>
 
