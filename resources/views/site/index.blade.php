@@ -113,7 +113,7 @@
             } elseif (str_contains($details['data_type'], 'multi')) {
                 $inputType = 'multi';
             } elseif (str_contains($details['data_type'], 'minput')) {
-                $inputType = 'text';  // Text input for comma-separated dates
+                $inputType = 'minput'; // Text input for comma-separated dates
             } elseif (str_contains($details['data_type'], 'select')) {
                 $inputType = 'select';
             }
@@ -137,6 +137,11 @@
             {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
                 'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
                 'multiple' => 'multiple'
+            ]) !!}
+            @elseif ($inputType === 'minput')
+            {!! Form::text($key, old($key, $details['value']), [
+                'class' => 'form-control flatpickr-multiple' . ($errors->has($key) ? ' is-invalid' : ''),
+                'placeholder' => 'Select multiple dates'
             ]) !!}
         @else
             {!! Form::$inputType($key, old($key, $details['value']), [
@@ -220,6 +225,14 @@
                 $(this).prop('disabled', true);
             });
         });
+      
+        flatpickr('.flatpickr-multiple', {
+            mode: 'multiple',
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y'
+        });
+   
     });
 </script>
 @endpush

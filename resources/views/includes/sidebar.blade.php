@@ -321,10 +321,11 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             </ul>
             </li>
             @endif
+            </li>
             <li class="nav-item">
-                <a href="{{ action('Pdf\PdfGenerationController@index') }}" class="nav-link {{ request()->is('pdf/pdf-generation') ? 'active' : '' }}">
+                <a href="{{ action('Pdf\PdfController@index') }}" class="nav-link {{ request()->is('pdf/pdf') ? 'active' : '' }}">
                 <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
-                    <p>PDF Generation</p>
+                    <p>Pdf Generation</p>
                 </a>
             </li>
             @if(Auth::user()->hasanyPermissionInGroup(['Sewer Connection']) || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))

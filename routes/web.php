@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Fsm\ApplicationController;
 use App\Http\Controllers\Fsm\DesludgingScheduleController;
-use App\Http\Controllers\Pdf\PdfGenerationController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,8 +36,8 @@ Route::get('/', function () {
 
 
 
-Route::get('/files', 'FileController@index')->name('files.index');
-Route::post('/files/upload', 'FileController@upload')->name('files.upload');
+// Route::get('/files', 'FileController@index')->name('files.index');
+// Route::post('/files/upload', 'FileController@upload')->name('files.upload');
 
 
 
@@ -235,18 +237,8 @@ Route::group([
 /**
  * Pdf Generation Routes
  */
-Route::group([
-    'name' => 'pdf',
-    'prefix' => 'pdf',
-    'namespace' => 'PdfGeneration',
-    'middleware' => 'auth'
-], function () {
-    Route::get('/pdf', [PdfGenerationController::class, 'index'])->name('pdf.index');
-    Route::get('pdf/data', 'PdfGenerationController@getData');
 
-    
-    // Route::resource('pdf/pdf-generation', 'PdfGenerationController');
-});
+
 /**
  * FSM Info Routes
  */
@@ -574,6 +566,18 @@ Route::group([
 
     Route::resource('hotspots', 'HotspotController');
 });
+
+Route::group([
+    'name' => 'pdf',
+    'prefix' => 'pdf',
+    'middleware' => 'auth',
+    'namespace' => 'Pdf'
+], function () {
+    Route::resource('/pdf-generation', 'PdfController');
+
+    Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
+});
+
 /**
  * Site SSettings Routes
  */
