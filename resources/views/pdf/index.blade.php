@@ -1,17 +1,11 @@
 @extends('layouts.dashboard')
 @section('title', $page_title)
-
-
 @section('content')
-
 <div class="card border-0">
     <div class="card-header">
-        @can('Add Pdf Data')
-        <a href="{{ action('PdfGenerationController@create') }}" class="btn btn-info">Create New Pdf Data
-            </a>
-        @endcan
+    <a href="{{ action('Pdf\PdfController@create') }}" class="btn btn-info">Create New Pdf Data
+    </a>
     </div><!-- /.card-header -->
-
     <div class="card-body">
         <div style="overflow: auto; width: 100%;">
                 <table id="data-table" class="table table-bordered table-striped dtr-inline" width="100%">
@@ -23,16 +17,13 @@
                         <th>Subject</th>
                         <th>Body</th>
                         <th>Actions</th>
-
                     </tr>
                 </thead>
             </table>
         </div>
     </div><!-- /.card-body -->
 </div> <!-- /.card -->
-
 @stop
-
 @push('scripts')
 <script>
 $(function() {
@@ -42,7 +33,8 @@ $(function() {
         serverSide: true,
         scrollCollapse: true,
         ajax: {
-            url: '{!! url("fsm/data") !!}',
+           
+            url: '{!! url("pdf/pdf/data") !!}',
         },
         columns: [{
                 data: 'id',
@@ -73,7 +65,6 @@ $(function() {
         ]
     }).on('draw', function() {
         $('.delete').on('click', function(e) {
-
             var form = $(this).closest("form");
             event.preventDefault();
             Swal.fire({
@@ -96,11 +87,6 @@ $(function() {
             })
         });
     });
-
-
-    
 });
 </script>
-
-
 @endpush
