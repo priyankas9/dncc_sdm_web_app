@@ -63,7 +63,6 @@
 @include('layouts.components.error-alert')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <div class="card">
-
     <div class="card-body">
         {!! Form::model([
         'method' => 'PATCH',
@@ -71,8 +70,6 @@
         'class' => 'form-horizontal',
         'id' => 'editForm',
         ]) !!}
-
-
         <div class="container-fluid">
             <div class="row form-title-row">
                 <div class="col-sm-3">
@@ -225,14 +222,12 @@
                 $(this).prop('disabled', true);
             });
         });
-      
         flatpickr('.flatpickr-multiple', {
             mode: 'multiple',
             dateFormat: 'Y-m-d',
             altInput: true,
             altFormat: 'F j, Y'
         });
-   
     });
 </script>
 @endpush

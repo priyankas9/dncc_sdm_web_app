@@ -78,7 +78,7 @@ class SiteSettingService
                  'remarks' => $data['Working_Hours_remark'] ?? null
              ],
              "Holiday Dates" => [
-                'value' => isset($data['Holiday_Dates']) ? $this->sanitizeHolidayDates($data['Holiday_Dates']) : null,
+                'value' => $data['Holiday_Dates'] ??  null,
                 'remarks' => $data['Holiday_Dates_remark'] ?? null
             ],
              "Weekend" => [
@@ -106,8 +106,8 @@ class SiteSettingService
          // Additional specific rules
          $rules['Next_Emptying_Date_Assignment_Period'] = 'integer|min:1|max:15';
          $rules['Working_Hours'] = 'max:24';
-         $rules['Holiday_Dates'] = 'nullable|string|regex:/^(\d{4}-\d{2}-\d{2})(,\d{4}-\d{2}-\d{2})*$/';
-         // Validate the data
+    
+         // Validate the date
          $validator = Validator::make($data, $rules);
      
          // Exit early if validation fails
