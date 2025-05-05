@@ -138,6 +138,10 @@ class DesludgingScheduleService
     }
     public function getContainmentData ()
     {
+        // fetch id of all containments that meet criteria for setting emptying date
+        //  must not be emptied through the service delivery
+        // does not pay WASA bill
+        // status is either 0 or 4
         $fetch_id = "SELECT DISTINCT ON (final_result.id) final_result.*
         FROM (
             SELECT 
@@ -152,9 +156,9 @@ class DesludgingScheduleService
                 ON b.bin = bc.bin 
                 AND b.deleted_at IS NULL
             WHERE   
-			    b.wasa_status = false
+			    b.wasa_status = false OR b.wasa_status IS NULL
 			AND c.emptied_status = false
-			AND (c.status = 0 OR c.status = 4)
+			AND (c.status = 0 OR c.status = 4 or c.status is NULL)
 			AND
             c.deleted_at IS NULL
         ) final_result
@@ -164,6 +168,7 @@ class DesludgingScheduleService
         // re-query all fetched ID's and order them by first priority then distance from FSTP
         $containments = Containment::whereIN('id',array_column($containment_id,'id'))->ORDERBY('priority')->ORDERBY('fstp_distance')->get();
         return $containments;
+        
     }
     public function setPriority($id)
     {
@@ -323,7 +328,8 @@ class DesludgingScheduleService
     }
     public function setEmptyingDate()
     {
-         try{
+       
+        try{
         // fetch all values required from site settings
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $containments = $this->getContainmentData();
@@ -333,6 +339,7 @@ class DesludgingScheduleService
         }
         $today = Carbon::now(); // Get today's date
         $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
+
         if($today->diff($start_date)->invert == true)
         {
             $start_date = $today->addDays($site_settings['Schedule Regeneration Period']->value)->format('Y-m-d');  
@@ -361,9 +368,12 @@ class DesludgingScheduleService
             $counter += $remaining_trips;
             $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
 
-        }while ($counter <= count($containments));
+        }
+       
+        while ($counter <= count($containments));
         if (!empty($containmentupdates)) {
             foreach (array_chunk($containmentupdates, 500) as $chunk) {
+               
                 foreach ($chunk as $update) {
                     Containment::where('id', $update['id'])->update([
                         'next_emptying_date' => $update['next_emptying_date']
