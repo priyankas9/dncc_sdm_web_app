@@ -87,8 +87,11 @@ Route::group([
         Route::get('/drivers',[EmptyingServiceController::class,'getDrivers']);
         Route::get('/emptiers',[EmptyingServiceController::class,'getEmptiers']);
         Route::post('/save-emptying',[EmptyingServiceController::class,'save']);
+        Route::post('/save-supervisoryassessment',[EmptyingServiceController::class,'saveSupervisoryAssessment']);
     });
-
+    // Route::group(['name' => 'supervisoryassessmentService'],function (){
+       
+    // });
     /*
     |
     | Building Survey Routes---------------------------------------------------

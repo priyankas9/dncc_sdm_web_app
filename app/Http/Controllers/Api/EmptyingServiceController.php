@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Fsm\EmptyingApiRequest;
+use App\Http\Requests\Fsm\SupervisoryAssessmentRequest;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
 use App\Models\Fsm\EmployeeInfo;
 use App\Models\Fsm\Emptying;
 use App\Models\Fsm\ServiceProvider;
+use App\Models\Fsm\SupervisoryAssessment;
 use App\Models\Fsm\TreatmentPlant;
 use App\Models\Fsm\VacutugType;
 use App\Models\User;
@@ -303,5 +305,63 @@ class EmptyingServiceController extends Controller
         ];
     }
     
+    public function saveSupervisoryAssessment(SupervisoryAssessmentRequest $request)
+    {
+       
+    
+        DB::beginTransaction();
+        $assessment = null;
+    
+        try {
+            // Validate the request data
+            if ($request->validated()) {
+                $assessment = new SupervisoryAssessment();
+                $assessment->application_id = $request->application_id;
+                $assessment->holding_number = $request->holding_number;
+                $assessment->owner_name = $request->owner_name;
+                $assessment->owner_gender = $request->owner_gender;
+                $assessment->owner_contact = $request->owner_contact;
+                $assessment->containment_type = $request->containment_type;
+                $assessment->containment_outlet_connection = $request->containment_outlet_connection;
+                $assessment->containment_volume = $request->containment_volume;
+                $assessment->road_width = $request->road_width;
+                $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
+                $assessment->septic_tank_length = $request->septic_tank_length;
+                $assessment->septic_tank_width = $request->septic_tank_width;
+                $assessment->septic_tank_depth = $request->septic_tank_depth;
+                $assessment->number_of_pit_rings = $request->number_of_pit_rings;
+                $assessment->pit_diameter = $request->pit_diameter;
+                $assessment->pit_depth = $request->pit_depth;
+                $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
+                $assessment->number_of_trips = $request->number_of_trips;
+                $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
+                $assessment->advance_paid_amount = $request->advance_paid_amount;
+                
+                // Save the assessment
+                $assessment->save();
+                $application = Application::where('id', $request->application_id)->first();
+                $application->supervisory_assessment_status = true;
+                $application->save();
+            }
+    
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            if ($assessment) {
+                $assessment->forceDelete();
+                $assessment->emptying_status = false;
+                $assessment->save();
+            }
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    
+        return [
+            'success' => true,
+            'message' => 'Supervisory assessment saved successfully.'
+        ];
+    }
 
 }
