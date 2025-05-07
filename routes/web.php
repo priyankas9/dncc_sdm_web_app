@@ -261,9 +261,11 @@ Route::group([
     Route::get('/store-kpi', 'KpiDashboardController@storekpi');
     Route::get('/data', 'KpiDashboardController@data');
     Route::get('/card', 'KpiDashboardController@card');
-
+    Route::get('/supervisory-assessment/data', 'SupervisoryAssessmentController@getData');
+    Route::get('supervisoryassessment/{id}/history', 'SupervisoryAssessmentController@history')->name('supervisory-assessment.history');
     Route::get('generate-report/{year?}/{serviceprovider?}', 'KpiDashboardController@generateReport');
     Route::resource('/kpi-dashboard', 'KpiDashboardController');
+    Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
     
     /**
      *
@@ -274,7 +276,7 @@ Route::group([
     Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
     Route::get('/serviceprovider', [DesludgingScheduleController::class, 'getServiceProviderData']);
     Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
-    Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
+   
     Route::resource('/desludging-reintegration', 'DesludgingReintegrationController');
     Route::get('/desludging-schedule/data', 'DesludgingScheduleController@getData');
     Route::get('/desludging-schedule/export', 'DesludgingScheduleController@export');

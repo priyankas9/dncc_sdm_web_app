@@ -9,4 +9,8 @@ class SupervisoryAssessment extends Model
 {
     use HasFactory;
     protected $table = 'fsm.supervisory_assessments';
+    public function application()
+    {
+        return $this->belongsTo(Application::class, 'application_id', 'id');
+    }
 }

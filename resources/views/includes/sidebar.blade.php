@@ -283,6 +283,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             </a>
                         </li>
                         @endcan
+                        <li class="nav-item">
+                            <a href="{{ route('supervisory-assessment.index') }}" class="nav-link {{ request()->is('fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Supervisory Assessment</p>
+                            </a>
+                        </li>
                         @can('List Emptyings')
                         <li class="nav-item">
                             <a href="{{ route('emptying.index') }}" class="nav-link {{ request()->is('fsm/emptying','fsm/emptying/*') ? 'active' : '' }}">
