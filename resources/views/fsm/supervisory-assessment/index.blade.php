@@ -3,7 +3,7 @@
 @section('content')
 <div class="card border-0">
     <div class="card-header">
-    <a href="{{ action('Pdf\PdfController@create') }}" class="btn btn-info">Export to CSV
+    <a href="{{ action('Fsm\SupervisoryAssessmentController@download') }}" class="btn btn-info">Export to CSV
     </a>
     </div><!-- /.card-header -->
     <div class="card-body">

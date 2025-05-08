@@ -9,6 +9,10 @@ use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
 use App\Models\Fsm\ContainmentType;
 use App\Models\Fsm\SupervisoryAssessment;
+use Box\Spout\Common\Type;
+use Box\Spout\Writer\Style\Color;
+use Box\Spout\Writer\Style\StyleBuilder;
+use Box\Spout\Writer\WriterFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -239,4 +243,45 @@ class SupervisoryAssessmentController extends Controller
             return redirect('fsm/supervisory-assessment')->with('error','Failed to delete Supervisory Assessment');
         }
     }
+    public function download($data = null)
+    {
+        $searchData = $data['searchData'] ?? null;
+    
+        // Custom header labels you want in the CSV
+        $columns = [
+            'Assessment Request ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
+            'Containment Type', 'Containment Outlet Connection', 'Containment Volume', 'Road Width',
+            'Distance from Nearest Road', 'Septic Tank Length', 'Septic Tank Width', 'Septic Tank Depth',
+            'Number of Pit Rings', 'Pit Diameter', 'Pit Depth', 'Appropriate Desludging Vehicle Size',
+            'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
+        ];
+    
+        // Fetch all records (you cannot use get($columns) since those are not DB fields)
+        $records = SupervisoryAssessment::whereNull('deleted_at')->get();
+    
+        $style = (new StyleBuilder())
+            ->setFontBold()
+            ->setFontSize(13)
+            ->setBackgroundColor(Color::rgb(228, 228, 228))
+            ->build();
+    
+        $writer = WriterFactory::create(Type::CSV);
+        $writer->openToBrowser('Supervisory Assessment.csv');
+    
+        // Add header row (your custom labels)
+        $writer->addRowWithStyle($columns, $style);
+    
+        // Add data rows
+        if ($records->count()) {
+            foreach ($records as $record) {
+                $row = $record->toArray();
+                unset($row['created_at'], $row['deleted_at']);
+                $writer->addRow(array_values($row));
+            }
+        }
+    
+        $writer->close();
+    }
+    
+    
 }
