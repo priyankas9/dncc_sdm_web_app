@@ -261,6 +261,7 @@ Route::group([
     Route::get('/store-kpi', 'KpiDashboardController@storekpi');
     Route::get('/data', 'KpiDashboardController@data');
     Route::get('/card', 'KpiDashboardController@card');
+    Route::get('/supervisory-assessment/export', 'SupervisoryAssessmentController@download')->name('supervisory-assessment.export');
     Route::get('/supervisory-assessment/data', 'SupervisoryAssessmentController@getData');
     Route::get('supervisoryassessment/{id}/history', 'SupervisoryAssessmentController@history')->name('supervisory-assessment.history');
     Route::get('generate-report/{year?}/{serviceprovider?}', 'KpiDashboardController@generateReport');
@@ -575,6 +576,7 @@ Route::group([
     'middleware' => 'auth',
     'namespace' => 'Pdf'
 ], function () {
+    Route::get('onsite-sanitation/singlepdf/{id}','PdfController@generatePdfReport');
     Route::resource('/pdf-generation', 'PdfController');
 
     Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
