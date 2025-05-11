@@ -346,7 +346,8 @@ class DesludgingScheduleService
         }
         $counter = 0;
         $weekends = explode(',', $site_settings['Weekend']->value);
-        $holiday_dates = explode(',', $site_settings['Holiday Dates']->value);
+        $holiday_dates = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
+
         $containmentupdates = [];
         do{
             
