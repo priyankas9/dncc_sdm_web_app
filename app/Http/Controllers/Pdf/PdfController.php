@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Pdf;
 
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BuildingInfo\Building;
 use App\Models\Pdf\PdfGeneration ;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables;
 
@@ -13,8 +16,9 @@ class PdfController extends Controller
 {
     public function index()
     {
-        $page_title = "Pdf Data";      
-        return view('pdf/index', compact('page_title'));
+        $page_title = "Pdf Data";
+        $body =   PdfGeneration::pluck('subject','subject');      
+        return view('pdf/index', compact('page_title','body'));
     }
     public function getData()
     {
@@ -29,6 +33,9 @@ class PdfController extends Controller
                 if (Auth::user()->can('Delete Pdf Data')) {
                     $content .= '<a href="#" title="Delete"  class="delete btn btn-danger btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
                 }
+                $content .= '<a title="Generate PDF" href="#" class="btn btn-info btn-xs generate-pdf-btn" data-id="' . $model->id . '" data-toggle="modal" data-target="#export-single-notice">
+                                <i class="fa-regular fa-file-pdf"></i>
+                            </a>';
                 $content .= \Form::close();
                 return $content;
             })
@@ -95,21 +102,31 @@ class PdfController extends Controller
         return view('pdf/edit', compact('page_title', 'pdf_data'));
     }
 
-    public function generatePdfReport($id)
-    {
-        try
-        {
+    // public function generatePdfReport($id)
+    // {
+    //     try
+    //     {
             
-        $pdf_data = PdfGeneration::latest()->get();
-        $holding = Building::find($id);        
-        $url =  "http://".$_SERVER['HTTP_HOST'] ."/dncc-smart-sanitaion-service/submit-plan/".$holding->gid;   
-        }catch (\Throwable $th){
-            return view('errors.404');
-        }
+    //     $pdf_data = PdfGeneration::latest()->get();
+    //     $holding = Building::find($id);        
+    //     $url =  "http://".$_SERVER['HTTP_HOST'] ."/dncc-smart-sanitaion-service/submit-plan/".$holding->gid;   
+    //     }catch (\Throwable $th){
+    //         return view('errors.404');
+    //     }
        
         
-        return PDF::loadView('pdf.pdf',compact('pdf_data','holding','url'))->inline('Application Report.pdf');
+    //     return PDF::loadView('pdf.pdf',compact('pdf_data','holding','url'))->inline('Application Report.pdf');
+    // }
+    public function generatePdfReport($id, Request $request)
+    {
+        // Fetch data according to the id
+        $pdf_data = PdfGeneration::find($id);
+
+        // Simple PDF content (as a Blade view)
+        return FacadePdf::loadView('pdf.pdf', compact('pdf_data'))
+                  ->download('report.pdf');
     }
+    
     /**
      * Update the specified resource in storage.
      *
