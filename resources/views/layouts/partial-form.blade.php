@@ -83,14 +83,16 @@ A dynamic form layout
                                         'style' => 'background-color: #fff !important; cursor: pointer;'
                                     ]) !!}
                                 @else
-                                    {{-- Default state: Native date picker --}}
-                                    {!! Form::date($field->inputId, $field->inputValue, [
-                                        'onclick' => 'this.showPicker()', 
-                                        'class' => $field->inputClass, 
+                                    {!! Form::text($field->inputId, $field->inputValue, [
+                                        'class' => $field->inputClass . ' flatpickr-reschedule', // <- add flatpickr class
+                                        'id' => $field->inputId,
                                         'disabled' => $field->disabled,
-                                        'autocomplete' => 'off'
+                                        'autocomplete' => 'off',
+                                        'placeholder' => 'mm/dd/yyyy',
+                                        'style' => 'background-color: #fff !important; cursor: pointer;'
                                     ]) !!}
                                 @endif
+
 
                                 {{-- Hidden input when disabled --}}
                                 @if($field->disabled)
