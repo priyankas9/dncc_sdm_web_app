@@ -311,8 +311,7 @@ class DesludgingScheduleService
         // Check if date is a holiday or weekend defined in site settings
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $weekends = explode(',', $site_settings['Weekend']->value);
-        $holidays = explode(',', $site_settings['Holiday Dates']->value);
-    
+        $holidays = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
         $carbonDate = Carbon::parse($date);
         $dayOfWeek = $carbonDate->format('l');
     
@@ -390,6 +389,7 @@ class DesludgingScheduleService
             return response()->json(['status' => 'error', 'message' => 'Failed to set emptying date. Please try again.']);
         }
     }
+    
 
     public function tripsAllocatedRange($request)
     {
@@ -397,30 +397,44 @@ class DesludgingScheduleService
         $end_date = $request->end_date;
     
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
-        $weekends = explode(',', $site_settings['Weekend']->value);
-        $holidays = explode(',', $site_settings['Holiday Dates']->value);
+        $weekends = array_map('trim', explode(',', $site_settings['Weekend']->value));
+        $holidays = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
     
         $current_date = $start_date;
         $trips_allocated = [];
     
-        while ($current_date) {
+        while ($current_date <= $end_date) {
             $carbonDate = Carbon::parse($current_date);
             $dayOfWeek = $carbonDate->format('l');
             $isHoliday = in_array($carbonDate->format('Y-m-d'), $holidays);
             $isWeekend = in_array($dayOfWeek, $weekends);
     
-            $trips_allocated[$current_date] = [
-                'trips' => $this->tripsAllocated($current_date),
-                'is_holiday' => $isHoliday,
-                'is_weekend' => $isWeekend
-            ];
+            if (!$isHoliday && !$isWeekend) {
+                $trips_allocated[$current_date] = [
+                    'trips' => $this->tripsAllocated($current_date),
+                    'is_holiday' => $isHoliday,
+                    'is_weekend' => $isWeekend
+                ];
+            } else {
+                // if you still want to list holidays/weekends with 0 trips
+                $trips_allocated[$current_date] = [
+                    'trips' => 0,
+                    'is_holiday' => $isHoliday,
+                    'is_weekend' => $isWeekend
+                ];
+            }
     
             $current_date = $carbonDate->addDay()->format('Y-m-d');
-            if ($current_date > $end_date) break;
         }
     
         return response()->json($trips_allocated);
     }
+    /**
+     * Disagree with emptying date
+     *
+     * @param string $bin
+     * @return \Illuminate\Http\JsonResponse
+     */    
 
     public function disagreeEmptying($bin)
     {
