@@ -103,22 +103,22 @@ Route::group([
     Route::resource('building-surveys', 'BuildingSurveyController');
 });
 
+/**
+ * Layer Info
+ */
+Route::group([
+    'name' => 'low-income-communities',
+    'prefix' => 'layer-info',
+    'namespace' => 'LayerInfo'
+], function () {
     /**
-     * Layer Info
+     * Low Income Community
      */
-    Route::group([
-        'name' => 'low-income-communities',
-        'prefix' => 'layer-info',
-        'namespace' => 'LayerInfo'
-    ], function () {
-        /**
-        * Low Income Community
-        */
-        Route::get('low-income-communities/data', 'LowIncomeCommunityController@getData');
-        Route::get('low-income-communities/export', 'LowIncomeCommunityController@export');
-        Route::get('low-income-communities/{id}/history', 'LowIncomeCommunityController@history');
-        Route::resource('low-income-communities', 'LowIncomeCommunityController');
-    });
+    Route::get('low-income-communities/data', 'LowIncomeCommunityController@getData');
+    Route::get('low-income-communities/export', 'LowIncomeCommunityController@export');
+    Route::get('low-income-communities/{id}/history', 'LowIncomeCommunityController@history');
+    Route::resource('low-income-communities', 'LowIncomeCommunityController');
+});
 /**
  * Users Routes
  */
@@ -213,7 +213,7 @@ Route::group([
 
 
     // Route::get('sewerconnection/{id}/approve', 'SewerConnectionController@approve');
-    Route::get('drains/get-drain-names','DrainController@getDrainNames')->name('drains.get-drain-names');
+    Route::get('drains/get-drain-names', 'DrainController@getDrainNames')->name('drains.get-drain-names');
 
     Route::get('drains/export', 'DrainController@export');
     Route::get('drains/data', 'DrainController@getData');
@@ -255,7 +255,7 @@ Route::group([
 
     Route::get('/treatment-plant-performance-test/data', 'TreatmentplantPerformanceTestController@getData');
     Route::resource('/treatment-plant-performance-test', 'TreatmentplantPerformanceTestController');
-    
+
 
     Route::get('fsmdashboard', 'FsmDashboardController@index')->name('fsmdashboard');
     Route::get('/store-kpi', 'KpiDashboardController@storekpi');
@@ -267,7 +267,7 @@ Route::group([
     Route::get('generate-report/{year?}/{serviceprovider?}', 'KpiDashboardController@generateReport');
     Route::resource('/kpi-dashboard', 'KpiDashboardController');
     Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
-    
+
     /**
      *
 
@@ -277,7 +277,7 @@ Route::group([
     Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
     Route::get('/serviceprovider', [DesludgingScheduleController::class, 'getServiceProviderData']);
     Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
-   
+
     Route::resource('/desludging-reintegration', 'DesludgingReintegrationController');
     Route::get('/desludging-schedule/data', 'DesludgingScheduleController@getData');
     Route::get('/desludging-schedule/export', 'DesludgingScheduleController@export');
@@ -287,7 +287,7 @@ Route::group([
     Route::get('/set-emptying-date', 'DesludgingScheduleController@set_emptying_date')->name('set.emptying.date');
     Route::get('/test', 'DesludgingScheduleController@test');
     Route::post('/schedule/confirm', 'DesludgingScheduleController@redirectToApplication')->name('schedule.confirm');
-    
+
     /**
      * Kpi Target Routes
      */
@@ -371,7 +371,7 @@ Route::group([
     Route::post('containments/{id}/store', 'ContainmentController@storeContainment');
 
     Route::get('containments/export', 'ContainmentController@export');
-    Route::get('containments/export-building-containment','ContainmentController@exportBuildingContainment');
+    Route::get('containments/export-building-containment', 'ContainmentController@exportBuildingContainment');
 
     Route::get('containments/{id}/history', 'ContainmentController@history');
     Route::get('containments/{id}/type-change-history', 'ContainmentController@typeChangeHistory');
@@ -446,8 +446,6 @@ Route::group([
 
 
     Route::resource('sludge-collection', 'SludgeCollectionController');
-
-
 });
 
 /**
@@ -558,7 +556,7 @@ Route::group([
 
     Route::resource('water-samples', 'WaterSamplesController');
 
-     /**
+    /**
      *Hotspot Indentification Routes
      */
     Route::get('hotspots/data', 'HotspotController@getData');
@@ -576,10 +574,15 @@ Route::group([
     'middleware' => 'auth',
     'namespace' => 'Pdf'
 ], function () {
-    Route::get('pdf-generation/{id}','PdfController@generatePdfReport');
-    Route::resource('/pdf-generation', 'PdfController');
 
+
+    Route::resource('pdf-generation', 'PdfController')->except(['show']);
+
+    Route::get('pdf-generation/{id}', 'PdfController@generatePdfReport');
     Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
+
+
+
 });
 
 /**
