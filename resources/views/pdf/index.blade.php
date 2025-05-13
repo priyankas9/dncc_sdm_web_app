@@ -132,7 +132,7 @@ $(function() {
             }
 
             // Redirect for PDF generation
-            window.location.href = "/pdf/onsite-sanitation/singlepdf/" + selectedId;
+            window.location.href = "/pdf/pdf-generation/" + selectedId;
         });
 
 
