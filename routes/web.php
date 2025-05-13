@@ -576,7 +576,7 @@ Route::group([
     'middleware' => 'auth',
     'namespace' => 'Pdf'
 ], function () {
-    Route::get('onsite-sanitation/singlepdf/{id}','PdfController@generatePdfReport');
+    Route::get('pdf-generation/{id}','PdfController@generatePdfReport');
     Route::resource('/pdf-generation', 'PdfController');
 
     Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
