@@ -16,14 +16,14 @@
     <div class="form-group row required">
         {!! Form::label('owner_gender', 'Owner Gender', ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::select('owner_gender', ['Male' => 'Male', 'Female' => 'Female', 'Other' => 'Other'], $owner_detail ? $owner_detail->owner_gender : null, ['class' => 'form-control', 'placeholder' => 'Select Gender']) !!}
+            {!! Form::select('owner_gender', ['Male' => 'Male', 'Female' => 'Female', 'Other' => 'Other'], $owner_detail ? $owner_detail->owner_gender : null, ['class' => 'form-control', 'placeholder' => 'Select Owner Gender']) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('owner_contact', 'Owner Contact', ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('owner_contact', $owner_detail ? $owner_detail->owner_contact : null, ['class' => 'form-control', 'placeholder' => 'Enter Contact Number']) !!}
+            {!! Form::text('owner_contact', $owner_detail ? $owner_detail->owner_contact : null, ['class' => 'form-control', 'placeholder' => 'Enter Owner Number']) !!}
         </div>
     </div>
 
@@ -38,7 +38,7 @@
     <div class="form-group row required">
         {!! Form::label('containment_outlet_connection','Containment Outlet Connection',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('containment_outlet_connection', null, ['class' => 'form-control', 'placeholder' => 'Enter Outlet Connection']) !!}
+            {!! Form::text('containment_outlet_connection', null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Outlet Connection']) !!}
         </div>
     </div>
     
@@ -59,28 +59,28 @@
     <div class="form-group row required">
         {!! Form::label('distance_from_nearest_road','Distance from Nearest Road',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Enter Distance']) !!}
+            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Enter Distance from Nearest Road']) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_length','Septic Tank Length',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Enter Distance']) !!}
+            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Length']) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_width','Septic Tank Width',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_width',  $containment ? $containment->tank_width : null, ['class' => 'form-control', 'placeholder' => 'Enter Distance']) !!}
+            {!! Form::text('septic_tank_width',  $containment ? $containment->tank_width : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Width']) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_depth','Septic Tank Depth',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_depth', $containment ? $containment->depth : null, ['class' => 'form-control', 'placeholder' => 'Enter Distance']) !!}
+            {!! Form::text('septic_tank_depth', $containment ? $containment->depth : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Depth']) !!}
         </div>
     </div>
 
