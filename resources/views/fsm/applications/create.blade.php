@@ -202,22 +202,22 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             ? '{!! url("fsm/service-provider") !!}/' + serviceProviderId 
             : '{!! url("fsm/service-provider") !!}/0';
         
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function (response) {
-                $('#service_provider_id').empty();
-                $('#service_provider_id').append('<option value="">Select a Service Provider</option>');
-                $.each(response, function (id, name) {
-                    $('#service_provider_id').append('<option value="' + id + '">' + name + '</option>');
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function (response) {
+                        $('#service_provider_id').empty();
+                        $('#service_provider_id').append('<option value="">Select a Service Provider</option>');
+                        $.each(response, function (id, name) {
+                            $('#service_provider_id').append('<option value="' + id + '">' + name + '</option>');
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching service provider data:', error);
+                    }
                 });
-            },
-            error: function (error) {
-                console.error('Error fetching service provider data:', error);
-            }
-        });
         
-        let tripData = {}; // global store
+    let tripData = {}; // global store
 
     flatpickr('.flatpickr-reschedule', {
     dateFormat: 'Y-m-d',
@@ -242,7 +242,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
                     <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                         <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #FAA0A0; border-radius: 50%;"></span> Holiday
+                            <span style="width: 10px; height: 10px; background-color:rgb(228, 173, 56); border-radius: 50%;"></span> Holiday
                         </span>
                         <span style="display: flex; align-items: center; gap: 6px;">
                             <span style="width: 10px; height: 10px; background-color: #cce5ff; border-radius: 50%;"></span> Weekend
@@ -298,7 +298,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
             // Priority coloring: Holiday > Weekend > Trips
             if (is_holiday) {
-                dayElem.style.backgroundColor = "#FAA0A0"; // pink
+                dayElem.style.backgroundColor = "rgb(228, 173, 56)"; // pink
                 dayElem.style.color = "#000000";
             } else if (is_weekend) {
                 dayElem.style.backgroundColor = "#cce5ff"; // light blue
@@ -330,45 +330,49 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             });
         }
 
-        function fetchAndDisplayTrips(instance) {
-            const calendarContainer = instance.calendarContainer;
-            const dayElements = calendarContainer.querySelectorAll(".flatpickr-day");
-            if (dayElements.length === 0) return;
+    function fetchAndDisplayTrips(instance) {
+    const calendarContainer = instance.calendarContainer;
+    const dayElements = calendarContainer.querySelectorAll(".flatpickr-day");
+    if (dayElements.length === 0) return;
 
-            const firstVisibleDay = dayElements[0].dateObj;
-            const lastVisibleDay = dayElements[dayElements.length - 1].dateObj;
+    const firstVisibleDay = new Date(dayElements[0].dateObj);
+    firstVisibleDay.setDate(firstVisibleDay.getDate() - firstVisibleDay.getDay()); // start of week (Sunday)
 
-            const startDateFormattedYMD = firstVisibleDay.toISOString().slice(0, 10);
-            const endDateFormattedYMD = lastVisibleDay.toISOString().slice(0, 10);
+    const lastVisibleDay = new Date(dayElements[dayElements.length - 1].dateObj);
+    lastVisibleDay.setDate(lastVisibleDay.getDate() + (6 - lastVisibleDay.getDay())); // end of week (Saturday)
 
-            // Optional UI update
-            const formatDMY = (d) => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
-            const displayTarget = document.getElementById("visible-range-display");
-            if (displayTarget) {
-                displayTarget.innerText = `Calendar Grid: ${formatDMY(firstVisibleDay)} - ${formatDMY(lastVisibleDay)}`;
-            }
+    const startDateFormattedYMD = firstVisibleDay.toISOString().slice(0, 10);
+    const endDateFormattedYMD = lastVisibleDay.toISOString().slice(0, 10);
 
-            $.ajax({
-                url: "{{ route('schedule.tripsallocated.range') }}",
-                type: 'POST',
-                data: {
-                    start_date: startDateFormattedYMD,
-                    end_date: endDateFormattedYMD
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (response) {
-                    tripData = response;
-                    console.log("✅ Trip data loaded:", tripData);
-                    instance.redraw(); // re-trigger onDayCreate
-                },
-                error: function (xhr, status, error) {
-                    console.error("❌ Failed to fetch trip data:", error);
-                }
-            });
+    // Optional UI update
+    const formatDMY = (d) => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+    const displayTarget = document.getElementById("visible-range-display");
+    if (displayTarget) {
+        displayTarget.innerText = `Calendar Grid: ${formatDMY(firstVisibleDay)} - ${formatDMY(lastVisibleDay)}`;
+    }
+
+    $.ajax({
+        url: "{{ route('schedule.tripsallocated.range') }}",
+        type: 'POST',
+        data: {
+            start_date: startDateFormattedYMD,
+            end_date: endDateFormattedYMD
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: 'json',
+        success: function (response) {
+            tripData = response;
+            console.log("✅ Trip data loaded:", tripData);
+            instance.redraw(); // re-trigger onDayCreate
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Failed to fetch trip data:", error);
         }
+    });
+}
+
 
     });
 </script>
