@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Fsm;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Fsm\SupervisoryAssessmentRequest;
+use App\Http\Requests\Fsm\SupervisoryRequest;
 use App\Models\BuildingInfo\BuildContain;
 use App\Models\BuildingInfo\Owner;
 use App\Models\Fsm\Application;
@@ -85,7 +87,7 @@ class SupervisoryAssessmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SupervisoryRequest $request)
     {   $slug = $request->slug; 
         $application = Application::where('bin', $slug)->first();
     
@@ -194,7 +196,7 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SupervisoryRequest $request, $id)
     {
         $assessment = SupervisoryAssessment::find($id);
         if ($assessment) {
