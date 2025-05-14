@@ -37,7 +37,7 @@ class ApplicationRequest extends FormRequest
             'applicant_contact' => 'required|integer',
             'containment_code' => '',
             'proposed_emptying_date' => 'required|date',
-            'supervisory_assessment_date' => 'nullable|date',
+            'supervisory_assessment_date' => 'required|date',
             'service_provider_id' => 'required|integer',
             'landmark' => '',
             'emergency_desludging_status' => 'required|boolean',
