@@ -87,8 +87,8 @@ class DesludgingScheduleService
             ->addColumn('action', function ($building) {
                 return
                   '<a href="javascript:void(0);"
-                    class="btn btn-sm mb-1 confirm-emptying-btn"
-                    title="Confirm schedule desludging"
+                    class="btn btn-md mb-1 confirm-emptying-btn"
+                    title="Confirm Schedule Desludging"
                     class="btn btn-sm mb-1 confirm-emptying-btn"
                     style="background-color: #17A2B8; color: white; margin-right: 2px;"
                     data-action_type="confirm"
@@ -106,8 +106,8 @@ class DesludgingScheduleService
                     <i class="fa-solid fa-check"></i>
                   </a>' .
                   '<a href="javascript:void(0);"
-                    title="Reschedule desludging"
-                    class="btn btn-sm mb-1 reschedule-emptying-btn"
+                    title="Reschedule Desludging"
+                    class="btn btn-md mb-1 reschedule-emptying-btn"
                     style="background-color:rgb(235, 158, 15); color: white; margin-right: 2px;"
                     data-bin="' . $building->bin . '"
                     data-action_type="reschedule"
@@ -123,8 +123,8 @@ class DesludgingScheduleService
                     data-owner_gender="' . $building->owner_gender . '">
                      <i class="fa-regular fa-clock"></i>
                   </a>' .
-                  '<button title="Disagree for schedule desludging"
-                    class="btn btn-sm mb-1 btn-unconfirm-emptying"
+                  '<button title="Disagree for Schedule Desludging"
+                    class="btn btn-md mb-1 btn-unconfirm-emptying"
                     style="background-color:rgb(184, 23, 26); color: white;"
                     data-bin="' . $building->bin . '"
                     data-owner_contact="' . $building->owner_contact . '"
