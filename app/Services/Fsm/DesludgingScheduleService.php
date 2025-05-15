@@ -70,12 +70,8 @@ class DesludgingScheduleService
                     LEFT JOIN fsm.applications a
                         ON a.containment_id = c.id AND a.emptying_status = false
                     WHERE   
-                        b.wasa_status = false
-                        OR (c.status != 5)
-                        OR (c.status != 1)
-                        OR (c.status != 2)
-                        OR c.deleted_at IS NULL
-                        OR a.id IS NOT NULL
+                        c.next_emptying_date is NOT NULL OR
+                        c.status = 0 or c.status = 4
                     ORDER BY c.id
                 ) final_result
                 ORDER BY final_result.next_emptying_date;
@@ -156,13 +152,17 @@ class DesludgingScheduleService
                 ON b.bin = bc.bin 
                 AND b.deleted_at IS NULL
             WHERE   
+            -- checks if WASA status is not paid
 			    b.wasa_status = false OR b.wasa_status IS NULL
+                -- this flag ensures that once containment is emptied through the schedule, it will not be selected again
 			AND c.emptied_status = false
+            -- this flag checks for 0: not scheduled and 4: denied once only
 			AND (c.status = 0 OR c.status = 4 or c.status is NULL)
 			AND
             c.deleted_at IS NULL
         ) final_result
         ORDER BY final_result.id;";
+
 
         $containment_id = DB::select($fetch_id);
         // re-query all fetched ID's and order them by first priority then distance from FSTP
@@ -332,9 +332,10 @@ class DesludgingScheduleService
         // fetch all values required from site settings
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $containments = $this->getContainmentData();
-        $priorityCount = $containments->whereNotNull('priority')->count();
-        if ($priorityCount === 0) {
+        $priorityCount = $containments->whereNull('priority')->count();
+        if ($priorityCount != 0) {
             $this->setPriority(null);
+            dd("test");
         }
         $today = Carbon::now(); // Get today's date
         $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
@@ -367,7 +368,11 @@ class DesludgingScheduleService
             }
             $counter += $remaining_trips;
             $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
-
+            dd($set_date);
+            if($set_date == "2025-05-15")
+            {
+                dd($selected_containments, $remaining_trips);
+            }
         }
        
         while ($counter <= count($containments));
