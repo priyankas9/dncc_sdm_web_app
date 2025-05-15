@@ -287,6 +287,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                     {
                         data: 'supervisory_assessment_date',
                         name: 'supervisory_assessment_date',
+                          render: function(data) {
+                            return moment(data).format("dddd, MMMM Do YYYY");
+                        }
                         
                     },
                     {
