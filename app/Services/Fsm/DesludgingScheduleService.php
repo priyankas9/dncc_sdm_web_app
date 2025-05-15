@@ -126,7 +126,7 @@ class DesludgingScheduleService
                     data-owner_contact="' . $building->owner_contact . '"
                     data-owner_name="' . $building->owner_name . '"
                     data-next-emptying-date="' . $building->next_emptying_date . '">
-                    <i class="fa-solid fa-trash"></i>
+                    <i class="fa-solid fa-xmark"></i>
                   </button>';
             })
             ->rawColumns(['action'])

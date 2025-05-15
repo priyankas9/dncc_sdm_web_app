@@ -63,6 +63,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 <thead>
                     <tr>
                         <th>BIN</th>
+                        <th>Containment ID</th>
                         <th>House Number</th>
                         <th>Area Name</th>
                         <th>Road Number</th>
@@ -113,6 +114,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         data: 'bin',
                         name: 'bin'
                     },
+                   {
+                        data: 'id',
+                        name: 'id'
+                },
                     {
                         data: 'house_number',
                         name: 'house_number'
