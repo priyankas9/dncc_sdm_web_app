@@ -17,7 +17,6 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         <th>Road Number</th>
                         <th>Owner Name</th>
                         <th>Owner Contact</th>
-                        <th>Next Emptying Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -25,6 +24,11 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
         </div>
     </div><!-- /.box-body -->
     <!-- Bootstrap Modal -->
+       <form id="confirmEmptyingForm" method="POST" action="{{ route('schedule.confirm') }}" style="display: none;">
+    @csrf
+
+    <input type="hidden" name="action_type" >
+    </form>
     @stop
     @push('scripts')
     <!-- Include SweetAlert2 from CDN -->
@@ -38,7 +42,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 serverSide: true,
                 scrollCollapse: true,
                 order: [
-                    [7, 'asc']
+                    [0, 'asc']
                 ], // Add this line to set the default order by the next_emptying_date column
                 ajax: {
                     url: '{!! url("fsm/desludging-reintegration/data") !!}',
@@ -68,10 +72,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         data: 'owner_contact',
                         name: 'owner_contact'
                     },
-                    {
-                        data: 'next_emptying_date',
-                        name: 'next_emptying_date'
-                    },
+
                     {
                         data: 'action',
                         name: 'action',
@@ -91,6 +92,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 e.preventDefault();
                 var searchData = $('input[type=search]').val();
                 window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData;
+            });
+             $(document).on('click', '.confirm-emptying-btn ', function (e) {
+                e.preventDefault();
+                const form = document.getElementById('confirmEmptyingForm');
+               
+                form.querySelector('[name="action_type"]').value = $(this).data('action_type');
+                form.submit();
             });
 
         });
