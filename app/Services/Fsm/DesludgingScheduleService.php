@@ -69,9 +69,9 @@ class DesludgingScheduleService
                         ON o.bin = b.bin AND o.deleted_at IS NULL
                     LEFT JOIN fsm.applications a
                         ON a.containment_id = c.id AND a.emptying_status = false
-                    WHERE   
-                        c.next_emptying_date is NOT NULL OR
-                        c.status = 0 or c.status = 4
+                   WHERE   
+								c.next_emptying_date IS Not NULL AND
+                        (c.status = 0 OR c.status = 4 OR c.status IS null )
                     ORDER BY c.id
                 ) final_result
                 ORDER BY final_result.next_emptying_date;
@@ -368,11 +368,8 @@ class DesludgingScheduleService
             }
             $counter += $remaining_trips;
             $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
-            dd($set_date);
-            if($set_date == "2025-05-15")
-            {
-                dd($selected_containments, $remaining_trips);
-            }
+           
+           
         }
        
         while ($counter <= count($containments));
