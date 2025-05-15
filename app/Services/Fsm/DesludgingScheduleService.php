@@ -119,15 +119,17 @@ class DesludgingScheduleService
                     data-owner_gender="' . $building->owner_gender . '">
                      <i class="fa-regular fa-clock"></i>
                   </a>' .
-                  '<button title="Disagree for Schedule Desludging"
-                    class="btn btn-md mb-1 btn-unconfirm-emptying"
+                '<button title="Disagree for Schedule Desludging"
+                    class="btn btn-md mb-1 btn-unconfirm-emptying ' . ($building->status == 4 ? 'static-ping' : '') . '"
                     style="background-color:rgb(184, 23, 26); color: white;"
                     data-bin="' . $building->bin . '"
                     data-owner_contact="' . $building->owner_contact . '"
                     data-owner_name="' . $building->owner_name . '"
-                    data-next-emptying-date="' . $building->next_emptying_date . '">
+                    data-next_emptying_date="' . $building->next_emptying_date . '">
                     <i class="fa-solid fa-xmark"></i>
-                  </button>';
+                </button>'
+
+                ;
             })
             ->rawColumns(['action'])
             ->make(true);
