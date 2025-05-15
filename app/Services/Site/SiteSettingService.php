@@ -104,7 +104,9 @@ class SiteSettingService
          }
      
          // Additional specific rules
-         $rules['Next_Emptying_Date_Assignment_Period'] = 'integer|min:1|max:15';
+         $rules['Next_Emptying_Date_Assignment_Period'] = 'integer|min:1|max:365';
+         $rules['Trip_Capacity_Per_Day'] = 'integer|min:1';
+         $rules['Schedule_Regeneration_Period'] = 'integer|min:1';
          $rules['Working_Hours'] = 'max:24';
     
          // Validate the date

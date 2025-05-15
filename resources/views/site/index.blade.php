@@ -140,6 +140,11 @@
                 'class' => 'form-control flatpickr-multiple' . ($errors->has($key) ? ' is-invalid' : ''),
                 'placeholder' => 'Select multiple dates'
             ]) !!}
+        @elseif ($inputType === 'number')
+            {!! Form::number($key, old($key, $details['value']), [
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
+                'oninput' => "this.value = this.value < 1 ? '' : this.value",
+            ]) !!}
         @else
             {!! Form::$inputType($key, old($key, $details['value']), [
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')

@@ -29,8 +29,8 @@ class SiteSettingController extends Controller
     public function index()
 {
     $page_title = "Site Setting";
-    $settings = DB::table('sdm_sitesettings')->orderBy('id')->get(['name', 'value', 'remarks', 'data_type', 'options']);
-    
+    $settings = DB::table('sdm_sitesettings')->orderBy('id')->where('deleted_at', null)->get(['name', 'value', 'remarks', 'data_type', 'options']);
+   
     $data = [];
     foreach ($settings as $setting) {
         if ($setting->data_type === 'select' || $setting->data_type === 'multiselect') {
