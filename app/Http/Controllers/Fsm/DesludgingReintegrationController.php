@@ -47,13 +47,21 @@ class DesludgingReintegrationController extends Controller
        order by  final_result.next_emptying_date ASC";
       $buildingResults = DB::SELECT($query);
       // Add the action column
-      foreach ($buildingResults as $key => $building) {
-        $buildingResults[$key]->action =
-            '<a href="/view/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">View</a> ' .
-            '<a href="/edit/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Edit</a> ' .
-            '<a href="/delete/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;" onclick="return confirm(\'Are you sure you want to delete this item?\')">Delete</a> ' .
-            '<a href="/download/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Download</a>';
-    }
-      return DataTables::of($buildingResults)->make(true);
+     
+       return Datatables::of($buildingResults)
+            ->addColumn('action', function ($building) {
+                return
+                  '<a href="javascript:void(0);"
+                    class="btn btn-md mb-1 confirm-emptying-btn"
+                    title="Confirm Schedule Desludging"
+                    class="btn btn-sm mb-1 confirm-emptying-btn"
+                    style="background-color: #17A2B8; color: white; margin-right: 2px;"
+                    data-action_type="confirm"
+                    >
+                    <i class="fa-solid fa-check"></i>
+                  </a>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }
