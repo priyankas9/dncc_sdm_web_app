@@ -758,6 +758,16 @@ class ApplicationService
     
             ["title" => "Application Details",
                 "fields" => [
+                     new FormField(
+                        label: 'Proposed Emptying Date',
+                        labelFor: 'proposed_emptying_date',
+                        inputType: 'date',
+                        inputId: 'proposed_emptying_date',
+                        inputValue: Carbon::parse($application->proposed_emptying_date)->format('Y-m-d'), // Correct date format for HTML date input
+                        required: true,
+                        disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
+                        placeholder: 'Proposed Emptying Date',
+                    ),
                     new FormField(
                         label: 'Supervisory Assessment Date',
                         labelFor: 'supervisory_assessment_date',
@@ -768,16 +778,7 @@ class ApplicationService
                         disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
                         placeholder: 'Supervisory Assessment Date',
                     ),
-                    new FormField(
-                        label: 'Proposed Emptying Date',
-                        labelFor: 'proposed_emptying_date',
-                        inputType: 'date',
-                        inputId: 'proposed_emptying_date',
-                        inputValue: Carbon::parse($application->proposed_emptying_date)->format('Y-m-d'), // Correct date format for HTML date input
-                        required: true,
-                        disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
-                        placeholder: 'Proposed Emptying Date',
-                    ),
+                   
                     
                     new FormField(
                         label: 'Service Provider Name',
