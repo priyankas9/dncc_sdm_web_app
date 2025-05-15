@@ -508,7 +508,7 @@ class DesludgingScheduleService
     {
         
         $searchData = $data['searchData'] ?? null; // Use null coalescing operator for cleaner code
-        $columns = ['BIN', 'House Number', 'Block Number', 'Road Number', 'Owner Name', 'Owner Contact', 'Next Emptying Date'];
+        $columns = ['BIN', 'Containment ID','House Number', 'Block Number', 'Road Number', 'Owner Name', 'Owner Contact', 'Next Emptying Date'];
     
         // Prepare the query using Eloquent query builder
         $buildingResults = Containment::select(
@@ -519,6 +519,7 @@ class DesludgingScheduleService
             'owners.owner_name',
             'owners.owner_contact',
             'containments.next_emptying_date',
+            'containments.id',
         )
         ->leftJoin('building_info.build_contains as bc', function($join) {
             $join->on('bc.containment_id', '=', 'containments.id')
@@ -537,12 +538,10 @@ class DesludgingScheduleService
         ->leftJoin('fsm.applications as applications', function($join) {
             $join->on('applications.containment_id', '=', 'containments.id')
                  ->where('applications.emptying_status', false);
-        })
+        }) 
         ->where(function($query) {
-            $query->where('buildings.wasa_status', false)
-                  ->orWhereNotIn('containments.status', [1, 2, 5])
-                  ->orWhereNull('containments.deleted_at')
-                  ->orWhereNotNull('applications.id');
+            $query->WhereNotNull('containments.next_emptying_date')
+                  ->orWhereIn('containments.status', [0, 4, NULL]);
         })
         ->orderBy('containments.next_emptying_date', 'asc');
     
