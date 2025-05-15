@@ -268,12 +268,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                                 <p>Desludging Schedule </p>
                           </a>
                         </li>
-                        <li class="nav-item">
-                         <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
-                            <i class="far fa-circle nav-icon"></i>
-                                <p>Scheduled<br> Desludging <br>Reintegration</p>
-                          </a>
-                        </li>
+                       
                      
                         @can('List Applications')
                         <li class="nav-item">
@@ -313,6 +308,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             </a>
                         </li>
                         @endcan
+                         <li class="nav-item">
+                         <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                                <p>Scheduled<br> Desludging <br>Reintegration</p>
+                          </a>
+                        </li>
                         @can('List Help Desks')
                         <li class="nav-item">
                             <a href="{{ action('Fsm\HelpDeskController@index') }}" class="nav-link {{ request()->is('fsm/help-desks/*','fsm/help-desks') ? 'active' : '' }}">
