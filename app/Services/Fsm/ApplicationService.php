@@ -197,40 +197,7 @@ class ApplicationService
                         placeholder: 'Emergency Desludging',
                     ),
                 ]],
-                ["title" => "Household Details",
-                "fields" => [
-                    new FormField(
-                        label: 'Number of Households',
-                        labelFor: 'household_served',
-                        inputType: 'number',
-                        inputId: 'household_served',
-                        required: false,
-                        placeholder: 'Number of Households',
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-                        inputValue: null
-
-                    ),
-                    new FormField(
-                        label: 'Population of Building',
-                        labelFor: 'population_served',
-                        inputType: 'number',
-                        inputId: 'population_served',
-                        required: false,
-                        placeholder: 'Population of Building',
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-                        inputValue: null
-                    ),
-                    new FormField(
-                        label: 'Number of Toilets',
-                        labelFor: 'toilet_count',
-                        inputType: 'number',
-                        inputId: 'toilet_count',
-                        required: false,
-                        placeholder: 'Number of Toilets',
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-                        inputValue: null
-                    ),
-                ]],
+               
         ];
         $this->createFormAction = route('application.store');
         $this->indexAction = route('application.index');
