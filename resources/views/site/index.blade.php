@@ -1,60 +1,85 @@
 @extends('layouts.dashboard')
 @push('style')
 <style type="text/css">
-    .dataTables_filter {
-        display: none;
-    }
+   /* Hide DataTables search box */
+.dataTables_filter {
+    display: none;
+}
 
-    .form-title-row {
-        display: flex;
-        align-items: center;
-    }
+/* Title row styling */
+.form-title-row {
+    display: flex;
+    align-items: center;
+}
 
-    .form-title-row h2 {
-        margin: 0;
-        padding: 2px 0;
-    }
+.form-title-row h2 {
+    margin: 0;
+    padding: 2px 0;
+}
 
-    .disabled-select {
-        color: black;
-    }
+/* Disabled select appearance */
+.disabled-select {
+    color: black;
+}
 
-    /* Change the text color of the selected options in the Select2 dropdown */
-    /* Change the text color of the selected options in the Select2 dropdown */
-    /* Change the text color of the selected options in the dropdown */
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        color: black;
-    }
+/* Select2 full width */
+.select2-container {
+    width: 100% !important;
+}
 
-    .readonly-select2 .select2-selection__choice {
-        color: black !important;
-        /* Ensures text color is black */
-        background-color: #f0f0f0;
-        /* Optional: Change background color to differentiate */
-    }
+/* Multi-select choice styling */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    color: red;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+}
 
-    .select2-multi {
-        color: red;
-    }
+/* Hide remove button in readonly multi-select */
+.readonly-select2 .select2-selection__choice__remove {
+    display: none;
+}
 
-    .readonly-select2 .select2-selection__choice__remove {
-        display: none;
-        /* Optional: Hide the remove button if you don't want users to deselect options */
-    }
+/* Selected option in dropdown list */
+.select2-container--default .select2-results__option[aria-selected="true"] {
+    color: red !important;
+}
 
-    .select2-selection__choice {
-        color: black;
-    }
+/* Hover highlight color for options */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #e0e0e0;
+    color: black;
+}
 
-    .select2-selection__choice__display {
-        color: red;
-    }
+/* Placeholder text */
+.select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+    color: #999;
+}
 
-    /* Change the text color of the selected options in the dropdown list */
-    .select2-container--default .select2-results__option[aria-selected="true"] {
-        color: red !important;
-    }
+/* Margin consistency */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    padding: 8px 12px;
+}
+
+/* Flatpickr multiple input styling */
+.flatpickr-multiple {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+/* Buttons spacing */
+.card-footer button,
+.card-footer span {
+    margin-right: 8px;
+}
+
 </style>
+
 @endpush
 @section('title', $page_title)
 @section('content')
@@ -131,10 +156,10 @@
                 'onclick' => 'this.showPicker();'
             ]) !!}
         @elseif ($inputType === 'multi')
-            {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
-                'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
-                'multiple' => 'multiple'
-            ]) !!}
+              {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
+            'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
+            'multiple' => 'multiple'
+                 ]) !!}
             @elseif ($inputType === 'minput')
             {!! Form::text($key, old($key, $details['value']), [
                 'class' => 'form-control flatpickr-multiple' . ($errors->has($key) ? ' is-invalid' : ''),
@@ -180,59 +205,45 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Function to toggle readonly attribute
-        function toggleReadOnly(readonly) {
-            $('input').prop('readonly', readonly);
-            $('select').prop('disabled', readonly);
-        }
-        // Initially set form fields as read-only
-        toggleReadOnly(true);
-        // Edit button click event
-        $('#editButton').click(function() {
-            $('input').removeAttr('readonly');
-            $('select').removeAttr('disabled');
-            $('#editButton').hide();
-            $('#saveButton').show();
-        });
-        // Check for errors and update buttons accordingly
-        var hasErrors = $('.alert-danger').length > 0;
-        if (hasErrors) {
-            $('input').removeAttr('readonly');
-            $('select').removeAttr('disabled');
-            $('#editButton').hide();
-            $('#saveButton').show();
-        } else {
-            $('#saveButton').hide();
-            $('#editButton').show();
-        }
-        // Initialize select2 for multi-select fields
-        $('.select2-multi').select2({
-            placeholder: 'Select options',
-            allowClear: true
-        }).on('select2:select', function(e) {
-            // Add inline style to selected options
-            $(this).next('.select2-container').find('.select2-selection__choice').css('color', 'black');
-        });
-        // Handle form submission for multi-select fields
-        $('form').on('submit', function(e) {
-            const multiselectFields = $('select[multiple]');
-            multiselectFields.each(function() {
-                const selectedOptions = $(this).val();
-                const hiddenInput = $('<input>')
-                    .attr('type', 'hidden')
-                    .attr('name', this.name.replace('[]', ''))
-                    .val(selectedOptions.join(','));
-                $(this).after(hiddenInput);
-                $(this).prop('disabled', true);
-            });
-        });
-        flatpickr('.flatpickr-multiple', {
-            mode: 'multiple',
-            dateFormat: 'Y-m-d',
-            altInput: true,
-            altFormat: 'F j, Y'
-        });
+   $(document).ready(function () {
+    // Initialize Select2 for multi-select fields
+    $('.select2-multi').select2({
+        width: '100%'
     });
+
+    // Function to toggle readonly/disabled state
+    function toggleReadOnly(readonly) {
+        $('input').prop('readonly', readonly);
+        $('select').prop('disabled', readonly);
+
+        if (readonly) {
+            // Disable select2s visually
+            $('.select2-multi').prop('disabled', true).trigger('change');
+        } else {
+            $('.select2-multi').prop('disabled', false).trigger('change');
+        }
+    }
+
+    // Initially readonly
+    toggleReadOnly(true);
+
+    // Edit button click
+    $('#editButton').click(function () {
+        toggleReadOnly(false);
+        $('#editButton').hide();
+        $('#saveButton').show();
+    });
+
+    // Check if form has validation errors, then unlock fields
+    if ($('.alert-danger').length > 0) {
+        toggleReadOnly(false);
+        $('#editButton').hide();
+        $('#saveButton').show();
+    } else {
+        $('#saveButton').hide();
+        $('#editButton').show();
+    }
+});
+
 </script>
 @endpush
