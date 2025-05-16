@@ -266,10 +266,13 @@ class SupervisoryAssessmentController extends Controller
     public function download($data = null)
     {
         $searchData = $data['searchData'] ?? null;
+        $owner_name = $data['owner_name'] ?? null;
+        $application_id = $data['application_id'] ?? null;
+        $holding_num = $data['holding_num'] ?? null;
     
         // Custom header labels you want in the CSV
         $columns = [
-            'Assessment Request ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
+            'Assessment Request ID', 'Application ID','Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
             'Containment Type', 'Containment Outlet Connection', 'Containment Volume', 'Road Width',
             'Distance from Nearest Road', 'Septic Tank Length', 'Septic Tank Width', 'Septic Tank Depth',
             'Number of Pit Rings', 'Pit Diameter', 'Pit Depth', 'Appropriate Desludging Vehicle Size',
@@ -277,8 +280,18 @@ class SupervisoryAssessmentController extends Controller
         ];
     
         // Fetch all records (you cannot use get($columns) since those are not DB fields)
-        $records = SupervisoryAssessment::whereNull('deleted_at')->get();
-    
+        $records = SupervisoryAssessment::select( 'id','application_id', 'holding_number', 'owner_name', 'owner_gender', 'owner_contact','containment_type','containment_outlet_connection','containment_volume','road_width','distance_from_nearest_road','septic_tank_length','septic_tank_width','septic_tank_depth','number_of_pit_rings','pit_diameter','pit_depth','appropriate_desludging_vehicle_size','number_of_trips','confirmed_emptying_date','advance_paid_amount')
+                ->whereNull('deleted_at')->get();
+        if (!empty($owner_name)) {
+            $records = $records->where('owner_name', 'ILIKE', '%' . $owner_name . '%');
+        }
+        if (!empty($application_id)) {
+            $records = $records->where('application_id', 'ILIKE', '%' . $application_id . '%');
+        }  
+        if (!empty($holding_num)) {
+            $records = $records->where('holding_number', 'ILIKE', '%' . $holding_num . '%');
+        } 
+       
         $style = (new StyleBuilder())
             ->setFontBold()
             ->setFontSize(13)
