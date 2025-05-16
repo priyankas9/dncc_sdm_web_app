@@ -105,7 +105,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             'fsm/feedback','fsm/feedback/*',
                             'fsm/help-desks/*','fsm/help-desks',
                             'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test',
-                            'fsm/pdf-generation/*','fsm/pdf-generation'
+                            'fsm/pdf-generation/*','fsm/pdf-generation','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*'
                         )
                             ? 'menu-is-opening menu-open'
                             : '' }}">
@@ -123,7 +123,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                                 'fsm/feedback','fsm/feedback/*',
                                 'fsm/help-desks/*','fsm/help-desks',
                                 'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test'
-                                ,'fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration'
+                                ,'fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*'
                             )
                                 ? 'active'
                                 : '' }}">
@@ -254,8 +254,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 'List Feedbacks',
                 'List Sludge Collections',
                 'List Help Desks') || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
-                <li class="nav-item  {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/emptying/*','fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'menu-is-opening menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active subnav' : '' }}">
+                <li class="nav-item  {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/emptying/*','fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'menu-is-opening menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active subnav' : '' }}">
                         <i class="nav-icon fa-regular fa-building"></i>
                         <p>
                             Emptying Service IMS <i class="right fas fa-angle-left"></i>

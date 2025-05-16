@@ -3,7 +3,7 @@
 @section('content')
 <div class="card border-0">
     <div class="card-header">
-    <a href="{{ action('Fsm\SupervisoryAssessmentController@download') }}" class="btn btn-info">Export to CSV
+    <a href="{{ action('Fsm\SupervisoryAssessmentController@download') }}" id="export" class="btn btn-info">Export to CSV
     </a>
      <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter"
                         aria-expanded="false" aria-controls="collapseFilter">Show Filter</a>
@@ -147,6 +147,19 @@ $(function() {
         holding_num = $('#holding_num').val();
         dataTable.draw();
     });
+     $("#export").on("click", function(e) {
+
+                            e.preventDefault();
+                            var searchData = $('input[type=search]').val();
+                            // var trtpltid = $('#trtpltid').val();
+                           owner_name = $('#owner_name').val();
+                            application_id = $('#application_id').val();
+                            holding_num = $('#holding_num').val();
+                            window.location.href = "{!! url('fsm/supervisory-assessment/export?searchData=') !!}" + searchData +
+                                "&owner_name=" + owner_name +
+                                "&application_id=" + application_id + "&holding_num=" +
+                                holding_num 
+                        });
 });
 </script>
 @endpush
