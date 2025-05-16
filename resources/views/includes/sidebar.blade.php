@@ -616,9 +616,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
                         </ul>
                     </li>
-                    <li class="nav-item {{ request()->is('auth/*') ? 'menu-is-opening menu-open' : '' }}">
-                                <a href="{{ action('Site\SiteSettingController@index') }}"
-                                    class="nav-link {{ request()->is('site/site-setting') ? 'active subnav' : '' }}">
+                  <li class="nav-item {{ request()->is('auth/') ? 'menu-is-opening menu-open' : '' }}">
+                                <a href="{{ action('Auth\SiteController@index') }}"
+                                    class="nav-link {{ request()->is('auth/site-setting','auth/site-setting/') ? 'active' : '' }}">
                                     <i class="nav-icon fa-solid fa-microscope"></i>
                                     <p>Site Setting</p>
                                 </a>
