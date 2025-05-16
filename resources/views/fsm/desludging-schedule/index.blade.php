@@ -40,6 +40,23 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
     .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
 .btn-labeled {padding-top: 0;padding-bottom: 0;}
 .btn { margin-bottom:10px; }
+.static-ping {
+  position: relative;
+}
+
+.static-ping::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 10px;
+  height: 10px;
+  background-color:rgb(8, 182, 245); /* or whatever color you like */
+  border-radius: 50%;
+  z-index: 2;
+}
+
+
 </style>
 
 @section('title', $page_title)
