@@ -1,18 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Site;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\Fsm\TreatmentplantPerformanceTestRequest;
-use App\Models\Site\SiteSetting;
-use App\Services\Fsm\TreatmentplantPerformanceTestService;
 use App\Services\Site\SiteSettingService;
-use App\Models\Fsm\TreatmentPlantPerformanceTest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-class SiteSettingController extends Controller
-{   
+class SiteController extends Controller
+{
     protected SiteSettingService $sitesetting;
     public function __construct(SiteSettingService $sitesetting)
     {
@@ -28,6 +23,7 @@ class SiteSettingController extends Controller
      */
     public function index()
 {
+    
     $page_title = "Site Setting";
     $settings = DB::table('sdm_sitesettings')->orderBy('id')->where('deleted_at', null)->get(['name', 'value', 'remarks', 'data_type', 'options']);
    
@@ -99,7 +95,7 @@ class SiteSettingController extends Controller
         $data = $request->all();
         $result = $this->sitesetting->storeOrUpdate($data);
    
-        return redirect('site/site-setting')->with('success', ' Site Setting updated successfully');
+        return redirect('auth/site-setting')->with('success', ' Site Setting updated successfully');
     }
 
     /**

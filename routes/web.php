@@ -138,6 +138,9 @@ Route::group([
 
     Route::resource("roles", "RoleController");
     Route::get('searchPermission/{id}', 'RoleController@searchPermission');
+
+    Route::resource('/site-setting', 'SiteController');
+    Route::get('/site-setting/data', 'SiteController@getData');
 });
 
 // Tax Payment routes
@@ -574,30 +577,24 @@ Route::group([
     'middleware' => 'auth',
     'namespace' => 'Pdf'
 ], function () {
-
-
     Route::resource('pdf-generation', 'PdfController')->except(['show']);
-
     Route::get('pdf-generation/{id}', 'PdfController@generatePdfReport');
     Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
-
-
-
 });
 
 /**
  * Site SSettings Routes
  */
-Route::group([
-    'name' => 'site',
-    'prefix' => 'site',
-    'middleware' => 'auth',
-    'namespace' => 'Site'
-], function () {
-    Route::resource('/site-setting', 'SiteSettingController');
+// Route::group([
+//     'name' => 'site',
+//     'prefix' => 'site',
+//     'middleware' => 'auth',
+//     'namespace' => 'Site'
+// ], function () {
+//     Route::resource('/site-setting', 'SiteSettingController');
 
-    Route::get('/site-setting/data', 'SiteSettingController@getData');
-});
+//     Route::get('/site-setting/data', 'SiteSettingController@getData');
+// });
 Route::group(['middleware' => ['auth']], function () {
     /**
      * Logout Routes
