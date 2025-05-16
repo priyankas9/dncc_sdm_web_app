@@ -298,7 +298,7 @@ class DesludgingScheduleService
         $site_settings = DB::table('public.sdm_sitesettings')->whereNull('deleted_at')->get();
         return $site_settings; 
     }
-    public function tripsAllocated($date)
+   public function tripsAllocated($date)
     {
         $confirmed_applications = Application::where('proposed_emptying_date', $date)->count();
         $confirmed_application_ids = Application::where('emptying_status', false)->pluck('containment_id');
@@ -306,23 +306,25 @@ class DesludgingScheduleService
             ->whereNotIn('id', $confirmed_application_ids)
             ->where('next_emptying_date', $date)
             ->count();
-    
-        $daily_trip_capacity = $this->fetchSiteSettings()->keyBy('name')['Trip Capacity Per Day']->value;
-        $remaining_trips = (int)$daily_trip_capacity - (int)$auto_scheduled_applications - (int)$confirmed_applications;
-    
-        // Check if date is a holiday or weekend defined in site settings
+
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
+        $daily_trip_capacity = $site_settings['Trip Capacity Per Day']->value;
+
+        // Check if date is a holiday or weekend
         $weekends = explode(',', $site_settings['Weekend']->value);
         $holidays = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
         $carbonDate = Carbon::parse($date);
         $dayOfWeek = $carbonDate->format('l');
-    
+
         if (in_array($dayOfWeek, $weekends) || in_array($carbonDate->format('Y-m-d'), $holidays)) {
-            return 0; // no trips allowed on holidays/weekends
+            return 0;
         }
-    
+
+        $remaining_trips = max(0, (int)$daily_trip_capacity - (int)$auto_scheduled_applications - (int)$confirmed_applications);
+
         return $remaining_trips;
     }
+
     public function fetchContainmentsInRange($start, $end, $containments)
     {
         return $containments->slice($start , $end - $start );
