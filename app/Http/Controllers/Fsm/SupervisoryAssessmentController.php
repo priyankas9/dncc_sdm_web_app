@@ -32,12 +32,30 @@ class SupervisoryAssessmentController extends Controller
     {
         return view('fsm.supervisory-assessment.index');
     }
-    public function getData()
+    public function getData(Request $request)
     {
-     
+        $data = $request->all();
+       
             $pdfBodyData = SupervisoryAssessment::select('*');
             
             return DataTables::of($pdfBodyData)
+             ->filter(function ($query) use ($data) {
+                // if ($data['trtpltid']) {
+                //     $query->where('id', $data['trtpltid']);
+                // }
+                if ($data['owner_name']) {
+
+                    $query->where('owner_name', 'ILIKE', '%' .  trim($data['owner_name']) . '%');
+                }
+
+                if ($data['application_id']) {
+                    $query->where('application_id', 'ILIKE', '%' . $data['application_id'] . '%');
+                }
+
+                if ($data['holding_num']) {
+                    $query->where('holding_number', 'ILIKE', '%'.$data['holding_num'].'%');
+                }
+            })
                 ->addColumn('action', function ($model) {
                     $content = \Form::open(['method' => 'DELETE',
                     'route' => ['supervisory-assessment.destroy', $model->id]]);
