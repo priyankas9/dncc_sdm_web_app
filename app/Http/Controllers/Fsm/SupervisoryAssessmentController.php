@@ -192,7 +192,7 @@ class SupervisoryAssessmentController extends Controller
         $supervisoryassessment = SupervisoryAssessment::find($id);
        
         if ($supervisoryassessment) {
-            $page_title = "Edit Emptying Service Details";
+            $page_title = "Edit Supervisory Assessment";
             $application = Application::find($supervisoryassessment->application_id);
             $owner_detail = SupervisoryAssessment::where('id', $id)->first();
             $containment = SupervisoryAssessment::where('id', $id)->first();
