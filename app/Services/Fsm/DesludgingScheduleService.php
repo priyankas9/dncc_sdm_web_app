@@ -512,7 +512,7 @@ class DesludgingScheduleService
     {
         
         $searchData = $data['searchData'] ?? null; // Use null coalescing operator for cleaner code
-        $columns = ['BIN', 'Containment ID','House Number', 'Block Number', 'Road Number', 'Owner Name', 'Owner Contact', 'Next Emptying Date'];
+        $columns = ['BIN', 'Containment ID','House Number', 'Area Name', 'Road Number', 'Owner Name', 'Owner Contact', 'Next Emptying Date'];
     
         // Prepare the query using Eloquent query builder
         $buildingResults = Containment::select(
