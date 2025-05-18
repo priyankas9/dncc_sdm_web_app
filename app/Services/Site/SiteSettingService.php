@@ -96,7 +96,7 @@ class SiteSettingService
              } elseif (str_contains($setting->data_type, 'date')) {
                  $rules[$setting->name] = 'nullable|date';
              } elseif (str_contains($setting->data_type, 'select') || str_contains($setting->data_type, 'multi-select')) {
-                 $rules[$setting->name] = 'nullable|string';
+                 $rules[$setting->name] = 'nullable';
              } else {
                  $rules[$setting->name] = 'nullable|string';
              }
