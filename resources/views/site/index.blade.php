@@ -243,6 +243,12 @@
         $('#saveButton').hide();
         $('#editButton').show();
     }
+       flatpickr('.flatpickr-multiple', {
+            mode: 'multiple',
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y'
+        });
 });
 
 </script>
