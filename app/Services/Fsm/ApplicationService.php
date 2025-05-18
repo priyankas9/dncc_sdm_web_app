@@ -354,6 +354,7 @@ class ApplicationService
     public function getCreateFormFields()
     {   
         $nextEmptyingDate = session('next_emptying_date');
+    
         $bin = session('bin');
         $ownerName = session('owner_name');
         $ownerContact = session('owner_contact');
@@ -374,7 +375,9 @@ class ApplicationService
                         $field->inputValue = $nextEmptyingDate;
                        $field->disabled =  true;
                     }
+                    
                     else {
+                         $field->inputValue = $nextEmptyingDate;
                         $field->disabled = false;
                     }
                 }
