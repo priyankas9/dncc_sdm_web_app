@@ -517,13 +517,14 @@ class DesludgingScheduleService
         // Prepare the query using Eloquent query builder
         $buildingResults = Containment::select(
             'buildings.bin',
+            'containments.id',
             'buildings.house_number',
             'buildings.house_locality',
             'buildings.road_code',
             'owners.owner_name',
             'owners.owner_contact',
-            'containments.next_emptying_date',
-            'containments.id',
+            'containments.next_emptying_date'
+           
         )
         ->leftJoin('building_info.build_contains as bc', function($join) {
             $join->on('bc.containment_id', '=', 'containments.id')
@@ -558,7 +559,7 @@ class DesludgingScheduleService
             ->build();
     
         $writer = WriterFactory::create(Type::CSV);
-        $writer->openToBrowser('Desludging_Schedule.csv'); // Ensure the file is CSV
+        $writer->openToBrowser('Desludging Schedule.csv'); // Ensure the file is CSV
         $writer->addRowWithStyle($columns, $style); // Write the header row with style
     
         // Process query data in chunks and write rows to the CSV file
@@ -566,6 +567,7 @@ class DesludgingScheduleService
             foreach ($desludgingData as $desludging) {
                 $values = [];
                 $values[] = $desludging->bin;
+                $values[] = $desludging->id;
                 $values[] = $desludging->house_number;
                 $values[] = $desludging->house_locality;
                 $values[] = $desludging->road_code;
