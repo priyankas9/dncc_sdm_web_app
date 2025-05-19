@@ -3,62 +3,62 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 @extends('layouts.dashboard')
 @push('style')
 
-@endpush
+
 <style type="text/css">
-    .dataTables_filter {
-        display: none;
-    }
- /* Fullscreen overlay */
- #loader-overlay {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-        z-index: 9999; /* High priority */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+            .dataTables_filter {
+                display: none;
+            }
+        /* Fullscreen overlay */
+        #loader-overlay {
+                display: none; /* Hidden by default */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+                z-index: 9999; /* High priority */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-    /* Loader content */
-    .loader-content {
-        text-align: center;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px;
-    }
+            /* Loader content */
+            .loader-content {
+                text-align: center;
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px;
+            }
 
-    /* Spinner icon */
-    .fa-spinner {
-        font-size: 30px;
-        margin-bottom: 10px;
-    }
-    .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
-.btn-labeled {padding-top: 0;padding-bottom: 0;}
-.btn { margin-bottom:10px; }
-.static-ping {
-  position: relative;
-}
+            /* Spinner icon */
+            .fa-spinner {
+                font-size: 30px;
+                margin-bottom: 10px;
+            }
+            .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
+        .btn-labeled {padding-top: 0;padding-bottom: 0;}
+        .btn { margin-bottom:10px; }
+        .static-ping {
+        position: relative;
+        }
 
-.static-ping::before {
-  content: "";
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  width: 10px;
-  height: 10px;
-  background-color:rgb(8, 182, 245); /* or whatever color you like */
-  border-radius: 50%;
-  z-index: 2;
-}
+        .static-ping::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        width: 10px;
+        height: 10px;
+        background-color:rgb(8, 182, 245); /* or whatever color you like */
+        border-radius: 50%;
+        z-index: 2;
+        }
 
 
 </style>
-
+@endpush
 @section('title', $page_title)
 @section('content')
 
@@ -109,7 +109,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
     <input type="hidden" name="action_type" >
     </form>
     <!-- Bootstrap Modal -->
-    @stop
+@stop
     @push('scripts')
     <!-- Include SweetAlert2 from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -298,4 +298,4 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 
         });
     </script>
-    @endpush
+@endpush
