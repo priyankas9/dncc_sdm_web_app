@@ -70,7 +70,7 @@ class DesludgingScheduleService
                     LEFT JOIN fsm.applications a
                         ON a.containment_id = c.id AND a.emptying_status = false
                    WHERE   
-								c.next_emptying_date IS Not NULL AND
+								c.next_emptying_date IS  NULL AND
                         (c.status = 0 OR c.status = 4 OR c.status IS null )
                     ORDER BY c.id
                 ) final_result
