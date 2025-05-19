@@ -102,7 +102,13 @@ class SiteSettingService
              }
              $rules[$setting->name . '_remark'] = 'nullable|string';
          }
-     
+         $attributes = [
+            'Next_Emptying_Date_Assignment_Period' => 'Next Emptying Date Assignment Period',
+            'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
+            'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
+            'Working_Hours' => 'Working Hours',
+            // add others as needed
+        ];
          // Additional specific rules
          $rules['Next_Emptying_Date_Assignment_Period'] = 'integer|min:1|max:365';
          $rules['Trip_Capacity_Per_Day'] = 'integer|min:1';
@@ -110,7 +116,7 @@ class SiteSettingService
          $rules['Working_Hours'] = 'max:24';
     
          // Validate the date
-         $validator = Validator::make($data, $rules);
+         $validator = Validator::make($data, $rules, [], $attributes);
      
          // Exit early if validation fails
          if ($validator->fails()) {
