@@ -193,7 +193,7 @@ class ApplicationService
                         inputType: 'select',
                         inputId: 'emergency_desludging_status',
                         selectValues: array("1" => "Yes" , "0" => "No"),
-                        required: false,
+                        required: true,
                         placeholder: 'Emergency Desludging',
                     ),
                 ]],
