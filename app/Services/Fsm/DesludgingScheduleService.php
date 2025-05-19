@@ -70,7 +70,7 @@ class DesludgingScheduleService
                     LEFT JOIN fsm.applications a
                         ON a.containment_id = c.id AND a.emptying_status = false
                    WHERE   
-								c.next_emptying_date IS  NULL AND
+								c.next_emptying_date IS Not NULL AND
                         (c.status = 0 OR c.status = 4 OR c.status IS null )
                     ORDER BY c.id
                 ) final_result
@@ -339,7 +339,7 @@ class DesludgingScheduleService
         $priorityCount = $containments->whereNull('priority')->count();
         if ($priorityCount != 0) {
             $this->setPriority(null);
-            dd("test");
+            
         }
         $today = Carbon::now(); // Get today's date
         $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
