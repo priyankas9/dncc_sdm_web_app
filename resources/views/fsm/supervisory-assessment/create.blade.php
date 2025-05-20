@@ -20,12 +20,19 @@
 <script> 
      let tripData = {}; // global store
 
-    flatpickr('.flatpickr-reschedule', {
+   // assign proposed date from blade into JS variable
+const proposedEmptyingDate = "{{ $application ? $application->proposed_emptying_date : '' }}";
+
+flatpickr('.flatpickr-reschedule', {
     dateFormat: 'Y-m-d',
     allowInput: true,
+    maxDate: proposedEmptyingDate || null,   // set limit here
+
     onReady: function (selectedDates, dateStr, instance) {
         if (instance.input.id === 'confirmed_emptying_date') {
-            // Inject legend at the top
+            console.log("Proposed Emptying Date:", proposedEmptyingDate);
+
+            // Inject legend
             const legendHTML = `
                 <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
                     <div style="display: flex; flex-wrap: wrap; gap: 12px;">
@@ -52,10 +59,10 @@
             `;
             const calendarContainer = instance.calendarContainer;
             calendarContainer.insertAdjacentHTML("afterbegin", legendHTML);
+
             fetchAndDisplayTrips(instance);
         }
     },
-
 
     onDayCreate: function (dObj, dStr, fp, dayElem) {
         const dateObj = dayElem.dateObj;
@@ -66,25 +73,30 @@
         const day = String(dateObj.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
 
+        // Disable dates after proposedEmptyingDate
+        if (proposedEmptyingDate && dateStr > proposedEmptyingDate) {
+            dayElem.classList.add("flatpickr-disabled");
+            dayElem.style.pointerEvents = "none";
+            dayElem.style.opacity = "0.3";
+            return; // Skip trip coloring if disabled
+        }
+
         if (tripData.hasOwnProperty(dateStr)) {
             const { trips, is_holiday, is_weekend } = tripData[dateStr];
 
-            // Clear previous styles
             dayElem.removeAttribute("style");
             dayElem.style.cursor = "pointer";
 
-            // Set tooltip
             let tooltip = `Trips Available: ${trips}`;
             if (is_holiday) tooltip += " (Holiday)";
             if (is_weekend) tooltip += " (Weekend)";
             dayElem.setAttribute("title", tooltip);
 
-            // Priority coloring: Holiday > Weekend > Trips
             if (is_holiday) {
-                dayElem.style.backgroundColor = "rgb(228, 173, 56)"; // pink
+                dayElem.style.backgroundColor = "rgb(228, 173, 56)";
                 dayElem.style.color = "#000000";
             } else if (is_weekend) {
-                dayElem.style.backgroundColor = "#cce5ff"; // light blue
+                dayElem.style.backgroundColor = "#cce5ff";
                 dayElem.style.color = "#004085";
             } else if (trips === 0) {
                 dayElem.style.backgroundColor = "#f8d7da";
@@ -103,6 +115,8 @@
         }
     }
 });
+
+
 
     // Supervisory assessment date picker initialized separately
    
