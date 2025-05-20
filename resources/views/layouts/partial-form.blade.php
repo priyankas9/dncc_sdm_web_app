@@ -14,13 +14,13 @@ A dynamic form layout
             <div class="card" @if(!empty($group['id'])) id="{{ $group['id'] }}" @endif @if(!empty($group['hidden'])) @if($group['hidden'] === true) style="display: none" @endif @endif>
                 <div class="card-header">
                     {{ $group['title'] }}
-                    @if(!empty($group["copyDetails"]))
+                      @if(!empty($group["copyDetails"]))
                         @if($group["copyDetails"])
                             <div class="clearfix float-right">
                                 <div class="icheck-primary d-inline">
                                     <input type="checkbox" name="autofill" id="autofill" onclick="autoFillDetails()">
                                     <label for="autofill">
-                                        Same as Owner
+                                    {{ __('Same as Owner') }} 
                                     </label>
                                 </div>
                             </div>
