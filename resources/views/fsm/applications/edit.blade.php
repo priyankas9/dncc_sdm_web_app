@@ -39,9 +39,6 @@ An Edit Layout for all forms
                     $("input[name='applicant_name']").val($("input[name=customer_name]").val());
                     $("#applicant_gender").val($("#customer_gender").val());
                     $("input[name='applicant_contact']").val($("input[name=customer_contact]").val());
-//                    $("input[name='applicant_name']").attr('disabled','disabled');
-//                    $("#applicant_gender").attr('disabled','disabled');
-//                    $("input[name='applicant_contact']").attr('disabled','disabled');
                 } else {
                     $("input[name='applicant_name']").val('');
                     $("#applicant_gender").val('');
@@ -320,6 +317,53 @@ An Edit Layout for all forms
         }
     });
 }
+  $(document).ready(function() {
+
+            let house_number = '{{ $application->bin }}';
+            var option = new Option(house_number, house_number, true, true);
+            $('#bin').val(house_number).trigger('change');
+
+            // manually trigger the `select2:select` event
+            $('#bin').trigger('select2:select');
+
+            if ('{{ old('address') }}'!==''){
+                $('#address').select2().val('{{ old('address') }}').trigger('change');
+                onAddressChange();
+            }
+
+            $('#bin').on('change',onAddressChange);
+            checkDetailsAndUpdateCheckbox();
+
+        });
+  function checkDetailsAndUpdateCheckbox() {
+        // Get the values of the Owner and Applicant Details
+        const ownerDetails = {
+            name: document.getElementById('customer_name').value,
+            gender: document.getElementById('customer_gender').value,
+            contact: document.getElementById('customer_contact').value
+        };
+
+        const applicantDetails = {
+            name: document.getElementById('applicant_name').value,
+            gender: document.getElementById('applicant_gender').value,
+            contact: document.getElementById('applicant_contact').value
+        };
+
+        // Get the checkbox element
+        const sameAsOwnerCheckbox = document.getElementById('autofill');
+
+        // Compare Owner and Applicant details
+        const isSame = ownerDetails.name === applicantDetails.name &&
+                    ownerDetails.gender === applicantDetails.gender &&
+                    ownerDetails.contact === applicantDetails.contact;
+
+        // Update checkbox state based on comparison
+        sameAsOwnerCheckbox.checked = isSame;
+    }
+        // Attach event listeners to Applicant fields to check when any field changes
+        document.getElementById('applicant_name').addEventListener('input', checkDetailsAndUpdateCheckbox);
+        document.getElementById('applicant_gender').addEventListener('input', checkDetailsAndUpdateCheckbox);
+        document.getElementById('applicant_contact').addEventListener('input', checkDetailsAndUpdateCheckbox);
 
     </script>
 @endpush
