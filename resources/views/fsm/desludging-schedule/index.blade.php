@@ -87,7 +87,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         <th>Owner Name</th>
                         <th>Owner Contact</th>
                         <th>Next Emptying Date</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
             </table>

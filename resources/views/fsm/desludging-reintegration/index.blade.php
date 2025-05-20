@@ -17,7 +17,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         <th>Road Number</th>
                         <th>Owner Name</th>
                         <th>Owner Contact</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
             </table>
