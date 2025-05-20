@@ -15,6 +15,7 @@ use App\Models\Fsm\SupervisoryAssessment;
 use App\Models\Fsm\TreatmentPlant;
 use App\Models\Fsm\VacutugType;
 use App\Models\User;
+use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -145,6 +146,74 @@ class EmptyingServiceController extends Controller
             ], 500);
         }
     }   
+    public function fetchSiteSettings()
+    {
+        $site_settings = DB::table('public.sdm_sitesettings')->whereNull('deleted_at')->get();
+        return $site_settings; 
+    }
+
+     public function tripsAllocated($date)
+    {
+        $confirmed_applications = Application::where('proposed_emptying_date', $date)->count();
+        $confirmed_application_ids = Application::where('emptying_status', false)->pluck('containment_id');
+        $auto_scheduled_applications = Containment::where('emptied_status', 'true')
+            ->whereNotIn('id', $confirmed_application_ids)
+            ->where('next_emptying_date', $date)
+            ->count();
+
+        $site_settings = $this->fetchSiteSettings()->keyBy('name');
+        $daily_trip_capacity = $site_settings['Trip Capacity Per Day']->value;
+
+        // Check if date is a holiday or weekend
+        $weekends = explode(',', $site_settings['Weekend']->value);
+        $holidays = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
+        $carbonDate = Carbon::parse($date);
+        $dayOfWeek = $carbonDate->format('l');
+
+        if (in_array($dayOfWeek, $weekends) || in_array($carbonDate->format('Y-m-d'), $holidays)) {
+            return 0;
+        }
+
+        $remaining_trips = max(0, (int)$daily_trip_capacity - (int)$auto_scheduled_applications - (int)$confirmed_applications);
+
+        return $remaining_trips;
+    }
+
+      public function tripsAllocatedRange($start_date, $end_date)
+    {
+        $site_settings = $this->fetchSiteSettings()->keyBy('name');
+        $weekends = array_map('trim', explode(',', $site_settings['Weekend']->value));
+        $holidays = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
+    
+        $current_date = $start_date;
+        $trips_allocated = [];
+    
+        while ($current_date <= $end_date) {
+            $carbonDate = Carbon::parse($current_date);
+            $dayOfWeek = $carbonDate->format('l');
+            $isHoliday = in_array($carbonDate->format('Y-m-d'), $holidays);
+            $isWeekend = in_array($dayOfWeek, $weekends);
+    
+            if (!$isHoliday && !$isWeekend) {
+                $trips_allocated[$current_date] = [
+                    'trips' => $this->tripsAllocated($current_date),
+                    'is_holiday' => $isHoliday,
+                    'is_weekend' => $isWeekend
+                ];
+            } else {
+                // if you still want to list holidays/weekends with 0 trips
+                $trips_allocated[$current_date] = [
+                    'trips' => 0,
+                    'is_holiday' => $isHoliday,
+                    'is_weekend' => $isWeekend
+                ];
+            }
+    
+            $current_date = $carbonDate->addDay()->format('Y-m-d');
+        }
+    
+        return response()->json($trips_allocated);
+    }
 
     public function getTreatmentPlants()
     {
