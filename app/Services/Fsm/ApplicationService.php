@@ -968,28 +968,22 @@ class ApplicationService
             ->editColumn('supervisory_assessment_status', function($model) {
                 $content = '<div class="application-quick__actions">';
                 $content .= $model->supervisory_assessment_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
-                
-                if ($model->supervisory_assessment_status !== true) {
-                    if (Auth::user()->can('View Emptying') && $model->emptying) {
-                        // Disabled link when status is true
-                        $content .= '<a title="Add Supervisory Assessment" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
-                                       <i class="fa-solid fa-clipboard-list"></i>
-                                    </a> ';
-                    }
-                }
-                if ($model->supervisory_assessment_status == true) {
-                    $content .= '<a title="View Emptying Service Details" href="#" class="btn btn-info btn-sm mb-1 disabled">
-                   <i class="fa-solid fa-clipboard-list"></i>
-                </a> ';
-              
-                }
-                 else {
-                    if (Auth::user()->can('Add Emptying')) {
+                 if ($model->supervisory_assessment_status == TRUE) {
+                 
+                        $content .= '<a title="View Supervisory Assessment Details" href="' 
+                                . route('supervisory-assessment.show', [$model->with('supervisory_assessment')->where('id', $model->id)->first()->supervisory_assessment->id])
+                                    . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
+                   
+                } else {
+                  
+                        // Disable "Add Emptying" if supervisory_assessment_status is false
+                        $disabledClass = $model->supervisory_assessment_status ? '' : ' anchor-disabled';
                         $content .= '<a title="Add Supervisory Assessment" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
                        <i class="fa-solid fa-clipboard-list"></i>
                     </a> ';
-                    }
+                    
                 }
+               
                 
                 $content .= '</div>';
                 return $content;
