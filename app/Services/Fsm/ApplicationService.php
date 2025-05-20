@@ -924,7 +924,7 @@ class ApplicationService
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['application.destroy', $model->id]]);
                 $content .= '<div class="">';
                 if (Auth::user()->can('Edit Application')){
-                    $content .= '<a title="Edit  Application Details" href="' . route('application.edit', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status? ' anchor-disabled' : '') . '"><i class="fa fa-edit"></i></a> ';
+                    $content .= '<a title="Edit  Application Details" href="' . route('application.edit', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->supervisory_assessment_status? ' anchor-disabled' : '') . '"><i class="fa fa-edit"></i></a> ';
                 }
 
                 if (Auth::user()->can('View Application')){
