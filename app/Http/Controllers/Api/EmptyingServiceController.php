@@ -86,7 +86,65 @@ class EmptyingServiceController extends Controller
         }
     }    
     
+     public function getAssessedSupervisoryApplications()
+    {
+        try {
+            $user = Auth::user();
     
+            // Base query
+            $query = Application::select(
+                'applications.*',
+                'buildings.house_number as building_house_number',
+                'roads.carrying_width',
+                'containments.size as containment_size' // Directly fetch containment size
+            )
+            ->join('building_info.buildings', function ($join) {
+                $join->on(DB::raw('CAST(applications.bin AS VARCHAR)'), '=', 'buildings.bin');
+            })
+            ->leftJoin('utility_info.roads', 'applications.road_code', '=', 'roads.code') // Join with Road model
+            ->leftJoin('fsm.containments', 'applications.containment_id', '=', 'containments.id') // Link containment directly
+            ->where('applications.supervisory_assessment_status', false);
+    
+            // Apply role-specific filtering
+            if ($user->hasRole('Service Provider - Emptying Operator')) {
+                $query->where('applications.service_provider_id', $user->service_provider_id);
+            }
+    
+            // Fetch the applications
+            $applications = $query->get();
+    
+            // Add geometry data and image status to each application
+            $imageFolder = storage_path('app/public/emptyings/houses');
+    
+            foreach ($applications as $application) {
+                // Fetch geometry data for each application
+                $application->geometry = json_decode(
+                    $application->buildings()
+                        ->select(DB::raw('public.ST_AsGeoJSON(geom) AS coordinates'))
+                        ->pluck('coordinates')
+                        ->first()
+                ) ?? null;
+    
+                // Check for the existence of an image for each application
+                $imageFile = $imageFolder . DIRECTORY_SEPARATOR . $application->bin . '.jpg';
+                $application->image_status = file_exists($imageFile) ? "true" : "false";
+            }
+    
+            // Return the response with the applications and their image status
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'applications' => $applications
+                ],
+                'message' => 'Applications retrieved successfully'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }   
 
     public function getTreatmentPlants()
     {
