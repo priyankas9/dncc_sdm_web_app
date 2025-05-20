@@ -2,81 +2,81 @@
 @push('style')
 <style type="text/css">
    /* Hide DataTables search box */
-.dataTables_filter {
-    display: none;
-}
+        .dataTables_filter {
+            display: none;
+        }
 
-/* Title row styling */
-.form-title-row {
-    display: flex;
-    align-items: center;
-}
+        /* Title row styling */
+        .form-title-row {
+            display: flex;
+            align-items: center;
+        }
 
-.form-title-row h2 {
-    margin: 0;
-    padding: 2px 0;
-}
+        .form-title-row h2 {
+            margin: 0;
+            padding: 2px 0;
+        }
 
-/* Disabled select appearance */
-.disabled-select {
-    color: black;
-}
+        /* Disabled select appearance */
+        .disabled-select {
+            color: black;
+        }
 
-/* Select2 full width */
-.select2-container {
-    width: 100% !important;
-}
+        /* Select2 full width */
+        .select2-container {
+            width: 100% !important;
+        }
 
-/* Multi-select choice styling */
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
-    color: red;
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-}
+        /* Multi-select choice styling */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: red;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
 
-/* Hide remove button in readonly multi-select */
-.readonly-select2 .select2-selection__choice__remove {
-    display: none;
-}
+        /* Hide remove button in readonly multi-select */
+        .readonly-select2 .select2-selection__choice__remove {
+            display: none;
+        }
 
-/* Selected option in dropdown list */
-.select2-container--default .select2-results__option[aria-selected="true"] {
-    color: red !important;
-}
+        /* Selected option in dropdown list */
+        .select2-container--default .select2-results__option[aria-selected="true"] {
+            color: red !important;
+        }
 
-/* Hover highlight color for options */
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #e0e0e0;
-    color: black;
-}
+        /* Hover highlight color for options */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #e0e0e0;
+            color: black;
+        }
 
-/* Placeholder text */
-.select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
-    color: #999;
-}
+        /* Placeholder text */
+        .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+            color: #999;
+        }
 
-/* Margin consistency */
-.form-group {
-    margin-bottom: 15px;
-}
+        /* Margin consistency */
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-.form-control {
-    padding: 8px 12px;
-}
+        .form-control {
+            padding: 8px 12px;
+        }
 
-/* Flatpickr multiple input styling */
-.flatpickr-multiple {
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-    border-radius: 4px;
-}
+        /* Flatpickr multiple input styling */
+        .flatpickr-multiple {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
 
-/* Buttons spacing */
-.card-footer button,
-.card-footer span {
-    margin-right: 8px;
-}
+        /* Buttons spacing */
+        .card-footer button,
+        .card-footer span {
+            margin-right: 8px;
+        }
 
 </style>
 
@@ -148,31 +148,31 @@
             ]) !!}
         @elseif ($inputType === 'select')
             {!! Form::select($key, array_combine($options, $options), old($key, $details['value']), [
-                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '') ,  'placeholder' => $details['name']
             ]) !!}
         @elseif ($inputType === 'date')
             {!! Form::date($key, old($key, $details['value']), [
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
-                'onclick' => 'this.showPicker();'
+                'onclick' => 'this.showPicker();', 'placeholder' => $details['name']
             ]) !!}
         @elseif ($inputType === 'multi')
               {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
             'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
-            'multiple' => 'multiple'
+            'multiple' => 'multiple',   'placeholder' => $details['name']
                  ]) !!}
             @elseif ($inputType === 'minput')
             {!! Form::text($key, old($key, $details['value']), [
                 'class' => 'form-control flatpickr-multiple' . ($errors->has($key) ? ' is-invalid' : ''),
-                'placeholder' => 'Select multiple dates'
+                  'placeholder' => $details['name']
             ]) !!}
         @elseif ($inputType === 'number')
             {!! Form::number($key, old($key, $details['value']), [
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
-                'oninput' => "this.value = this.value < 1 ? '' : this.value",
+                'oninput' => "this.value = this.value < 1 ? '' : this.value",  'placeholder' => $details['name']
             ]) !!}
         @else
             {!! Form::$inputType($key, old($key, $details['value']), [
-                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),  'placeholder' => $details['name']
             ]) !!}
         @endif
         @if ($errors->has($key))
