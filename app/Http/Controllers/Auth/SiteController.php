@@ -49,6 +49,7 @@ class SiteController extends Controller
             }
 
             $data[$setting->name] = [
+                 'name' => $setting->name,
                 'value' => $setting->value,
                 'remarks' => $setting->remarks,
                 'data_type' => $setting->data_type,
@@ -56,6 +57,7 @@ class SiteController extends Controller
             ];
         } else {
             $data[$setting->name] = [
+                'name' => $setting->name,
                 'value' => $setting->value,
                 'remarks' => $setting->remarks,
                 'data_type' => $setting->data_type,
