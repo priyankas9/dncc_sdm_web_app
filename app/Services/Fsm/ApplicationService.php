@@ -1117,7 +1117,7 @@ class ApplicationService
                     $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
                 
                    $application->save();
-                   // 🧠 Set containment status based on next_emptying_date vs proposed_emptying_date
+                   // Set containment status based on next_emptying_date vs proposed_emptying_date
                 $containmentRecord = Containment::find($request->containment_id);
                   if ($request->action_type == 'confirm')
                   {
