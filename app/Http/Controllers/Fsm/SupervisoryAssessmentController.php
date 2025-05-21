@@ -274,8 +274,8 @@ class SupervisoryAssessmentController extends Controller
     // Custom header labels you want in the CSV
     $columns = [
         'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
-        'Containment Type', 'Containment Outlet Connection', 'Containment Volume', 'Road Width',
-        'Distance from Nearest Road', 'Septic Tank Length', 'Septic Tank Width', 'Septic Tank Depth',
+        'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width',
+        'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width', 'Septic Tank Depth',
         'Number of Pit Rings', 'Pit Diameter', 'Pit Depth', 'Appropriate Desludging Vehicle Size',
         'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
     ];

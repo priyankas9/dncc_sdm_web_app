@@ -45,9 +45,9 @@
     </div>
     
     <div class="form-group row required">
-        {!! Form::label('containment_volume','Containment Volume',['class' => 'col-sm-3 control-label']) !!}
+        {!! Form::label('containment_volume','Containment Volume (m³)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('containment_volume', $containment ? $containment->size : null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Volume', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('containment_volume', $containment ? $containment->size : null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Volume (m³)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
     
@@ -59,16 +59,16 @@
     </div>
     
     <div class="form-group row required">
-        {!! Form::label('distance_from_nearest_road','Distance from Nearest Road',['class' => 'col-sm-3 control-label']) !!}
+        {!! Form::label('distance_from_nearest_road','Distance from Nearest Road (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Enter Distance from Nearest Road', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Enter Distance from Nearest Road (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
     <div class="form-group row required">
-        {!! Form::label('septic_tank_length','Septic Tank Length',['class' => 'col-sm-3 control-label']) !!}
+        {!! Form::label('septic_tank_length','Septic Tank Length (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Length', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Length (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
