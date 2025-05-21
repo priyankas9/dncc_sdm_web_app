@@ -293,7 +293,10 @@ class ApplicationService
                     inputType: 'date',
                     inputId: 'supervisory_assessment_date',
                     placeholder: 'Supervisory Assessment Date',
-                ),
+                )
+               
+            ],
+            [
                 new FormField(
                     label: 'Proposed Emptying Date',
                     labelFor: 'proposed_emptying_date',
@@ -302,9 +305,6 @@ class ApplicationService
                     inputId: 'proposed_emptying_date',
                     placeholder: 'Proposed Emptying Date',
                 ),
-               
-            ],
-            [
                 new FormField(
                     label: 'Ward Number ',
                     labelFor: 'ward',
@@ -323,7 +323,10 @@ class ApplicationService
                     placeholder: 'Service Provider Name',
                     selectValues:  [],
                 ),
-                new FormField(
+               
+            ],
+            [
+                 new FormField(
                     label: 'Date From',
                     labelFor: 'date_from',
                     labelClass: 'col-md-2 col-form-label ',
@@ -331,8 +334,6 @@ class ApplicationService
                     inputId: 'date_from',
                     placeholder: 'Date From',
                 ),
-            ],
-            [
                 new FormField(
                     label: 'Date To',
                     labelFor: 'date_to',
