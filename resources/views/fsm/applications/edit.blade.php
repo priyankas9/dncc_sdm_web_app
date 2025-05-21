@@ -265,8 +265,52 @@ An Edit Layout for all forms
                 dayElem.style.color = "#155724";
             }
             dayElem.style.borderRadius = "50%";
+             if (is_holiday || is_weekend || trips === 0) {
+    dayElem.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let message = '';
+        if (is_holiday) {
+            message = 'Cannot select a holiday date.';
+        } else if (is_weekend) {
+            message = 'Cannot select a weekend date.';
+        } else {
+            message = 'No trips available for this date.';
         }
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'warning',
+            title: message,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    });
+}
+        
+        }
+    },
+    disable: [
+    function(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+
+        if (tripData[dateKey]) {
+            const { trips, is_holiday, is_weekend } = tripData[dateKey];
+            return is_holiday || is_weekend || trips === 0;
+        }
+        return false;
     }
+]
 });
   window.isConfirm = {{ $isConfirm ? 'true' : 'false' }};
     if (window.isConfirm === false) {

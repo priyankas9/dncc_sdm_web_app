@@ -219,15 +219,45 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         
     let tripData = {}; // global store
 
-    flatpickr('.flatpickr-reschedule', {
+  flatpickr('.flatpickr-reschedule', {
     dateFormat: 'Y-m-d',
     allowInput: true,
 
     onChange: function(selectedDates, dateStr, instance) {
-        // Restrict supervisory_assessment_date when proposed_emptying_date changes
         if (instance.input.id === 'proposed_emptying_date') {
-            if (selectedDates.length) {
-                let selectedDate = selectedDates[0];
+            // Check if a date was selected
+            if (selectedDates.length > 0) {
+                const selectedDate = selectedDates[0];
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+                
+                // Check if the selected date is in tripData
+                if (tripData[dateKey]) {
+                    const { trips, is_holiday, is_weekend } = tripData[dateKey];
+                    
+                    if (is_holiday || is_weekend || trips === 0) {
+                        // Clear the selection
+                        instance.clear();
+                        
+                        // Show appropriate popup message
+                        let message = '';
+                        if (is_holiday) {
+                            message = 'Cannot select a holiday date.';
+                        } else if (is_weekend) {
+                            message = 'Cannot select a weekend date.';
+                        } else {
+                            message = 'No trips available for this date.';
+                        }
+                        console.log(message);
+                        // Use alert or a better notification system
+                        alert(message);
+                        return;
+                    }
+                }
+                
+                // If date is valid, restrict supervisory_assessment_date
                 flatpickr("#supervisory_assessment_date").set('maxDate', selectedDate);
             } else {
                 flatpickr("#supervisory_assessment_date").set('maxDate', null);
@@ -237,7 +267,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
     onReady: function (selectedDates, dateStr, instance) {
         if (instance.input.id === 'proposed_emptying_date') {
-            // Inject legend at the top
+            // Inject legend at the top (same as before)
             const legendHTML = `
                 <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
                     <div style="display: flex; flex-wrap: wrap; gap: 12px;">
@@ -257,7 +287,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             <span style="width: 10px; height: 10px; background-color: #d4edda; border-radius: 50%;"></span> 3+ Trips
                         </span>
                         <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #f8d7da; border-radius: 50%;"></span> 0 Trips
+                            <span style="width: 10px; height: 10px; background-color: #f8d7da; border-radius: 50%;"></span> 0 Trips (Unavailable)
                         </span>
                     </div>
                 </div>
@@ -274,51 +304,99 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         }
     },
 
-    onDayCreate: function (dObj, dStr, fp, dayElem) {
-        const dateObj = dayElem.dateObj;
-        if (!dateObj) return;
+   onDayCreate: function (dObj, dStr, fp, dayElem) {
+    const dateObj = dayElem.dateObj;
+    if (!dateObj) return;
 
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const dateStrKey = `${year}-${month}-${day}`;
 
-        if (tripData.hasOwnProperty(dateStr)) {
-            const { trips, is_holiday, is_weekend } = tripData[dateStr];
+    if (tripData.hasOwnProperty(dateStrKey)) {
+        const { trips, is_holiday, is_weekend } = tripData[dateStrKey];
 
-            // Clear previous styles
-            dayElem.removeAttribute("style");
-            dayElem.style.cursor = "pointer";
+        // Clear previous styles
+        dayElem.removeAttribute("style");
+        dayElem.style.cursor = "pointer";
 
-            // Set tooltip
-            let tooltip = `Trips Available: ${trips}`;
-            if (is_holiday) tooltip += " (Holiday)";
-            if (is_weekend) tooltip += " (Weekend)";
-            dayElem.setAttribute("title", tooltip);
+        // Set tooltip
+        let tooltip = `Trips Available: ${trips}`;
+        if (is_holiday) tooltip += " (Holiday)";
+        if (is_weekend) tooltip += " (Weekend)";
+        dayElem.setAttribute("title", tooltip);
 
-            // Priority coloring: Holiday > Weekend > Trips
-            if (is_holiday) {
-                dayElem.style.backgroundColor = "rgb(228, 173, 56)"; // pink
-                dayElem.style.color = "#000000";
-            } else if (is_weekend) {
-                dayElem.style.backgroundColor = "#cce5ff"; // light blue
-                dayElem.style.color = "#004085";
-            } else if (trips === 0) {
-                dayElem.style.backgroundColor = "#f8d7da";
-                dayElem.style.color = "#721c24";
-            } else if (trips === 1) {
-                dayElem.style.backgroundColor = "rgb(245, 157, 130)";
-                dayElem.style.color = "#856404";
-            } else if (trips === 2) {
-                dayElem.style.backgroundColor = "#fff3cd";
-                dayElem.style.color = "#856404";
-            } else {
-                dayElem.style.backgroundColor = "#d4edda";
-                dayElem.style.color = "#155724";
-            }
-            dayElem.style.borderRadius = "50%";
+        // Priority coloring: Holiday > Weekend > Trips
+        if (is_holiday) {
+            dayElem.style.backgroundColor = "rgb(228, 173, 56)";
+            dayElem.style.color = "#000000";
+        } else if (is_weekend) {
+            dayElem.style.backgroundColor = "#cce5ff";
+            dayElem.style.color = "#004085";
+        } else if (trips === 0) {
+            dayElem.style.backgroundColor = "#f8d7da";
+            dayElem.style.color = "#721c24";
+        } else if (trips === 1) {
+            dayElem.style.backgroundColor = "rgb(245, 157, 130)";
+            dayElem.style.color = "#856404";
+        } else if (trips === 2) {
+            dayElem.style.backgroundColor = "#fff3cd";
+            dayElem.style.color = "#856404";
+        } else {
+            dayElem.style.backgroundColor = "#d4edda";
+            dayElem.style.color = "#155724";
         }
+        dayElem.style.borderRadius = "50%";
+
+        // Add click event to invalid dates
+       if (is_holiday || is_weekend || trips === 0) {
+    dayElem.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let message = '';
+        if (is_holiday) {
+            message = 'Cannot select a holiday date.';
+        } else if (is_weekend) {
+            message = 'Cannot select a weekend date.';
+        } else {
+            message = 'No trips available for this date.';
+        }
+
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'warning',
+            title: message,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    });
+}
+
     }
+},
+
+ disable: [
+    function(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+
+        if (tripData[dateKey]) {
+            const { trips, is_holiday, is_weekend } = tripData[dateKey];
+            return is_holiday || is_weekend || trips === 0;
+        }
+        return false;
+    }
+]
+
 });
 
     // Supervisory assessment date picker initialized separately
