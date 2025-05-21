@@ -73,13 +73,7 @@ flatpickr('.flatpickr-reschedule', {
         const day = String(dateObj.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
 
-        // Disable dates after proposedEmptyingDate
-        if (proposedEmptyingDate && dateStr > proposedEmptyingDate) {
-            dayElem.classList.add("flatpickr-disabled");
-            dayElem.style.pointerEvents = "none";
-            dayElem.style.opacity = "0.3";
-            return; // Skip trip coloring if disabled
-        }
+      
 
         if (tripData.hasOwnProperty(dateStr)) {
             const { trips, is_holiday, is_weekend } = tripData[dateStr];
