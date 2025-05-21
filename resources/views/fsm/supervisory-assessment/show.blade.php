@@ -52,9 +52,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row required">
-    {!! Form::label('containment_volume','Containment Volume',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('containment_volume','Containment Volume (m³)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('containment_volume', $supervisoryassessment->containment_volume, ['class' => 'form-control', 'placeholder' => 'Enter Containment Volume', 'disabled' => 'disabled']) !!}
+        {!! Form::text('containment_volume', $supervisoryassessment->containment_volume, ['class' => 'form-control', 'placeholder' => 'Enter Containment Volume (m³)', 'disabled' => 'disabled']) !!}
     </div>
 </div>
 
@@ -66,14 +66,14 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row required">
-    {!! Form::label('distance_from_nearest_road','Distance from Nearest Road',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('distance_from_nearest_road','Distance from Nearest Road (m)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('distance_from_nearest_road', $supervisoryassessment->distance_from_nearest_road, ['class' => 'form-control', 'placeholder' => 'Enter Distance', 'disabled' => 'disabled']) !!}
+        {!! Form::text('distance_from_nearest_road', $supervisoryassessment->distance_from_nearest_road, ['class' => 'form-control', 'placeholder' => 'Enter Distance (m)', 'disabled' => 'disabled']) !!}
     </div>
 </div>
 
 <div class="form-group row required">
-    {!! Form::label('septic_tank_length','Septic Tank Length',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('septic_tank_length','Septic Tank Length (m)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
         {!! Form::text('septic_tank_length', $supervisoryassessment->septic_tank_length, ['class' => 'form-control', 'placeholder' => 'Enter Length', 'disabled' => 'disabled']) !!}
     </div>
