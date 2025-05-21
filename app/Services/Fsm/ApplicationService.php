@@ -554,19 +554,20 @@ class ApplicationService
             ["title" => "Application Details",
                 "fields" => [
                     new FormField(
-                        label: 'Supervisory Assessment Date',
-                        labelFor: 'supervisory_assessment_date',
-                        inputType: 'label',
-                        inputId: 'supervisory_assessment_date',
-                        labelValue: date('m/d/Y', strtotime($application->supervisory_assessment_date)),
-                    ),
-                    new FormField(
                         label: 'Proposed Emptying Date',
                         labelFor: 'proposed_emptying_date',
                         inputType: 'label',
                         inputId: 'proposed_emptying_date',
                         labelValue: date('m/d/Y', strtotime($application->proposed_emptying_date)),
                     ),
+                    new FormField(
+                        label: 'Supervisory Assessment Date',
+                        labelFor: 'supervisory_assessment_date',
+                        inputType: 'label',
+                        inputId: 'supervisory_assessment_date',
+                        labelValue: date('m/d/Y', strtotime($application->supervisory_assessment_date)),
+                    ),
+                    
                     new FormField(
                         label: 'Service Provider Name',
                         labelFor: 'service_provider_id',
