@@ -40,6 +40,7 @@ class SiteSettingService
 
      public function storeOrUpdate($data)
      {
+         
          // Retrieve existing site settings
          $performance_test = SiteSetting::get();
      
@@ -84,6 +85,10 @@ class SiteSettingService
              "Weekend" => [
                  'value' => $data['Weekend'] ?? [],
                  'remarks' => $data['Weekend_remark'] ?? null
+             ],
+              "Schedule Regeneration Period" => [
+                 'value' => $data['Schedule_Regeneration_Period'] ?? [],
+                 'remarks' => $data['Schedule_Regeneration_Period_remark'] ?? null
              ],
             
          ];
@@ -140,7 +145,7 @@ class SiteSettingService
                  $settingsUpdated = true; // Mark that an update has occurred
              }
          }
-     
+    
          // Redirect with success message only if settings were updated
          if ($settingsUpdated) {
              return redirect()->back()->with('success', 'Settings updated successfully!');
