@@ -329,72 +329,90 @@ class DesludgingScheduleService
     {
         return $containments->slice($start , $end - $start );
     }
-    public function setEmptyingDate()
-    {
-       
-        try{
-        // fetch all values required from site settings
+  public function setEmptyingDate()
+{
+    try {
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $containments = $this->getContainmentData();
+
         $priorityCount = $containments->whereNull('priority')->count();
         if ($priorityCount != 0) {
             $this->setPriority(null);
-            
         }
-        $today = Carbon::now(); // Get today's date
-        $start_date = Carbon::createFromFormat('Y-m-d', $site_settings['Schedule Desludging Start Date']->value)->format('Y-m-d');
 
-        if($today->diff($start_date)->invert == true)
-        {
-            $start_date = $today->addDays($site_settings['Schedule Regeneration Period']->value)->format('Y-m-d');  
+        $today = Carbon::now();
+
+        $start_date_value = $site_settings['Schedule Desludging Start Date']->value;
+
+        if (!$start_date_value || strlen($start_date_value) < 10) {
+            $start_date = $today->format('Y-m-d');
+        } else {
+            $start_date = Carbon::createFromFormat('Y-m-d', $start_date_value)->format('Y-m-d');
         }
+
+        if ($today->diff(Carbon::createFromFormat('Y-m-d', $start_date))->invert == true) {
+            $start_date = $today->addDays($site_settings['Schedule Regeneration Period']->value)->format('Y-m-d');
+        }
+
         $counter = 0;
         $weekends = explode(',', $site_settings['Weekend']->value);
         $holiday_dates = array_map('trim', explode(',', $site_settings['Holiday Dates']->value));
 
         $containmentupdates = [];
-        do{
-            
+
+        do {
             $set_date = $start_date;
-             // Skip weekends and holidays efficiently
-             if (in_array( date("l", strtotime($set_date)), $weekends) || 
-                    in_array($set_date, $holiday_dates)) {
-                    $set_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');
+
+            // Keep moving to next day if weekend or holiday
+            while (in_array(Carbon::createFromFormat('Y-m-d', $set_date)->format('l'), $weekends) ||
+                   in_array($set_date, $holiday_dates)) {
+                $set_date = Carbon::createFromFormat('Y-m-d', $set_date)->addDay()->format('Y-m-d');
             }
+
             $remaining_trips = $this->tripsAllocated($set_date);
-           
             $selected_containments = $this->fetchContainmentsInRange($counter, $counter + (int)$remaining_trips, $containments);
+
             foreach ($selected_containments as $containment) {
                 $containmentupdates[] = [
                     'id' => $containment->id,
-                    'next_emptying_date' => $start_date
-                ]; 
+                    'next_emptying_date' => $set_date
+                ];
             }
+
             $counter += $remaining_trips;
-            $start_date = Carbon::createFromFormat('Y-m-d',$set_date)->addDay()->format('Y-m-d');// Move to the next day after processing
-           
-           
-        }
-       
-        while ($counter <= count($containments));
+
+            // Move to the next day after processing
+            $start_date = Carbon::createFromFormat('Y-m-d', $set_date)->addDay()->format('Y-m-d');
+
+        } while ($counter <= count($containments));
+
         if (!empty($containmentupdates)) {
             foreach (array_chunk($containmentupdates, 500) as $chunk) {
-               
                 foreach ($chunk as $update) {
                     Containment::where('id', $update['id'])->update([
                         'next_emptying_date' => $update['next_emptying_date']
                     ]);
-                    
                 }
             }
         }
-        return response()->json(['status' => 'success', 'message' => 'Next emptying dates have been successfully regenerated.']);
-        }
-        catch (\Exception $e) {
-            \Log::error('Error in set_emptying_date: ', ['error' => $e->getMessage()]);
-            return response()->json(['status' => 'error', 'message' => 'Failed to set emptying date. Please try again.']);
-        }
+
+        //  Success response
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Schedule generated successfully.'
+        ]);
+
+    } catch (\Exception $e) {
+        //  Error response
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to generate schedule. Error: ' . $e->getMessage()
+        ], 500);
     }
+}
+
+
+
     
 
     public function tripsAllocatedRange($request)
