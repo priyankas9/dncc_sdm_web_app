@@ -526,79 +526,99 @@ class DesludgingScheduleService
      * @param array $data
      * @return null
      */
-    public function download($data)
-    {
-        
-        $searchData = $data['searchData'] ?? null; // Use null coalescing operator for cleaner code
-        $columns = ['BIN', 'Containment ID','House Number', 'Area Name', 'Road Number', 'Owner Name', 'Owner Contact', 'Next Emptying Date'];
-    
-        // Prepare the query using Eloquent query builder
-        $buildingResults = Containment::select(
-            'buildings.bin',
-            'containments.id',
-            'buildings.house_number',
-            'buildings.house_locality',
-            'buildings.road_code',
-            'owners.owner_name',
-            'owners.owner_contact',
-            'containments.next_emptying_date'
-           
-        )
-        ->leftJoin('building_info.build_contains as bc', function($join) {
-            $join->on('bc.containment_id', '=', 'containments.id')
-                 ->whereNull('bc.deleted_at')
-                 ->whereNotNull('bc.bin')
-                 ->whereNotNull('bc.containment_id');
-        })
-        ->leftJoin('building_info.buildings as buildings', function($join) {
-            $join->on('buildings.bin', '=', 'bc.bin')
-                 ->whereNull('buildings.deleted_at');
-        })
-        ->leftJoin('building_info.owners as owners', function($join) {
-            $join->on('owners.bin', '=', 'buildings.bin')
-                 ->whereNull('owners.deleted_at');
-        })
-        ->leftJoin('fsm.applications as applications', function($join) {
-            $join->on('applications.containment_id', '=', 'containments.id')
-                 ->where('applications.emptying_status', false);
-        }) 
-        ->where(function($query) {
-            $query->WhereNotNull('containments.next_emptying_date')
-                  ->orWhereIn('containments.status', [0, 4, NULL]);
-        })
-        ->orderBy('containments.next_emptying_date', 'asc');
-    
-          
-        // Set up the CSV writer and file
-        $style = (new StyleBuilder())
-            ->setFontBold()
-            ->setFontSize(13)
-            ->setBackgroundColor(Color::rgb(228, 228, 228))
-            ->build();
-    
-        $writer = WriterFactory::create(Type::CSV);
-        $writer->openToBrowser('Desludging Schedule.csv'); // Ensure the file is CSV
-        $writer->addRowWithStyle($columns, $style); // Write the header row with style
-    
-        // Process query data in chunks and write rows to the CSV file
-        $buildingResults->chunk(5000, function ($desludgingData) use ($writer) {
-            foreach ($desludgingData as $desludging) {
-                $values = [];
-                $values[] = $desludging->bin;
-                $values[] = $desludging->id;
-                $values[] = $desludging->house_number;
-                $values[] = $desludging->house_locality;
-                $values[] = $desludging->road_code;
-                $values[] = $desludging->owner_name;
-                $values[] = $desludging->owner_contact;
-                $values[] = $desludging->next_emptying_date;
-                $writer->addRow($values); // Write each row
-            }
-        });
-    
-        // Close the writer to finish the file download
-        $writer->close();
+  public function download($data)
+{
+    $searchData = $data['searchData'] ?? null;
+    $columns = [
+        'BIN', 
+        'Containment ID',
+        'House Number', 
+        'Area Name', 
+        'Road Number', 
+        'Owner Name', 
+        'Owner Gender',
+        'Owner Contact', 
+        'Next Emptying Date',
+        'Status',
+        'Ward',
+        'Household Served',
+        'Population Served',
+        'Toilet Count'
+    ];
+
+    // Use DB::select to match your original query exactly
+    $query = "SELECT * FROM (
+                SELECT DISTINCT ON (c.id)
+                    b.bin, 
+                    b.house_number, 
+                    b.house_locality, 
+                    b.road_code, 
+                    o.owner_name, 
+                    o.owner_gender,
+                    o.owner_contact, 
+                    c.next_emptying_date,
+                    c.status,
+                    c.id,
+                    b.ward,
+                    b.household_served,
+                    b.population_served,
+                    b.toilet_count
+                FROM fsm.containments c
+                LEFT JOIN building_info.build_contains bc 
+                    ON bc.containment_id = c.id 
+                    AND bc.deleted_at IS NULL 
+                    AND bc.bin IS NOT NULL 
+                    AND bc.containment_id IS NOT NULL
+                LEFT JOIN building_info.buildings b 
+                    ON b.bin = bc.bin 
+                    AND b.deleted_at IS NULL
+                LEFT JOIN building_info.owners AS o 
+                    ON o.bin = b.bin AND o.deleted_at IS NULL
+                LEFT JOIN fsm.applications a
+                    ON a.containment_id = c.id AND a.emptying_status = false
+               WHERE   
+                    c.next_emptying_date IS Not NULL AND
+                    (c.status = 0 OR c.status = 4 OR c.status IS null )
+                ORDER BY c.id
+            ) final_result
+            ORDER BY final_result.next_emptying_date";
+
+    $buildingResults = DB::select($query);
+
+    // Set up the CSV writer and file
+    $style = (new StyleBuilder())
+        ->setFontBold()
+        ->setFontSize(13)
+        ->setBackgroundColor(Color::rgb(228, 228, 228))
+        ->build();
+
+    $writer = WriterFactory::create(Type::CSV);
+    $writer->openToBrowser('Desludging Schedule.csv');
+    $writer->addRowWithStyle($columns, $style);
+
+    // Process the results and write to CSV
+    foreach ($buildingResults as $desludging) {
+        $values = [
+            $desludging->bin,
+            $desludging->id,
+            $desludging->house_number,
+            $desludging->house_locality,
+            $desludging->road_code,
+            $desludging->owner_name,
+            $desludging->owner_gender,
+            $desludging->owner_contact,
+            $desludging->next_emptying_date,
+            $desludging->status,
+            $desludging->ward,
+            $desludging->household_served,
+            $desludging->population_served,
+            $desludging->toilet_count
+        ];
+        $writer->addRow($values);
     }
+
+    $writer->close();
+}
     
 }
 
