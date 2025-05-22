@@ -100,7 +100,7 @@ class SupervisoryRequest extends FormRequest
             'pit_depth.numeric' => 'The Pit Depth must be numeric.',
             'pit_depth.gt' => 'The Pit Depth must be greater than 0.',
     
-            'appropriate_desludging_vehicle_size.required' => 'The Appropriate Desludging Vehicle size is required.',
+            'appropriate_desludging_vehicle_size.required' => 'The Appropriate Desludging Vehicle Size is required.',
     
             'number_of_trips.required' => 'The Number of Trips is required.',
             'number_of_trips.integer' => 'The Number of Trips must be an integer.',
