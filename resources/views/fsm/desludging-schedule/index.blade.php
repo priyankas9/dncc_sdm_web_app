@@ -98,6 +98,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                                                     <div class="col-md-2">
                                                         <input type="text" class="form-control" id="holding_num" placeholder= "Holding Number"/>
                                                     </div>
+                                                    
+                                                </div>
+                                                 <div class="form-group row">
+                                                   
                                                       <label for="owner_name" class="col-md-2 col-form-label ">Owner Name</label>
                                                     <div class="col-md-2">
                                                         <input type="text" class="form-control" id="owner_name" placeholder= "Owner Name" />
