@@ -38,102 +38,128 @@ class DesludgingScheduleService
         ....
          here*/
     }
-    public function getAllData($data)
-    {
-        $fetch_id = "SELECT * FROM (
-                    SELECT DISTINCT ON (c.id)
-                        b.bin, 
-                        b.house_number, 
-                        b.house_locality, 
-                        b.road_code, 
-                        o.owner_name, 
-                        o.owner_gender,
-                        o.owner_contact, 
-                        c.next_emptying_date,
-                        c.status,
-                        c.id,
-                        b.ward,
-                        b.household_served,
-                        b.population_served,
-                        b.toilet_count
-                    FROM fsm.containments c
-                    LEFT JOIN building_info.build_contains bc 
-                        ON bc.containment_id = c.id 
-                        AND bc.deleted_at IS NULL 
-                        AND bc.bin IS NOT NULL 
-                        AND bc.containment_id IS NOT NULL
-                    LEFT JOIN building_info.buildings b 
-                        ON b.bin = bc.bin 
-                        AND b.deleted_at IS NULL
-                    LEFT JOIN building_info.owners AS o 
-                        ON o.bin = b.bin AND o.deleted_at IS NULL
-                    LEFT JOIN fsm.applications a
-                        ON a.containment_id = c.id AND a.emptying_status = false
-                   WHERE   
-								c.next_emptying_date IS Not NULL AND
+  public function getAllData($data)
+{
+    $fetch_id = "SELECT * FROM (
+                SELECT DISTINCT ON (c.id)
+                    b.bin, 
+                    b.house_number, 
+                    b.house_locality, 
+                    b.road_code, 
+                    o.owner_name, 
+                    o.owner_gender,
+                    o.owner_contact, 
+                    c.next_emptying_date,
+                    c.status,
+                    c.id,
+                    b.ward,
+                    b.household_served,
+                    b.population_served,
+                    b.toilet_count
+                FROM fsm.containments c
+                LEFT JOIN building_info.build_contains bc 
+                    ON bc.containment_id = c.id 
+                    AND bc.deleted_at IS NULL 
+                    AND bc.bin IS NOT NULL 
+                    AND bc.containment_id IS NOT NULL
+                LEFT JOIN building_info.buildings b 
+                    ON b.bin = bc.bin 
+                    AND b.deleted_at IS NULL
+                LEFT JOIN building_info.owners AS o 
+                    ON o.bin = b.bin AND o.deleted_at IS NULL
+                LEFT JOIN fsm.applications a
+                    ON a.containment_id = c.id AND a.emptying_status = false
+               WHERE   
+                        c.next_emptying_date IS Not NULL AND
                         (c.status = 0 OR c.status = 4 OR c.status IS null )
-                    ORDER BY c.id
-                ) final_result
-                ORDER BY final_result.next_emptying_date;
-                ;";
+                ORDER BY c.id
+            ) final_result
+            ORDER BY final_result.next_emptying_date;
+            ";
     
-        $buildingResults = DB::select($fetch_id);
+    $buildingResults = DB::select($fetch_id);
     
-        return Datatables::of($buildingResults)
-            ->addColumn('action', function ($building) {
-                return
-                  '<a href="javascript:void(0);"
-                    class="btn btn-md mb-1 confirm-emptying-btn"
-                    title="Confirm Schedule Desludging"
-                    class="btn btn-sm mb-1 confirm-emptying-btn"
-                    style="background-color: #17A2B8; color: white; margin-right: 2px;"
-                    data-action_type="confirm"
-                    data-bin="' . $building->bin . '"
-                    data-containment_id ="' . $building->id  . '"
-                    data-ward ="' . $building->ward  . '"
-                    data-road_code ="' . $building->road_code  . '"
-                    data-household_served ="' . $building->household_served  . '"
-                    data-population_served ="' . $building->population_served  . '"
-                    data-toilet_count ="' . $building->toilet_count  . '"
-                    data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
-                    data-owner_contact="' . $building->owner_contact . '"
-                    data-next_emptying_date="' . $building->next_emptying_date . '"
-                    data-owner_gender="' . $building->owner_gender . '">
-                    <i class="fa-solid fa-check"></i>
-                  </a>' .
-                  '<a href="javascript:void(0);"
-                    title="Reschedule Desludging"
-                    class="btn btn-md mb-1 reschedule-emptying-btn"
-                    style="background-color:rgb(235, 158, 15); color: white; margin-right: 2px;"
-                    data-bin="' . $building->bin . '"
-                    data-action_type="reschedule"
-                    data-ward ="' . $building->ward  . '"
-                    data-containment_id ="' . $building->id  . '"
-                    data-toilet_count ="' . $building->toilet_count  . '"
-                    data-household_served ="' . $building->household_served  . '"
-                    data-population_served ="' . $building->population_served  . '"
-                    data-road_code ="' . $building->road_code  . '"
-                    data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
-                    data-owner_contact="' . $building->owner_contact . '"
-                    data-next_emptying_date="' . $building->next_emptying_date . '"
-                    data-owner_gender="' . $building->owner_gender . '">
-                     <i class="fa-regular fa-clock"></i>
-                  </a>' .
-                '<button title="Disagree for Schedule Desludging"
-                    class="btn btn-md mb-1 btn-unconfirm-emptying ' . ($building->status == 4 ? 'static-ping' : '') . '"
-                    style="background-color:rgb(184, 23, 26); color: white;"
-                    data-bin="' . $building->bin . '"
-                    data-owner_contact="' . $building->owner_contact . '"
-                    data-owner_name="' . $building->owner_name . '"
-                    data-next_emptying_date="' . $building->next_emptying_date . '">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>'
-
-                ;
-            })
-            ->rawColumns(['action'])
-            ->make(true);
+    // Convert to collection
+    $collection = collect($buildingResults);
+    
+    // Apply filters if they exist
+    if (!empty($data['owner_name'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->owner_name, trim($data['owner_name'])) !== false;
+        });
     }
+    
+    if (!empty($data['containment_id'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->id, $data['containment_id']) !== false;
+        });
+    }
+    
+    if (!empty($data['holding_num'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->house_number, $data['holding_num']) !== false;
+        });
+    }
+
+     if (!empty($data['bin'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->bin, $data['bin']) !== false;
+        });
+    }
+    
+    return Datatables::of($collection)
+        ->addColumn('action', function ($building) {
+            return
+              '<a href="javascript:void(0);"
+                class="btn btn-md mb-1 confirm-emptying-btn"
+                title="Confirm Schedule Desludging"
+                class="btn btn-sm mb-1 confirm-emptying-btn"
+                style="background-color: #17A2B8; color: white; margin-right: 2px;"
+                data-action_type="confirm"
+                data-bin="' . $building->bin . '"
+                data-containment_id ="' . $building->id  . '"
+                data-ward ="' . $building->ward  . '"
+                data-road_code ="' . $building->road_code  . '"
+                data-household_served ="' . $building->household_served  . '"
+                data-population_served ="' . $building->population_served  . '"
+                data-toilet_count ="' . $building->toilet_count  . '"
+                data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
+                data-owner_contact="' . $building->owner_contact . '"
+                data-next_emptying_date="' . $building->next_emptying_date . '"
+                data-owner_gender="' . $building->owner_gender . '">
+                <i class="fa-solid fa-check"></i>
+              </a>' .
+              '<a href="javascript:void(0);"
+                title="Reschedule Desludging"
+                class="btn btn-md mb-1 reschedule-emptying-btn"
+                style="background-color:rgb(235, 158, 15); color: white; margin-right: 2px;"
+                data-bin="' . $building->bin . '"
+                data-action_type="reschedule"
+                data-ward ="' . $building->ward  . '"
+                data-containment_id ="' . $building->id  . '"
+                data-toilet_count ="' . $building->toilet_count  . '"
+                data-household_served ="' . $building->household_served  . '"
+                data-population_served ="' . $building->population_served  . '"
+                data-road_code ="' . $building->road_code  . '"
+                data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
+                data-owner_contact="' . $building->owner_contact . '"
+                data-next_emptying_date="' . $building->next_emptying_date . '"
+                data-owner_gender="' . $building->owner_gender . '">
+                 <i class="fa-regular fa-clock"></i>
+              </a>' .
+            '<button title="Disagree for Schedule Desludging"
+                class="btn btn-md mb-1 btn-unconfirm-emptying ' . ($building->status == 4 ? 'static-ping' : '') . '"
+                style="background-color:rgb(184, 23, 26); color: white;"
+                data-bin="' . $building->bin . '"
+                data-owner_contact="' . $building->owner_contact . '"
+                data-owner_name="' . $building->owner_name . '"
+                data-next_emptying_date="' . $building->next_emptying_date . '">
+                <i class="fa-solid fa-xmark"></i>
+            </button>';
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+}
     public function getContainmentData ()
     {
         // fetch id of all containments that meet criteria for setting emptying date
@@ -411,10 +437,7 @@ class DesludgingScheduleService
     }
 }
 
-
-
     
-
     public function tripsAllocatedRange($request)
     {
         $start_date = $request->start_date;
@@ -529,6 +552,10 @@ class DesludgingScheduleService
   public function download($data)
 {
     $searchData = $data['searchData'] ?? null;
+    $owner_name = request('owner_name');
+    $containment_id = request('containment_id');
+    $holding_num = request('holding_num');
+    $bin = request('bin');
     $columns = [
         'BIN', 
         'Containment ID',
@@ -584,7 +611,32 @@ class DesludgingScheduleService
             ORDER BY final_result.next_emptying_date";
 
     $buildingResults = DB::select($query);
-
+ // Convert to collection
+    $collection = collect($buildingResults);
+    
+    // Apply filters if they exist
+    if (!empty($data['owner_name'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->owner_name, trim($data['owner_name'])) !== false;
+        });
+    }
+    
+    if (!empty($data['containment_id'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->id, $data['containment_id']) !== false;
+        });
+    }
+    
+    if (!empty($data['holding_num'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->house_number, $data['holding_num']) !== false;
+        });
+    }
+     if (!empty($data['bin'])) {
+        $collection = $collection->filter(function ($item) use ($data) {
+            return stripos($item->bin , $data['bin']) !== false;
+        });
+    }
     // Set up the CSV writer and file
     $style = (new StyleBuilder())
         ->setFontBold()
@@ -597,7 +649,7 @@ class DesludgingScheduleService
     $writer->addRowWithStyle($columns, $style);
 
     // Process the results and write to CSV
-    foreach ($buildingResults as $desludging) {
+    foreach ($collection as $desludging) {
         $values = [
             $desludging->bin,
             $desludging->id,
