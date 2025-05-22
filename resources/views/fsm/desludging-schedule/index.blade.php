@@ -63,6 +63,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
     <div class="card-header">
         <a href="#" id="regenerate-btn" class="btn btn-info">Regenerate Desludging Schedule</a>
         <a href="#" id="export" class="btn btn-info">Export to CSV</a>
+      
+     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter"
+                        aria-expanded="false" aria-controls="collapseFilter">Show Filter</a>
     </div><!-- /.card-header -->
     <div id="loader-overlay" style="display: none;">
     <div class="loader-content">
@@ -72,6 +75,46 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
     </div>
 
     <div class="card-body">
+           <div class="row">
+                        <div class="col-12">
+                            <div class="accordion" id="accordionFilter">
+                                <div class="accordion-item">
+                                    <div id="collapseFilter" class="collapse" aria-labelledby="filter"
+                                        data-parent="#accordionFilter">
+                                        <div class="accordion-body">
+                                            <form class="form-horizontal" id="filter-form">
+                                                <div class="form-group row">
+                                                    <label for="bin" class="col-md-2 col-form-label ">BIN</label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="bin" placeholder= "BIN" />
+                                                    </div>
+                                                    <label for="containment_id" class="col-md-2 col-form-label ">Containment ID
+                                                    </label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="containment_id" placeholder= "Containment ID"/>
+                                                    </div>
+                                                    <label for="holding_num" class="col-md-2 col-form-label ">Holding Number
+                                                    </label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="holding_num" placeholder= "Holding Number"/>
+                                                    </div>
+                                                      <label for="owner_name" class="col-md-2 col-form-label ">Owner Name</label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="owner_name" placeholder= "Owner Name" />
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer text-right">
+                                                    <button type="submit" class="btn btn-info ">Filter</button>
+                                                    <button type="reset" id="reset-filter" class="btn btn-info">Reset</button>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
         <div style="overflow: auto; width: 100%;">
             <table id="data-table" class="table table-bordered table-striped dtr-inline" width="100%">
                 <thead>
@@ -123,6 +166,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 ], // Add this line to set the default order by the next_emptying_date column
                 ajax: {
                     url: '{!! url("fsm/desludging-schedule/data") !!}',
+                    data:function(d) {
+                        d.owner_name = $('#owner_name').val();
+                        d.containment_id = $('#containment_id').val();
+                        d.holding_num = $('#holding_num').val();
+                        d.bin = $('#bin').val();
+                    }
                 },
                 columns: [{
                         data: 'bin',
@@ -173,16 +222,29 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 ]
             });
             resetDataTable(dataTable);
-
+            var owner_name = '',
+                holding_num = '',
+                containment_id = '',
+                bin = '';
             $('#filter-form').on('submit', function(e) {
                 e.preventDefault();
+                 owner_name = $('#owner_name').val();
+                containment_id = $('#containment_id').val();
+                holding_num = $('#holding_num').val();
                 dataTable.draw();
             });
 
             $("#export").on("click", function(e) {
                 e.preventDefault();
                 var searchData = $('input[type=search]').val();
-                window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData;
+                 owner_name = $('#owner_name').val();
+                 containment_id = $('#containment_id').val();
+                 holding_num = $('#holding_num').val();
+                 bin = $('#bin').val();
+                window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData + 
+                    "&owner_name=" + owner_name +
+                    "&containment_id=" + containment_id +
+                    "&holding_num=" + holding_num + "&bin=" + bin;
             });
            
             $(document).on('click', '.confirm-emptying-btn , .reschedule-emptying-btn', function (e) {
