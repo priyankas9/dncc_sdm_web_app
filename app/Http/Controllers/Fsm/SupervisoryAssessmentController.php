@@ -250,18 +250,27 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+     public function destroy($id)
     {
         $supervisoryassessment = SupervisoryAssessment::find($id);
 
-        if ($supervisoryassessment) {
-                $supervisoryassessment->delete();
-                return redirect('fsm/supervisory-assessment')->with('success','Supervisory Assessment deleted successfully!');
-        } 
-        else 
-        {
-            return redirect('fsm/supervisory-assessment')->with('error','Failed to delete Supervisory Assessment');
+        if (!$supervisoryassessment) {
+            return redirect('fsm/supervisory-assessment')->with('error', 'Supervisory Assessment not found.');
         }
+
+        // Check application emptying status if application_id exists
+        if ($supervisoryassessment->application_id) {
+            $application = Application::find($supervisoryassessment->application_id);
+
+            if ($application && $application->emptying_status) {
+                return redirect('fsm/supervisory-assessment')
+                    ->with('error', 'Cannot delete — emptying has already been done for this application.');
+            }
+        }
+
+        // Delete if no issues
+        $supervisoryassessment->delete();
+        return redirect('fsm/supervisory-assessment')->with('success', 'Supervisory Assessment deleted successfully!');
     }
 
    public function download()
