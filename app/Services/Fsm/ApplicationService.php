@@ -1123,7 +1123,7 @@ class ApplicationService
                     $containmentRecord->status = 1;
                     $containmentRecord->save();
                   } 
-                  else if ($request-> action_type == 'reschedule')
+                  else if ($request-> action_type == 'reschedule' || empty($request->action_type))
                     {
                         $containmentRecord->status = 2;
                         app(DesludgingScheduleController::class)->set_emptying_date();
