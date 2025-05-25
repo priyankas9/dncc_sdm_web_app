@@ -113,29 +113,27 @@ $(function() {
             }
         ]
     }).on('draw', function() {
-        $('.delete').on('click', function(e) {
-            var form = $(this).closest("form");
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                    Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
-                        'success'
-                    )
-                }
-            })
-        });
+    $('.delete').on('click', function(e) {
+        e.preventDefault(); // use 'e' not 'event' unless defined globally
+        var form = $(this).closest("form");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+                // Don't put Swal.fire success here — page will reload.
+            }
+        })
     });
+});
+
      resetDataTable(dataTable);
      var owner_name = '',
         application_id = '',
