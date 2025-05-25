@@ -567,10 +567,7 @@ class DesludgingScheduleService
         'Owner Contact', 
         'Next Emptying Date',
         'Status',
-        'Ward',
-        'Household Served',
-        'Population Served',
-        'Toilet Count'
+        'Ward'
     ];
 
     // Use DB::select to match your original query exactly
