@@ -658,10 +658,7 @@ class DesludgingScheduleService
             $desludging->owner_contact,
             $desludging->next_emptying_date,
             $desludging->status,
-            $desludging->ward,
-            $desludging->household_served,
-            $desludging->population_served,
-            $desludging->toilet_count
+            $desludging->ward
         ];
         $writer->addRow($values);
     }
