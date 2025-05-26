@@ -26,11 +26,11 @@ const proposedEmptyingDate = "{{ $application ? $application->proposed_emptying_
 flatpickr('.flatpickr-reschedule', {
     dateFormat: 'Y-m-d',
     allowInput: true,
-    maxDate: proposedEmptyingDate || null,   // set limit here
+
 
     onReady: function (selectedDates, dateStr, instance) {
         if (instance.input.id === 'confirmed_emptying_date') {
-            console.log("Proposed Emptying Date:", proposedEmptyingDate);
+            
 
             // Inject legend
             const legendHTML = `
@@ -63,7 +63,11 @@ flatpickr('.flatpickr-reschedule', {
             fetchAndDisplayTrips(instance);
         }
     },
-
+ onMonthChange: function (selectedDates, dateStr, instance) {
+        if (instance.input.id === 'confirmed_emptying_date') {
+            fetchAndDisplayTrips(instance);
+        }
+    },
     onDayCreate: function (dObj, dStr, fp, dayElem) {
         const dateObj = dayElem.dateObj;
         if (!dateObj) return;
