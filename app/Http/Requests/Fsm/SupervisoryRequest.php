@@ -28,7 +28,7 @@ class SupervisoryRequest extends FormRequest
             'holding_number' => 'required|numeric|gt:0',
             'owner_name' => 'required',
             'owner_gender' => 'required',
-            'owner_contact' => 'required|integer',
+            'owner_contact' => 'required|integer|min:1',
             'containment_type' => 'required',
             'containment_outlet_connection' => 'required',
             'containment_volume' => 'required|numeric|gt:0',
@@ -40,7 +40,7 @@ class SupervisoryRequest extends FormRequest
             'number_of_pit_rings' => 'required|integer|gt:0',
             'pit_diameter' => 'required|numeric|gt:0',
             'pit_depth' => 'required|numeric|gt:0',
-            'appropriate_desludging_vehicle_size' => 'required',
+            'appropriate_desludging_vehicle_size' => 'required|min:1',
             'number_of_trips' => 'required|integer|gt:0',
             'confirmed_emptying_date' => 'required',
             'advance_paid_amount' => 'required|integer',
@@ -61,7 +61,8 @@ class SupervisoryRequest extends FormRequest
             'owner_gender.required' => 'The Owner Gender is required.',
             'owner_contact.required' => 'The Owner Contact Number is required.',
             'owner_contact.integer' => 'The Owner Contact Number must be a number.',
-    
+            'owner_contact.min' => 'The owner contact number cannot be zero or negative.',
+
             'containment_type.required' => 'The Containment Type is required.',
             'containment_outlet_connection.required' => 'The Containment Outlet Connection Type is required.',
             'containment_volume.required' => 'The Containment Volume (m³) is required.',
@@ -101,6 +102,7 @@ class SupervisoryRequest extends FormRequest
             'pit_depth.gt' => 'The Pit Depth (m) must be greater than 0.',
     
             'appropriate_desludging_vehicle_size.required' => 'The Appropriate Desludging Vehicle Size is required.',
+            'appropriate_desludging_vehicle_size.min' => 'The Appropriate Desludging Vehicle Size cannot be zero or negative.',
     
             'number_of_trips.required' => 'The Number of Trips is required.',
             'number_of_trips.integer' => 'The Number of Trips must be an integer.',

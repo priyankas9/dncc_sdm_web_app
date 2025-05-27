@@ -111,7 +111,12 @@
 <div class="form-group row required">
     {!! Form::label('appropriate_desludging_vehicle_size', 'Appropriate Desludging Vehicle Size', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('appropriate_desludging_vehicle_size', null, ['class' => 'form-control', 'placeholder' => 'Enter Desludging Vehicle Size', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+        {!! Form::number('appropriate_desludging_vehicle_size', null, [
+            'class' => 'form-control', 
+            'placeholder' => 'Enter Desludging Vehicle Size', 
+            'min' => '1',
+           'oninput' => "this.value = this.value < 1 ? '' : this.value"
+        ]) !!}
     </div>
 </div>
 
@@ -139,7 +144,10 @@
 <div class="form-group row required">
     {!! Form::label('advance_paid_amount', 'Advance Paid Amount', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::number('advance_paid_amount', null, ['class' => 'form-control', 'placeholder' => 'Enter Advance Paid Amount', 'step' => '0.01', 'oninput' => "this.value = this.value < 1 ? '' : this.value"]) !!}
+        {!! Form::number('advance_paid_amount', null, ['class' => 'form-control',
+             'placeholder' => 'Enter Advance Paid Amount', 
+             'step' => '0.01', 
+             'oninput' => "this.value = this.value < 1 ? '' : this.value"]) !!}
     </div>
 </div>
 
