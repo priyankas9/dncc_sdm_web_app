@@ -965,37 +965,32 @@ class ApplicationService
 
                 return $content;
             })
-           ->editColumn('supervisory_assessment_status', function($model) {
-                $content = '<div class="application-quick__actions">';
-                $content .= $model->supervisory_assessment_status 
-                    ? '<i class="fa fa-check"></i>' 
-                    : '<i class="fa fa-times"></i>';
+        ->editColumn('supervisory_assessment_status', function($model) {
+                    $content = '<div class="application-quick__actions">';
+                    
+                    // Check if assessment exists (relation not null)
+                    $assessmentExists = $model->supervisory_assessment !== null;
+                    
+                    // Show check or cross based on assessment existence
+                    $content .= $assessmentExists 
+                        ? '<i class="fa fa-check"></i>' 
+                        : '<i class="fa fa-times"></i>';
 
-                $assessment = $model->supervisory_assessment; // relation, null if none
-
-                if ($model->supervisory_assessment_status) {
-                    // Status is true
-                    if ($assessment) {
+                    if ($assessmentExists) {
                         // Assessment exists → show view button
                         $content .= '<a title="View Supervisory Assessment Details" href="' 
-                                . route('supervisory-assessment.show', [$assessment->id])
+                                . route('supervisory-assessment.show', [$model->supervisory_assessment->id])
                                 . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
                     } else {
-                        // Assessment NOT found → show Add button instead of No Assessment Found
+                        // No assessment exists → show Add button
                         $content .= '<a title="Add Supervisory Assessment" href="' 
                                 . route("supervisory-assessment.create", [$model->bin])
                                 . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
                     }
-                } else {
-                    // Status is false → show Add button
-                    $content .= '<a title="Add Supervisory Assessment" href="' 
-                            . route("supervisory-assessment.create", [$model->bin])
-                            . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
-                }
 
-                $content .= '</div>';
-                return $content;
-            })
+                    $content .= '</div>';
+                    return $content;
+                })
             ->editColumn('emptying_status', function($model) {
                 $content = '<div class="application-quick__actions">';
                 $content .= $model->emptying_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
