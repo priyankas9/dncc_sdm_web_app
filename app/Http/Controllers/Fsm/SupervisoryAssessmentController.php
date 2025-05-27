@@ -82,22 +82,35 @@ class SupervisoryAssessmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function create(Request $request)
     {      
         $value = rtrim(request()->getQueryString(), '=');
-       
-        $page_title = 'Add Supervisory Assessment';
-        // Get the slug from the query string
-        $slug = array_keys($request->query())[0] ?? null;
-        $owner_detail  = Owner::where('bin', $slug)->first();
-        $application = Application::where('bin', $slug)->first();
-        $containment_id = BuildContain::where('bin', $slug)->first()->containment_id;
-        $containment = Containment::where('id', $containment_id)->first();
-        $type_id = Containment::where('id', $containment_id)->first()->type_id;
-        $containment_type = ContainmentType::pluck('type', 'id');
         
-        return view('fsm.supervisory-assessment.create', compact('page_title', 'slug', 'owner_detail', 'type_id', 'containment_type', 'containment', 'application', 'value'));
-
+        $page_title = 'Add Supervisory Assessment';
+        $slug = array_keys($request->query())[0] ?? null;
+        
+        $owner_detail = Owner::where('bin', $slug)->first();
+        $application = Application::where('bin', $slug)->first();
+        
+        // Get containment details - fixed this part
+        $build_contain = BuildContain::where('bin', $slug)->first();
+        $containment = $build_contain ? Containment::find($build_contain->containment_id) : null;
+        $type_id = $containment ? $containment->type_id : null;
+        
+        // Get all types for dropdown
+        $containment_types = ContainmentType::all();
+        
+        return view('fsm.supervisory-assessment.create', compact(
+            'page_title', 
+            'slug', 
+            'owner_detail', 
+            'type_id', 
+            'containment_types', 
+            'containment', // Make sure this is included
+            'application', 
+            'value'
+        ));
     }
 
     /**
@@ -170,44 +183,40 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $supervisoryassessment = SupervisoryAssessment::find($id);
-       
-        if ($supervisoryassessment) {
-            $page_title = "Supervisory Assessment Details";
-            return view('fsm/supervisory-assessment.show', compact('page_title', 'supervisoryassessment'));
-        } else {
-            abort(404);
-        }
+  public function show($id)
+{
+    $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
+    
+    if ($supervisoryassessment) {
+        $page_title = "Supervisory Assessment Details";
+        return view('fsm.supervisory-assessment.show', compact('page_title', 'supervisoryassessment'));
+    } else {
+        abort(404);
     }
+}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $supervisoryassessment = SupervisoryAssessment::find($id);
-       
-        if ($supervisoryassessment) {
-            $page_title = "Edit Supervisory Assessment";
-            $application = Application::find($supervisoryassessment->application_id);
-            $owner_detail = SupervisoryAssessment::where('id', $id)->first();
-            $containment = SupervisoryAssessment::where('id', $id)->first();
-            $type_id = SupervisoryAssessment::where('id', $id)->first();
-            $indexAction = url()->previous();
-            return view('fsm.supervisory-assessment.edit',compact('page_title','supervisoryassessment','indexAction', 
-            'application', 
-            'owner_detail', 
-            'containment','type_id'));
-        } else {
-            abort(404);
-        }
+public function edit($id)
+{
+    $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
+    
+    if ($supervisoryassessment) {
+        $page_title = "Edit Supervisory Assessment";
+        $application = Application::find($supervisoryassessment->application_id);
+        $owner_detail = SupervisoryAssessment::where('id', $id)->first();
+        $containment = SupervisoryAssessment::where('id', $id)->first();
+        $containment_types = ContainmentType::all(); // Get all types for dropdown
+        $indexAction = url()->previous();
+        
+        return view('fsm.supervisory-assessment.edit', compact(
+            'page_title',
+            'supervisoryassessment',
+            'containment_types',
+            'indexAction','owner_detail','containment','application'
+        ));
+    } else {
+        abort(404);
     }
-
+}
     /**
      * Update the specified resource in storage.
      *
@@ -296,83 +305,101 @@ class SupervisoryAssessmentController extends Controller
     }
 }
    public function download()
-    {
-        $searchData = request('searchData');
-        $owner_name = request('owner_name');
-        $application_id = request('application_id');
-        $holding_num = request('holding_num');
+{
+    $searchData = request('searchData');
+    $owner_name = request('owner_name');
+    $application_id = request('application_id');
+    $holding_num = request('holding_num');
 
-        // Custom header labels you want in the CSV
-        $columns = [
-            'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
-            'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
-            'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
-            'Number of Pit Rings', 'Pit Diameter (mm)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
-            'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
-        ];
+    // Custom header labels you want in the CSV
+    $columns = [
+        'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
+        'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
+        'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
+        'Number of Pit Rings', 'Pit Diameter (mm)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
+        'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
+    ];
 
-        // Build query
-        $query = SupervisoryAssessment::select(
-            'id', 'application_id', 'holding_number', 'owner_name', 'owner_gender', 'owner_contact',
-            'containment_type', 'containment_outlet_connection', 'containment_volume', 'road_width',
-            'distance_from_nearest_road', 'septic_tank_length', 'septic_tank_width', 'septic_tank_depth',
-            'number_of_pit_rings', 'pit_diameter', 'pit_depth', 'appropriate_desludging_vehicle_size',
-            'number_of_trips', 'confirmed_emptying_date', 'advance_paid_amount'
-        )->whereNull('deleted_at');
+    // Build query with join to containment_types
+    $query = SupervisoryAssessment::select(
+        'supervisory_assessments.id',
+        'supervisory_assessments.application_id',
+        'supervisory_assessments.holding_number',
+        'supervisory_assessments.owner_name',
+        'supervisory_assessments.owner_gender',
+        'supervisory_assessments.owner_contact',
+        'fsm.containment_types.type as containment_type', // Get the type name instead of ID
+        'supervisory_assessments.containment_outlet_connection',
+        'supervisory_assessments.containment_volume',
+        'supervisory_assessments.road_width',
+        'supervisory_assessments.distance_from_nearest_road',
+        'supervisory_assessments.septic_tank_length',
+        'supervisory_assessments.septic_tank_width',
+        'supervisory_assessments.septic_tank_depth',
+        'supervisory_assessments.number_of_pit_rings',
+        'supervisory_assessments.pit_diameter',
+        'supervisory_assessments.pit_depth',
+        'supervisory_assessments.appropriate_desludging_vehicle_size',
+        'supervisory_assessments.number_of_trips',
+        'supervisory_assessments.confirmed_emptying_date',
+        'supervisory_assessments.advance_paid_amount'
+    )
+    ->leftJoin('fsm.containment_types', 'supervisory_assessments.containment_type', '=', 'fsm.containment_types.id')
+    ->whereNull('supervisory_assessments.deleted_at');
 
-        if (!empty($owner_name)) {
-            $query->where('owner_name', 'ILIKE', '%' . $owner_name . '%');
-        }
-        if (!empty($application_id)) {
-            $query->where('application_id', 'ILIKE', '%' . $application_id . '%');
-        }
-        if (!empty($holding_num)) {
-            $query->where('holding_number', 'ILIKE', '%' . $holding_num . '%');
-        }
-
-        $style = (new StyleBuilder())
-            ->setFontBold()
-            ->setFontSize(13)
-            ->setBackgroundColor(Color::rgb(228, 228, 228))
-            ->build();
-
-        $writer = WriterFactory::create(Type::CSV);
-
-        $writer->openToBrowser('Supervisory Assessment.csv')
-            ->addRowWithStyle($columns, $style); // Top row of CSV
-
-        $query->chunk(5000, function ($records) use ($writer) {
-            foreach ($records as $data) {
-                $values = [
-                    $data->id,
-                    $data->application_id,
-                    $data->holding_number,
-                    $data->owner_name,
-                    $data->owner_gender,
-                    $data->owner_contact,
-                    $data->containment_type,
-                    $data->containment_outlet_connection,
-                    $data->containment_volume,
-                    $data->road_width,
-                    $data->distance_from_nearest_road,
-                    $data->septic_tank_length,
-                    $data->septic_tank_width,
-                    $data->septic_tank_depth,
-                    $data->number_of_pit_rings,
-                    $data->pit_diameter,
-                    $data->pit_depth,
-                    $data->appropriate_desludging_vehicle_size,
-                    $data->number_of_trips,
-                    $data->confirmed_emptying_date,
-                    $data->advance_paid_amount
-                ];
-
-                $writer->addRow($values);
-            }
-        });
-
-        $writer->close();
+    if (!empty($owner_name)) {
+        $query->where('supervisory_assessments.owner_name', 'ILIKE', '%' . $owner_name . '%');
     }
+    if (!empty($application_id)) {
+        $query->where('supervisory_assessments.application_id', 'ILIKE', '%' . $application_id . '%');
+    }
+    if (!empty($holding_num)) {
+        $query->where('supervisory_assessments.holding_number', 'ILIKE', '%' . $holding_num . '%');
+    }
+
+    $style = (new StyleBuilder())
+        ->setFontBold()
+        ->setFontSize(13)
+        ->setBackgroundColor(Color::rgb(228, 228, 228))
+        ->build();
+
+    $writer = WriterFactory::create(Type::CSV);
+
+    $writer->openToBrowser('Supervisory Assessment.csv')
+        ->addRowWithStyle($columns, $style);
+
+    $query->chunk(5000, function ($records) use ($writer) {
+        foreach ($records as $data) {
+            $values = [
+                $data->id,
+                $data->application_id,
+                $data->holding_number,
+                $data->owner_name,
+                $data->owner_gender,
+                $data->owner_contact,
+                $data->containment_type, // This will now be the type name from the joined table
+                $data->containment_outlet_connection,
+                $data->containment_volume,
+                $data->road_width,
+                $data->distance_from_nearest_road,
+                $data->septic_tank_length,
+                $data->septic_tank_width,
+                $data->septic_tank_depth,
+                $data->number_of_pit_rings,
+                $data->pit_diameter,
+                $data->pit_depth,
+                $data->appropriate_desludging_vehicle_size,
+                $data->number_of_trips,
+                $data->confirmed_emptying_date,
+                $data->advance_paid_amount
+            ];
+
+            $writer->addRow($values);
+        }
+    });
+
+    $writer->close();
+}
 
 
     
