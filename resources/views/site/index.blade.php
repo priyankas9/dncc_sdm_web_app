@@ -77,7 +77,11 @@
         .card-footer span {
             margin-right: 8px;
         }
-
+        input[disabled].flatpickr-multiple {
+            pointer-events: none;
+            background-color: #e9ecef;
+            opacity: 1;
+        }
 </style>
 
 @endpush
@@ -205,22 +209,70 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-   $(document).ready(function () {
+$(document).ready(function () {
     // Initialize Select2 for multi-select fields
     $('.select2-multi').select2({
         width: '100%'
     });
 
+    // Initialize flatpickr and store instances
+    const flatpickrInstances = [];
+    $('.flatpickr-multiple').each(function() {
+        const instance = flatpickr(this, {
+            mode: 'multiple',
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y',
+            onReady: function(selectedDates, dateStr, instance) {
+                // Store the instance
+                flatpickrInstances.push(instance);
+                // Set initial state based on readonly
+                if ($(instance.element).prop('readonly')) {
+                    disableFlatpickrInstance(instance);
+                }
+            }
+        });
+    });
+
+    // Function to disable a flatpickr instance
+    function disableFlatpickrInstance(instance) {
+        instance.set('clickOpens', false);
+        instance._input.disabled = true;
+        instance._input.readOnly = true;
+        instance._input.style.pointerEvents = 'none';
+        instance._input.style.backgroundColor = '#e9ecef';
+        instance.close(); // Ensure calendar is closed
+    }
+
+    // Function to enable a flatpickr instance
+    function enableFlatpickrInstance(instance) {
+        instance.set('clickOpens', true);
+        instance._input.disabled = false;
+        instance._input.readOnly = false;
+        instance._input.style.pointerEvents = 'auto';
+        instance._input.style.backgroundColor = '#fff';
+    }
+
     // Function to toggle readonly/disabled state
     function toggleReadOnly(readonly) {
-        $('input').prop('readonly', readonly);
+        $('input').not('.flatpickr-multiple').prop('readonly', readonly);
         $('select').prop('disabled', readonly);
 
         if (readonly) {
             // Disable select2s visually
             $('.select2-multi').prop('disabled', true).trigger('change');
+            
+            // Disable all flatpickr instances
+            flatpickrInstances.forEach(instance => {
+                disableFlatpickrInstance(instance);
+            });
         } else {
             $('.select2-multi').prop('disabled', false).trigger('change');
+            
+            // Enable all flatpickr instances
+            flatpickrInstances.forEach(instance => {
+                enableFlatpickrInstance(instance);
+            });
         }
     }
 
@@ -243,13 +295,6 @@
         $('#saveButton').hide();
         $('#editButton').show();
     }
-       flatpickr('.flatpickr-multiple', {
-            mode: 'multiple',
-            dateFormat: 'Y-m-d',
-            altInput: true,
-            altFormat: 'F j, Y'
-        });
 });
-
 </script>
 @endpush
