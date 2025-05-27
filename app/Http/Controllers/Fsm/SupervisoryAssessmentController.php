@@ -18,6 +18,7 @@ use Box\Spout\Writer\WriterFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Venturecraft\Revisionable\Revision;
 use Yajra\DataTables\DataTables;
 
@@ -250,107 +251,128 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-     public function destroy($id)
-    {
-        $supervisoryassessment = SupervisoryAssessment::find($id);
-
-        if (!$supervisoryassessment) {
-            return redirect('fsm/supervisory-assessment')->with('error', 'Supervisory Assessment not found.');
-        }
-
-        // Check application emptying status if application_id exists
-        if ($supervisoryassessment->application_id) {
-            $application = Application::find($supervisoryassessment->application_id);
-
-            if ($application && $application->emptying_status) {
-                return redirect('fsm/supervisory-assessment')
-                    ->with('error', 'Cannot delete — emptying has already been done for this application.');
-            }
-        }
-
-        // Delete if no issues
-        $supervisoryassessment->delete();
-        return redirect('fsm/supervisory-assessment')->with('success', 'Supervisory Assessment deleted successfully!');
-    }
-
-   public function download()
+ public function destroy($id)
 {
-    $searchData = request('searchData');
-    $owner_name = request('owner_name');
-    $application_id = request('application_id');
-    $holding_num = request('holding_num');
+    $supervisoryassessment = SupervisoryAssessment::find($id);
 
-    // Custom header labels you want in the CSV
-    $columns = [
-        'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
-        'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
-        'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
-        'Number of Pit Rings', 'Pit Diameter (mm)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
-        'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
-    ];
-
-    // Build query
-    $query = SupervisoryAssessment::select(
-        'id', 'application_id', 'holding_number', 'owner_name', 'owner_gender', 'owner_contact',
-        'containment_type', 'containment_outlet_connection', 'containment_volume', 'road_width',
-        'distance_from_nearest_road', 'septic_tank_length', 'septic_tank_width', 'septic_tank_depth',
-        'number_of_pit_rings', 'pit_diameter', 'pit_depth', 'appropriate_desludging_vehicle_size',
-        'number_of_trips', 'confirmed_emptying_date', 'advance_paid_amount'
-    )->whereNull('deleted_at');
-
-    if (!empty($owner_name)) {
-        $query->where('owner_name', 'ILIKE', '%' . $owner_name . '%');
-    }
-    if (!empty($application_id)) {
-        $query->where('application_id', 'ILIKE', '%' . $application_id . '%');
-    }
-    if (!empty($holding_num)) {
-        $query->where('holding_number', 'ILIKE', '%' . $holding_num . '%');
+    if (!$supervisoryassessment) {
+        return redirect('fsm/supervisory-assessment')->with('error', 'Supervisory Assessment not found.');
     }
 
-    $style = (new StyleBuilder())
-        ->setFontBold()
-        ->setFontSize(13)
-        ->setBackgroundColor(Color::rgb(228, 228, 228))
-        ->build();
+    // Check application emptying status if application_id exists
+    if ($supervisoryassessment->application_id) {
+        $application = Application::find($supervisoryassessment->application_id);
 
-    $writer = WriterFactory::create(Type::CSV);
-
-    $writer->openToBrowser('Supervisory Assessment.csv')
-        ->addRowWithStyle($columns, $style); // Top row of CSV
-
-    $query->chunk(5000, function ($records) use ($writer) {
-        foreach ($records as $data) {
-            $values = [
-                $data->id,
-                $data->application_id,
-                $data->holding_number,
-                $data->owner_name,
-                $data->owner_gender,
-                $data->owner_contact,
-                $data->containment_type,
-                $data->containment_outlet_connection,
-                $data->containment_volume,
-                $data->road_width,
-                $data->distance_from_nearest_road,
-                $data->septic_tank_length,
-                $data->septic_tank_width,
-                $data->septic_tank_depth,
-                $data->number_of_pit_rings,
-                $data->pit_diameter,
-                $data->pit_depth,
-                $data->appropriate_desludging_vehicle_size,
-                $data->number_of_trips,
-                $data->confirmed_emptying_date,
-                $data->advance_paid_amount
-            ];
-
-            $writer->addRow($values);
+        if ($application && $application->emptying_status) {
+            return redirect('fsm/supervisory-assessment')
+                ->with('error', 'Cannot delete — emptying has already been done for this application.');
         }
-    });
+    }
 
-    $writer->close();
+    // Start transaction
+    DB::beginTransaction();
+
+    try {
+        // Store application_id before deletion
+        $applicationId = $supervisoryassessment->application_id;
+        
+        // Delete the assessment
+        $supervisoryassessment->delete();
+        
+        // Update the corresponding application's status
+        if ($applicationId) {
+            Application::where('id', $applicationId)
+                ->update(['supervisory_assessment_status' => false]);
+        }
+        
+        DB::commit();
+        
+        return redirect('fsm/supervisory-assessment')->with('success', 'Supervisory Assessment deleted successfully!');
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect('fsm/supervisory-assessment')
+            ->with('error', 'Failed to delete supervisory assessment: ' . $e->getMessage());
+    }
 }
+   public function download()
+    {
+        $searchData = request('searchData');
+        $owner_name = request('owner_name');
+        $application_id = request('application_id');
+        $holding_num = request('holding_num');
+
+        // Custom header labels you want in the CSV
+        $columns = [
+            'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
+            'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
+            'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
+            'Number of Pit Rings', 'Pit Diameter (mm)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
+            'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
+        ];
+
+        // Build query
+        $query = SupervisoryAssessment::select(
+            'id', 'application_id', 'holding_number', 'owner_name', 'owner_gender', 'owner_contact',
+            'containment_type', 'containment_outlet_connection', 'containment_volume', 'road_width',
+            'distance_from_nearest_road', 'septic_tank_length', 'septic_tank_width', 'septic_tank_depth',
+            'number_of_pit_rings', 'pit_diameter', 'pit_depth', 'appropriate_desludging_vehicle_size',
+            'number_of_trips', 'confirmed_emptying_date', 'advance_paid_amount'
+        )->whereNull('deleted_at');
+
+        if (!empty($owner_name)) {
+            $query->where('owner_name', 'ILIKE', '%' . $owner_name . '%');
+        }
+        if (!empty($application_id)) {
+            $query->where('application_id', 'ILIKE', '%' . $application_id . '%');
+        }
+        if (!empty($holding_num)) {
+            $query->where('holding_number', 'ILIKE', '%' . $holding_num . '%');
+        }
+
+        $style = (new StyleBuilder())
+            ->setFontBold()
+            ->setFontSize(13)
+            ->setBackgroundColor(Color::rgb(228, 228, 228))
+            ->build();
+
+        $writer = WriterFactory::create(Type::CSV);
+
+        $writer->openToBrowser('Supervisory Assessment.csv')
+            ->addRowWithStyle($columns, $style); // Top row of CSV
+
+        $query->chunk(5000, function ($records) use ($writer) {
+            foreach ($records as $data) {
+                $values = [
+                    $data->id,
+                    $data->application_id,
+                    $data->holding_number,
+                    $data->owner_name,
+                    $data->owner_gender,
+                    $data->owner_contact,
+                    $data->containment_type,
+                    $data->containment_outlet_connection,
+                    $data->containment_volume,
+                    $data->road_width,
+                    $data->distance_from_nearest_road,
+                    $data->septic_tank_length,
+                    $data->septic_tank_width,
+                    $data->septic_tank_depth,
+                    $data->number_of_pit_rings,
+                    $data->pit_diameter,
+                    $data->pit_depth,
+                    $data->appropriate_desludging_vehicle_size,
+                    $data->number_of_trips,
+                    $data->confirmed_emptying_date,
+                    $data->advance_paid_amount
+                ];
+
+                $writer->addRow($values);
+            }
+        });
+
+        $writer->close();
+    }
 
 
     
