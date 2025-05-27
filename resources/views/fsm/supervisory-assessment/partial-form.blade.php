@@ -30,13 +30,21 @@
     </div>
 
     
-    <div class="form-group row required">
+<div class="form-group row required">
     {!! Form::label('containment_type', 'Containment Type', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('containment_type', $type_id ? ($containment_type[$type_id] ?? 'Unknown Type') : null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Type']) !!}
+        <!-- Display field -->
+        {!! Form::text('containment_type_display', 
+            $supervisoryassessment->containmentType->type ?? 'Unknown Type', 
+            ['class' => 'form-control', 'id' => 'containment_type_display', 'readonly' => false]) !!}
+        
+        <!-- Select field -->
+        {!! Form::select('containment_type', 
+            $containment_types->pluck('type', 'id'), 
+            $supervisoryassessment->containment_type, 
+            ['class' => 'form-control d-none', 'id' => 'containment_type_select']) !!}
     </div>
-    </div>
-
+</div>
     <div class="form-group row required">
         {!! Form::label('containment_outlet_connection','Containment Outlet Connection',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">

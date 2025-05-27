@@ -37,12 +37,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     </div>
 </div>
 
-<div class="form-group row ">
+
+   <div class="form-group row">
     {!! Form::label('containment_type', 'Containment Type', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('containment_type', $supervisoryassessment->containment_type, ['class' => 'form-control', 'placeholder' => 'Enter Containment Type', 'disabled' => 'disabled']) !!}
+        {!! Form::text('containment_type_display', 
+            $supervisoryassessment->containmentType->type ?? 'Unknown Type', 
+            ['class' => 'form-control', 'readonly' => true]) !!}
     </div>
 </div>
+
 
 <div class="form-group row ">
     {!! Form::label('containment_outlet_connection','Containment Outlet Connection',['class' => 'col-sm-3 control-label']) !!}
