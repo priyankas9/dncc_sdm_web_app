@@ -97,7 +97,12 @@ class EmptyingServiceController extends Controller
                 'applications.*',
                 'buildings.house_number as building_house_number',
                 'roads.carrying_width',
-                'containments.size as containment_size' // Directly fetch containment size
+                'containments.size as containment_size',
+                'containments.tank_length',
+                'containments.tank_width',
+                'containments.depth',
+                'containments.type_id'
+                 // Directly fetch containment size
             )
             ->join('building_info.buildings', function ($join) {
                 $join->on(DB::raw('CAST(applications.bin AS VARCHAR)'), '=', 'buildings.bin');
@@ -146,6 +151,11 @@ class EmptyingServiceController extends Controller
             ], 500);
         }
     }   
+      public function fetchContainmentType()
+    {
+        $containmenttype = DB::table('fsm.containment_types')->get();
+        return $containmenttype; 
+    }
     public function fetchSiteSettings()
     {
         $site_settings = DB::table('public.sdm_sitesettings')->whereNull('deleted_at')->get();
