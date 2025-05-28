@@ -2,14 +2,14 @@
     <div class="form-group row required">
         {!! Form::label('holding_number','Holding Number',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('holding_number', null, ['class' => 'form-control', 'placeholder' => 'Enter Holding Number', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('holding_number', null, ['class' => 'form-control', 'placeholder' => 'Holding Number', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
     
     <div class="form-group row required">
     {!! Form::label('owner_name', 'Owner Name', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('owner_name', $owner_detail ? $owner_detail->owner_name : null, ['class' => 'form-control', 'placeholder' => 'Enter Owner Name','oninput' => "this.value = this.value.replace(/[^a-zA-Z]/g, '')"
+        {!! Form::text('owner_name', $owner_detail ? $owner_detail->owner_name : null, ['class' => 'form-control', 'placeholder' => 'Owner Name','oninput' => "this.value = this.value.replace(/[^a-zA-Z]/g, '')"
 ]) !!}
     </div>
     </div>
@@ -24,7 +24,7 @@
     <div class="form-group row required">
         {!! Form::label('owner_contact', 'Owner Contact', ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('owner_contact', $owner_detail ? $owner_detail->owner_contact : null, ['class' => 'form-control', 'placeholder' => 'Enter Owner Number','oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
+            {!! Form::text('owner_contact', $owner_detail ? $owner_detail->owner_contact : null, ['class' => 'form-control', 'placeholder' => 'Owner Number','oninput' => "this.value = this.value.replace(/[^0-9]/g, '')"
 ]) !!}
         </div>
     </div>
@@ -35,62 +35,62 @@
     <div class="col-sm-3">
         <!-- Display field -->
         {!! Form::text('containment_type_display', 
-            $supervisoryassessment->containmentType->type ?? 'Unknown Type', 
+            $supervisoryassessment->containmentType->type ?? ($containment->type ?? 'Unknown Type'), 
             ['class' => 'form-control', 'id' => 'containment_type_display', 'readonly' => false]) !!}
         
         <!-- Select field -->
         {!! Form::select('containment_type', 
             $containment_types->pluck('type', 'id'), 
-            $supervisoryassessment->containment_type, 
+            $supervisoryassessment->containment_type ?? ($type_id ?? null), 
             ['class' => 'form-control d-none', 'id' => 'containment_type_select']) !!}
     </div>
 </div>
     <div class="form-group row required">
         {!! Form::label('containment_outlet_connection','Containment Outlet Connection',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('containment_outlet_connection', null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Outlet Connection']) !!}
+            {!! Form::text('containment_outlet_connection', null, ['class' => 'form-control', 'placeholder' => 'Containment Outlet Connection']) !!}
         </div>
     </div>
     
     <div class="form-group row required">
         {!! Form::label('containment_volume','Containment Volume (m³)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('containment_volume', $containment ? $containment->size : null, ['class' => 'form-control', 'placeholder' => 'Enter Containment Volume (m³)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('containment_volume', $containment ? $containment->size : null, ['class' => 'form-control', 'placeholder' => 'Containment Volume (m³)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
     
     <div class="form-group row required">
         {!! Form::label('road_width','Road Width (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('road_width', null, ['class' => 'form-control', 'placeholder' => 'Enter Road Width (m)' ,'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('road_width', null, ['class' => 'form-control', 'placeholder' => 'Road Width (m)' ,'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
     
     <div class="form-group row required">
         {!! Form::label('distance_from_nearest_road','Distance from Nearest Road (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Enter Distance from Nearest Road (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('distance_from_nearest_road', null, ['class' => 'form-control', 'placeholder' => 'Distance from Nearest Road (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_length','Septic Tank Length (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Length (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('septic_tank_length', $containment ? $containment->tank_length : null, ['class' => 'form-control', 'placeholder' => 'Septic Tank Length (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_width','Septic Tank Width (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_width',  $containment ? $containment->tank_width : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Width (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('septic_tank_width',  $containment ? $containment->tank_width : null, ['class' => 'form-control', 'placeholder' => 'Septic Tank Width (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
     <div class="form-group row required">
         {!! Form::label('septic_tank_depth','Septic Tank Depth (m)',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-3">
-            {!! Form::text('septic_tank_depth', $containment ? $containment->depth : null, ['class' => 'form-control', 'placeholder' => 'Enter Septic Tank Depth (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+            {!! Form::text('septic_tank_depth', $containment ? $containment->depth : null, ['class' => 'form-control', 'placeholder' => 'Septic Tank Depth (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
         </div>
     </div>
 
@@ -98,21 +98,21 @@
     <div class="form-group row required">
     {!! Form::label('number_of_pit_rings', 'Number of Pit Rings', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::number('number_of_pit_rings', null, ['class' => 'form-control', 'placeholder' => 'Enter Number of Pit Rings', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+        {!! Form::number('number_of_pit_rings', null, ['class' => 'form-control', 'placeholder' => 'Number of Pit Rings', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
     </div>
 </div>
 
 <div class="form-group row required">
-    {!! Form::label('pit_diameter', 'Pit Diameter (mm)', ['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('pit_diameter', 'Pit Diameter (m)', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('pit_diameter', null, ['class' => 'form-control', 'placeholder' => 'Enter Pit Diameter (mm)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+        {!! Form::text('pit_diameter', null, ['class' => 'form-control', 'placeholder' => 'Pit Diameter (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
     </div>
 </div>
 
 <div class="form-group row required">
     {!! Form::label('pit_depth', 'Pit Depth (m)', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('pit_depth', null, ['class' => 'form-control', 'placeholder' => 'Enter Pit Depth (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
+        {!! Form::text('pit_depth', null, ['class' => 'form-control', 'placeholder' => 'Pit Depth (m)', 'oninput' => "this.value = this.value.replace(/[^0-9.]/g, ''); ",]) !!}
     </div>
 </div>
 
@@ -121,7 +121,7 @@
     <div class="col-sm-3">
         {!! Form::number('appropriate_desludging_vehicle_size', null, [
             'class' => 'form-control', 
-            'placeholder' => 'Enter Desludging Vehicle Size', 
+            'placeholder' => 'Desludging Vehicle Size', 
             'min' => '1',
            'oninput' => "this.value = this.value < 1 ? '' : this.value"
         ]) !!}
@@ -131,7 +131,7 @@
 <div class="form-group row required">
     {!! Form::label('number_of_trips', 'Number of Trips', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::number('number_of_trips', null, ['class' => 'form-control', 'placeholder' => 'Enter Number of Trips', 'oninput' => "this.value = this.value < 1 ? '' : this.value"]) !!}
+        {!! Form::number('number_of_trips', null, ['class' => 'form-control', 'placeholder' => 'Number of Trips', 'oninput' => "this.value = this.value < 1 ? '' : this.value"]) !!}
     </div>
 </div>
 
@@ -153,7 +153,7 @@
     {!! Form::label('advance_paid_amount', 'Advance Paid Amount', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
         {!! Form::number('advance_paid_amount', null, ['class' => 'form-control',
-             'placeholder' => 'Enter Advance Paid Amount', 
+             'placeholder' => 'Advance Paid Amount', 
              'step' => '0.01', 
              'oninput' => "this.value = this.value < 1 ? '' : this.value"]) !!}
     </div>

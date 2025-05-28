@@ -83,35 +83,42 @@ class SupervisoryAssessmentController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function create(Request $request)
-    {      
-        $value = rtrim(request()->getQueryString(), '=');
-        
-        $page_title = 'Add Supervisory Assessment';
-        $slug = array_keys($request->query())[0] ?? null;
-        
-        $owner_detail = Owner::where('bin', $slug)->first();
-        $application = Application::where('bin', $slug)->first();
-        
-        // Get containment details - fixed this part
-        $build_contain = BuildContain::where('bin', $slug)->first();
-        $containment = $build_contain ? Containment::find($build_contain->containment_id) : null;
-        $type_id = $containment ? $containment->type_id : null;
-        
-        // Get all types for dropdown
-        $containment_types = ContainmentType::all();
-        
-        return view('fsm.supervisory-assessment.create', compact(
-            'page_title', 
-            'slug', 
-            'owner_detail', 
-            'type_id', 
-            'containment_types', 
-            'containment', // Make sure this is included
-            'application', 
-            'value'
-        ));
+  public function create(Request $request)
+{      
+    $value = rtrim(request()->getQueryString(), '=');
+    
+    $page_title = 'Add Supervisory Assessment';
+    $slug = array_keys($request->query())[0] ?? null;
+    $supervisoryassessment = new SupervisoryAssessment(); // Empty instance
+    $owner_detail = Owner::where('bin', $slug)->first();
+    $application = Application::where('bin', $slug)->first();
+    
+    // Get containment details
+    $build_contain = BuildContain::where('bin', $slug)->first();
+    $containment = $build_contain ? Containment::find($build_contain->containment_id) : null;
+    $type_id = $containment ? $containment->type_id : null;
+    
+    // Get all types for dropdown
+    $containment_types = ContainmentType::all();
+    
+    // Pre-fill the supervisoryassessment with type_id if available
+    if ($type_id) {
+        $supervisoryassessment->containment_type = $type_id;
+        $supervisoryassessment->containmentType = ContainmentType::find($type_id); // Load relationship
     }
+
+    return view('fsm.supervisory-assessment.create', compact(
+        'page_title', 
+        'slug', 
+        'owner_detail', 
+        'type_id', 
+        'containment_types', 
+        'containment',
+        'application', 
+        'value',
+        'supervisoryassessment' // Now contains type_id if available
+    ));
+}
 
     /**
      * Store a newly created resource in storage.

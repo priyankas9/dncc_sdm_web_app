@@ -193,6 +193,7 @@
         }
     });
 }
+// supervisory-assessment-form.js
 document.addEventListener('DOMContentLoaded', function() {
     const displayField = document.getElementById('containment_type_display');
     const selectField = document.getElementById('containment_type_select');
@@ -208,6 +209,15 @@ document.addEventListener('DOMContentLoaded', function() {
             displayField.value = this.options[this.selectedIndex].text;
             displayField.classList.remove('d-none');
             this.classList.add('d-none');
+        });
+        
+        // Ensure the select field is submitted even when hidden
+        selectField.addEventListener('blur', function() {
+            if(!this.classList.contains('d-none')) {
+                displayField.value = this.options[this.selectedIndex].text;
+                displayField.classList.remove('d-none');
+                this.classList.add('d-none');
+            }
         });
     }
 });
