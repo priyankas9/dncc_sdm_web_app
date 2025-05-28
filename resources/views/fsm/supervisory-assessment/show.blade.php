@@ -63,9 +63,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row ">
-    {!! Form::label('road_width','Road Width',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('road_width','Road Width (m)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('road_width', $supervisoryassessment->road_width, ['class' => 'form-control', 'placeholder' => 'Enter Road Width', 'disabled' => 'disabled']) !!}
+        {!! Form::text('road_width', $supervisoryassessment->road_width, ['class' => 'form-control', 'placeholder' => 'Enter Road Width (m)', 'disabled' => 'disabled']) !!}
     </div>
 </div>
 
@@ -84,14 +84,14 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row ">
-    {!! Form::label('septic_tank_width','Septic Tank Width',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('septic_tank_width','Septic Tank Width (m)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
-        {!! Form::text('septic_tank_width', $supervisoryassessment->septic_tank_width, ['class' => 'form-control', 'placeholder' => 'Enter Width', 'disabled' => 'disabled']) !!}
+        {!! Form::text('septic_tank_width', $supervisoryassessment->septic_tank_width, ['class' => 'form-control', 'placeholder' => 'Width', 'disabled' => 'disabled']) !!}
     </div>
 </div>
 
 <div class="form-group row ">
-    {!! Form::label('septic_tank_depth','Septic Tank Depth',['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('septic_tank_depth','Septic Tank Depth (m)',['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
         {!! Form::text('septic_tank_depth', $supervisoryassessment->septic_tank_depth, ['class' => 'form-control', 'placeholder' => 'Enter Depth', 'disabled' => 'disabled']) !!}
     </div>
@@ -105,7 +105,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row ">
-    {!! Form::label('pit_diameter', 'Pit Diameter', ['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('pit_diameter', 'Pit Diameter (m)', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
         {!! Form::text('pit_diameter', $supervisoryassessment->pit_diameter, ['class' => 'form-control', 'placeholder' => 'Enter Pit Diameter', 'disabled' => 'disabled']) !!}
     </div>

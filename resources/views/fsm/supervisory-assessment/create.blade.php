@@ -205,30 +205,33 @@ flatpickr('.flatpickr-reschedule', {
         }
     });
 }
- document.addEventListener('DOMContentLoaded', function() {
+ // supervisory-assessment-form.js
+document.addEventListener('DOMContentLoaded', function() {
     const displayField = document.getElementById('containment_type_display');
     const selectField = document.getElementById('containment_type_select');
     
-    displayField.addEventListener('click', function() {
-        this.classList.add('d-none');
-        selectField.classList.remove('d-none');
-        selectField.focus();
-    });
-    
-    selectField.addEventListener('change', function() {
-        displayField.value = this.options[this.selectedIndex].text;
-        displayField.classList.remove('d-none');
-        this.classList.add('d-none');
-    });
-    
-    // Ensure the select field is submitted even when hidden
-    selectField.addEventListener('blur', function() {
-        if(!this.classList.contains('d-none')) {
+    if (displayField && selectField) {
+        displayField.addEventListener('click', function() {
+            this.classList.add('d-none');
+            selectField.classList.remove('d-none');
+            selectField.focus();
+        });
+        
+        selectField.addEventListener('change', function() {
             displayField.value = this.options[this.selectedIndex].text;
             displayField.classList.remove('d-none');
             this.classList.add('d-none');
-        }
-    });
+        });
+        
+        // Ensure the select field is submitted even when hidden
+        selectField.addEventListener('blur', function() {
+            if(!this.classList.contains('d-none')) {
+                displayField.value = this.options[this.selectedIndex].text;
+                displayField.classList.remove('d-none');
+                this.classList.add('d-none');
+            }
+        });
+    }
 });
 </script>
 @endpush
