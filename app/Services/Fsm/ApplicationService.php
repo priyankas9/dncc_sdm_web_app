@@ -943,7 +943,7 @@ class ApplicationService
                     $content .= '<a title="Edit Feedback Details" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-pencil"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status && $model->supervisory_assessment) {
-                    $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", $model->supervisory_assessment->id) . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
+                    $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", $model->supervisory_assessment->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->supervisory_assessment_status ? ' anchor-disabled' : '') . '"> <i class="fa-solid fa-clipboard-list"></i></a> ';
                 }
                 
 
