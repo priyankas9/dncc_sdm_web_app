@@ -112,7 +112,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 </div>
 
 <div class="form-group row ">
-    {!! Form::label('pit_depth', 'Pit Depth', ['class' => 'col-sm-3 control-label']) !!}
+    {!! Form::label('pit_depth', 'Pit Depth (m)', ['class' => 'col-sm-3 control-label']) !!}
     <div class="col-sm-3">
         {!! Form::text('pit_depth', $supervisoryassessment->pit_depth, ['class' => 'form-control', 'placeholder' => 'Enter Pit Depth', 'disabled' => 'disabled']) !!}
     </div>
