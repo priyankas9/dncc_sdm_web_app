@@ -352,104 +352,88 @@ class ApplicationService
      *
      * @return array
      */
-    public function getCreateFormFields()
-    {   
-        $nextEmptyingDate = session('next_emptying_date');
-    
-        $bin = session('bin');
-        $ownerName = session('owner_name');
-        $ownerContact = session('owner_contact');
-        $containmentId = session('containment_id');
-        $ownerGender = session('owner_gender');
-        $ward = session('ward');
-        $population_served =  session('population_served');
-        $household_served = session('household_served');
-        $toilet_count = session('toilet_count');
-        $road_code = session('road_code');
-        $action_type = session('action_type');
-       
-        foreach ($this->createFormFields as &$section) {
-            foreach ($section['fields'] as &$field) {
-                if ($field->inputId === 'proposed_emptying_date') {
-                   
-                    if ( $action_type == "confirm") {
-                        $field->inputValue = $nextEmptyingDate;
-                       $field->disabled =  true;
-                    }
+   public function getCreateFormFields()
+{   
+    // Retrieve all session values
+    $nextEmptyingDate = session('next_emptying_date');
+    $bin = session('bin');
+    $ownerName = session('owner_name');
+    $ownerContact = session('owner_contact');
+    $containmentId = session('containment_id');
+    $ownerGender = session('owner_gender');
+    $ward = session('ward');
+    $population_served = session('population_served');
+    $household_served = session('household_served');
+    $toilet_count = session('toilet_count');
+    $road_code = session('road_code');
+    $action_type = session('action_type');
+   
+    // Process each field in the form
+    foreach ($this->createFormFields as &$section) {
+        foreach ($section['fields'] as &$field) {
+            switch ($field->inputId) {
+                case 'proposed_emptying_date':
+                    $field->inputValue = $nextEmptyingDate;
+                    $field->disabled = ($action_type == "confirm");
+                    break;
                     
-                    else {
-                         $field->inputValue = $nextEmptyingDate;
-                        $field->disabled = false;
-                    }
-                }
-                else if ($field->inputId === 'population_served') {
+                case 'population_served':
                     $field->inputValue = $population_served;
-                    if (!empty($population_served)) {
-                       $field->disabled =  true;
-                    }
-                }
-               else if ($field->inputId === 'household_served') {
+                    $field->disabled = !empty($population_served);
+                    break;
+                    
+                case 'household_served':
                     $field->inputValue = $household_served;
-                    if (!empty($household_served)) {
-                       $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'toilet_count') {
+                    $field->disabled = !empty($household_served);
+                    break;
+                    
+                case 'toilet_count':
                     $field->inputValue = $toilet_count;
-                    if (!empty($toilet_count)) {
-                       $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'bin') {
+                    $field->disabled = !empty($toilet_count);
+                    break;
+                    
+                case 'bin':
                     $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
                     $field->selectedValue = $selectedBin;
-                    if (!empty($selectedBin)) {
-                         $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'customer_name') {
+                    $field->disabled = !empty($selectedBin);
+                    break;
+                    
+                case 'customer_name':
                     $field->inputValue = $ownerName;
-                    if (!empty($ownerName)) {
-                       $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'road_code') {
+                    $field->disabled = !empty($ownerName);
+                    break;
+                    
+                case 'road_code':
                     $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
                     $field->selectedValue = $selectedRoadCode;
-                    if (!empty($selectedRoadCode)) {
-                         $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'customer_contact') {
+                    $field->disabled = !empty($selectedRoadCode);
+                    break;
+                    
+                case 'customer_contact':
                     $field->inputValue = $ownerContact;
-                    if (!empty($ownerContact)) {
-                       $field->disabled =  true;
-                    }
-                }
-    
-                else if ($field->inputId === 'customer_gender') {
+                    $field->disabled = !empty($ownerContact);
+                    break;
+                    
+                case 'customer_gender':
                     $field->selectedValue = $ownerGender;
-                    if (!empty($ownerGender)) {
-                         $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'containment_id') {
+                    $field->disabled = !empty($ownerGender);
+                    break;
+                    
+                case 'containment_id':
                     $field->inputValue = $containmentId;
-                    if (!empty($containmentId)) {
-                       $field->disabled =  true;
-                    }
-                }
-                else if ($field->inputId === 'ward') {
+                    $field->disabled = !empty($containmentId);
+                    break;
+                    
+                case 'ward':
                     $field->selectedValue = $ward;
-                    if (!empty($ward)) {
-                         $field->disabled =  true;
-                    }
-                }
+                    $field->disabled = !empty($ward);
+                    break;
             }
         }
-    
-        return $this->createFormFields;
     }
+    
+    return $this->createFormFields;
+}
     
     /**
      * Get form fields for showing application.
@@ -937,10 +921,10 @@ class ApplicationService
                     $content .= '<a title="Edit Emptying Service Details" href="' . route("emptying.edit", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->sludge_collection_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-recycle"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Sludge Collection') && $model->sludge_collection_status){
-                    $content .= '<a title="Edit Sludge Collection Details" href="' . route("sludge-collection.edit", [$model->sludge_collection->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-truck-moving"></i></a> ';
+                    $content .= '<a title="Edit Sludge Collection Details" href="' . route("sludge-collection.edit", [$model->sludge_collection->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->feedback_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-truck-moving"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Feedback') && $model->feedback_status){
-                    $content .= '<a title="Edit Feedback Details" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-pencil"></i></a> ';
+                    $content .= '<a title="Edit Feedback Details" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->feedback_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-pencil"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status && $model->supervisory_assessment) {
                     $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", $model->supervisory_assessment->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status ? ' anchor-disabled' : '') . '"> <i class="fa-solid fa-clipboard-list"></i></a> ';
