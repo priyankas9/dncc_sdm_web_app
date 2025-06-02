@@ -102,6 +102,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                                 $('#containment_id').replaceWith(`
                                     <input id="containment_id" name="containment_id" class="form-control" value="${res.containments[0]}" readonly>
                                 `);
+                                localStorage.setItem("containment_id", res.containments[0]);
                             } else {
                                 $('#containment_id').replaceWith(`
                                     <select id="containment_id" name="containment_id" class="form-control">
@@ -142,13 +143,121 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             }
         }
     }
+    function initializeFormWithPersistedValues() {
+    // Get values from server-side first (highest priority)
+    const serverRoadCode = @json(session('road_code') ?? old('road_code'));
+    const serverBin = @json(session('bin') ?? old('bin'));
+    
+    // Store server values in localStorage if they exist
+    if (serverRoadCode) {
+        localStorage.setItem("road_code", serverRoadCode);
+        localStorage.setItem("selectedRoadCode", serverRoadCode);
+    }
+    if (serverBin) {
+        localStorage.setItem("bin", serverBin);
+        localStorage.setItem("selectedBINValue", serverBin);
+        localStorage.setItem("selectedBINText", serverBin);
+    }
 
+    // Initialize Select2 controls
+    initializeSelect2Controls();
+
+    // Restore other form fields from localStorage
+    restoreFormFields();
+    }
+    function initializeSelect2Controls() {
+    // Road Code Select2
+    const storedRoadCode = localStorage.getItem("road_code");
+    let roadCodeOptions = '<option selected></option>';
+    
+    if (storedRoadCode) {
+        roadCodeOptions = `<option value="${storedRoadCode}" selected>${storedRoadCode}</option>`;
+    }
+    
+    $('#road_code').html(roadCodeOptions).select2({
+        ajax: {
+            url: "{{ route('roadlines.get-road-names') }}",
+            data: function(params) {
+                return {
+                    search: params.term,
+                    bin: $('#bin').val(),
+                    page: params.page || 1
+                };
+            },
+        },
+        placeholder: 'Street Name / Street Code',
+        allowClear: true,
+        closeOnSelect: true,
+        width: '100%'
+    });
+
+    // Bin Select2
+    const storedBin = localStorage.getItem("bin");
+    let binOptions = '<option selected></option>';
+    
+    if (storedBin) {
+        binOptions = `<option value="${storedBin}" selected>${storedBin}</option>`;
+    }
+    
+    $('#bin').html(binOptions).select2({
+        ajax: {
+            url: "{{ route('building.get-house-numbers-containments') }}",
+            data: function(params) {
+                return {
+                    search: params.term,
+                    road_code: $('#road_code').val(),
+                    page: params.page || 1
+                };
+            },
+        },
+        placeholder: 'House Number / BIN',
+        allowClear: true,
+        closeOnSelect: true,
+        width: '100%'
+    });
+
+    // Trigger changes if values exist
+    if (storedRoadCode) {
+        $('#road_code').trigger('change');
+    }
+    if (storedBin) {
+        $('#bin').trigger('change');
+    }
+    }
+    function restoreFormFields() {
+    // Restore other fields from localStorage
+    const selectedOwnerName = localStorage.getItem("selectedOwnerName");
+    const selectedOwnerGender = localStorage.getItem("selectedOwnerGender");
+    const selectedOwnerContact = localStorage.getItem("selectedOwnerContact");
+    const selectedHouseholdServed = localStorage.getItem("selectedHouseholdServed");
+    const selectedPopulationServed = localStorage.getItem("selectedPopulationServed");
+    const selectedToiletCount = localStorage.getItem("selectedToiletCount");
+    const containmentId = localStorage.getItem("containment_id");
+
+    if (selectedOwnerName) $('#customer_name').val(selectedOwnerName).prop('disabled', true);
+    if (selectedOwnerGender) $('#customer_gender').val(selectedOwnerGender).prop('disabled', true);
+    if (selectedOwnerContact) $('#customer_contact').val(selectedOwnerContact).prop('disabled', true);
+    if (selectedHouseholdServed) $('#household_served').val(selectedHouseholdServed).prop('disabled', true);
+    if (selectedPopulationServed) $('#population_served').val(selectedPopulationServed).prop('disabled', true);
+    if (selectedToiletCount) $('#toilet_count').val(selectedToiletCount).prop('disabled', true);
+    if (containmentId) $('#containment_id').val(containmentId);
+    }
     $(document).ready(function() {
         // const today = new Date().toISOString().split('T')[0];
         // document.getElementById('proposed_emptying_date').setAttribute('min', today);
+         initializeFormWithPersistedValues();
         let sessionBin = @json(session('bin'));
         let sessionRoad = @json(session('road_code'));
+        $('#road_code').on('change', function() {
+        const val = $(this).val();
+        const text = $(this).find('option:selected').text();
+        
+        localStorage.setItem("road_code", val);
+        localStorage.setItem("selectedRoadCode", text);
+    });
+ 
 
+    
         let optionHtmlBIN = sessionBin
             ? `<option selected value="${sessionBin}">${sessionBin}</option>`
             : `<option selected></option>`;
@@ -198,6 +307,29 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
         $('#create_application_form').on('submit', function (e) {
             $('#containment_id').removeAttr('disabled'); // Ensure the field is enabled for submission
+            localStorage.setItem("road_code", $('#road_code').val());
+            localStorage.setItem("bin", $('#bin').val());
+            
+            // Store service provider selection
+            const serviceProviderValue = $('#service_provider_id').val();
+            if (serviceProviderValue) {
+                localStorage.setItem("selectedServiceProviderValue", serviceProviderValue);
+            }
+             $(document).ajaxComplete(function(event, xhr, settings) {
+        if (settings.url === "{{ route('application.store') }}") {
+            if (xhr.responseJSON && xhr.responseJSON.success) {
+                localStorage.removeItem("road_code");
+                localStorage.removeItem("bin");
+                localStorage.removeItem("selectedRoadCode");
+                localStorage.removeItem("selectedBINValue");
+                localStorage.removeItem("selectedBINText");
+                // Clear other items as needed
+            }
+        }
+    });
+
+    // Check details and update checkbox
+    checkDetailsAndUpdateCheckbox();
         });
 
         var serviceProviderId = {{ Auth::user()->service_provider_id ?? 'null' }};
@@ -488,6 +620,8 @@ if ($('.alert.alert-danger.alert-dismissible').length == 0) {
     localStorage.removeItem("selectedBINValue");
     localStorage.removeItem("selectedBINText");
     localStorage.removeItem("containment_id");
+    localStorage.removeItem("road_code");
+    localStorage.removeItem("bin");
     localStorage.removeItem("selectedHouseholdServed");
     localStorage.removeItem("selectedPopulationServed");
     localStorage.removeItem("selectedServiceProviderText");
@@ -504,6 +638,8 @@ if ($('.alert.alert-danger.alert-dismissible').length == 0) {
     const selectedHouseholdServed = localStorage.getItem("selectedHouseholdServed");
     const selectedPopulationServed = localStorage.getItem("selectedPopulationServed");
     const selectedToiletCount = localStorage.getItem("selectedToiletCount");
+      const storedRoadCode = localStorage.getItem("road_code");
+        const storedBin = localStorage.getItem("bin");
     if (selectedRoadCode) {
         var roadCode = selectedRoadCode.split(" - ")[0];
         $('#road_code').val(selectedRoadCode); // Set road code from localStorage
@@ -559,16 +695,29 @@ if ($('.alert.alert-danger.alert-dismissible').length == 0) {
         width: '100%',
     });
 }
+ if (storedRoadCode) {
+            $('#road_code').val(storedRoadCode).trigger('change');
+        }
+        if (storedBin) {
+            $('#bin').val(storedBin).trigger('change');
+        }
 // Store selected values in localStorage
 $('#road_code').on('change', function() {
     var selectedRoadCode = $(this).find('option:selected').text();
     localStorage.setItem("selectedRoadCode", selectedRoadCode);
+    
+    // Also store the value separately for easier retrieval
+    localStorage.setItem("road_code", $(this).val());
 });
+
 $('#bin').on('change', function() {
     var selectedBINValue = $(this).find('option:selected').attr('value');
     var selectedBINText = $(this).find('option:selected').text();
     localStorage.setItem("selectedBINValue", selectedBINValue);
     localStorage.setItem("selectedBINText", selectedBINText);
+    
+    // Also store the value separately for easier retrieval
+    localStorage.setItem("bin", $(this).val());
 });
 checkDetailsAndUpdateCheckbox();
 // Function to check if the Owner and Applicant details are the same

@@ -392,7 +392,7 @@ class ApplicationService
                     $field->disabled = !empty($toilet_count);
                     break;
                     
-                case 'bin':
+              case 'bin':
                     $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
                     $field->selectedValue = $selectedBin;
                     $field->disabled = !empty($selectedBin);
@@ -403,7 +403,7 @@ class ApplicationService
                     $field->disabled = !empty($ownerName);
                     break;
                     
-                case 'road_code':
+                   case 'road_code':
                     $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
                     $field->selectedValue = $selectedRoadCode;
                     $field->disabled = !empty($selectedRoadCode);
