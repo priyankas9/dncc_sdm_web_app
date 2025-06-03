@@ -25,7 +25,7 @@ class SupervisoryAssessmentRequest extends FormRequest
     {
         return [
             'application_id' => 'required|exists:fsm.applications,id',
-            'holding_number' => 'required|numeric|gt:0',
+            'holding_number' => 'required',
             'owner_name' => 'required',
             'owner_gender' => 'required',
             'owner_contact' => 'required|integer',
@@ -55,8 +55,7 @@ class SupervisoryAssessmentRequest extends FormRequest
             'application_id.exists' => 'The specified Application does not exist.',
     
             'holding_number.required' => 'The Holding Number is required.',
-            'holding_number.numeric' => 'The Holding Number must be numeric.',
-            'holding_number.gt' => 'The Holding Number must be greater than 0.',
+           
     
             'owner_name.required' => 'The Owner Name is required.',
             'owner_gender.required' => 'The Owner Gender is required.',
