@@ -1063,7 +1063,7 @@ class EmptyingService
      *
      * @throws Exception
      */
-    public function updateEmptying(Request $request, $id)
+       public function updateEmptying(Request $request, $id)
     {   
         $emptying = Emptying::findOrFail($id);
         DB::beginTransaction();
@@ -1083,39 +1083,38 @@ class EmptyingService
                             $filename_receipt = $emptying->id . '_' . $emptying->application_id . '_' . $emptying->receipt_number . '_' . $dateTime . '.' . $extension_receipt;
                             $storeReceiptImg = Image::make($request->receipt_image)->save(Storage::disk('local')->path('/public/emptyings/receipts/' . $filename_receipt), 50);
                             if (!Storage::disk('local')->exists('/public/emptyings/receipts/' . $filename_receipt)) {
-                                return redirect()->back()->withInput()->with('error', "Error! Unable to save receipt image.");
+                                return redirect()->back()->withInput()->with('error', __("Error! Unable to save receipt image."));
                             }
                             $emptying->receipt_image = $filename_receipt;
                         } catch (\Throwable $th) {
                             DB::rollBack(); 
-                            return redirect()->back()->withInput()->with('error', "Error! Unable to save images.");
+                            return redirect()->back()->withInput()->with('error', __("Error! Unable to save images."));
                         }
-
                     } else {
                         DB::rollBack(); 
-                        return redirect()->back()->withInput()->with('error', "Error! Invalid image format.");
+                        return redirect()->back()->withInput()->with('error', __("Error! Invalid image format."));
                     }
-
 
                 } elseif (!is_null($request->house_image)) {
                     $extension_house = $request->house_image->getClientOriginalExtension();
                     $check = in_array($extension_house, $allowedFileExt);
                     if ($check) {
+                            dd($application->bin);
                         try {
                             $filename_house = $application->bin . '.' . $extension_house;
                             $storeHouseImg = Image::make($request->house_image)->save(Storage::disk('local')->path('/public/emptyings/houses/' . $filename_house), 50);
                             if (!Storage::disk('local')->exists('/public/emptyings/houses/' . $filename_house)) {
-                                return redirect()->back()->withInput()->with('error', "Error! Unable to save house image.");
+                                return redirect()->back()->withInput()->with('error', __("Error! Unable to save house image."));
                             }
                             $emptying->house_image = $filename_house;
                         } catch (\Throwable $th) {
                             DB::rollBack(); 
-                            return redirect()->back()->withInput()->with('error', "Error! Unable to save images.");
+                            return redirect()->back()->withInput()->with('error', __("Error! Unable to save images."));
                         }
 
                     } else {
                         DB::rollBack(); 
-                        return redirect()->back()->withInput()->with('error', "Error! Invalid image format.");
+                        return redirect()->back()->withInput()->with('error', __("Error! Invalid image format."));
                     }
                 }
                 $emptying->save();
@@ -1123,9 +1122,9 @@ class EmptyingService
             }
         } catch (\Throwable $e) {
             DB::rollBack(); 
-            return redirect()->back()->withInput()->with('error', 'Failed to update Emptying');
+            return redirect()->back()->withInput()->with('error', __('Failed to update Emptying.'));
         }
-        return redirect(route('application.index'))->with('success', 'Emptying updated successfully');
+        return redirect(route('application.index'))->with('success', __('Emptying updated successfully.'));
     }
 
     /**
