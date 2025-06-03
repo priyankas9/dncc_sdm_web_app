@@ -353,87 +353,87 @@ class ApplicationService
      * @return array
      */
    public function getCreateFormFields()
-{   
-    // Retrieve all session values
-    $nextEmptyingDate = session('next_emptying_date');
-    $bin = session('bin');
-    $ownerName = session('owner_name');
-    $ownerContact = session('owner_contact');
-    $containmentId = session('containment_id');
-    $ownerGender = session('owner_gender');
-    $ward = session('ward');
-    $population_served = session('population_served');
-    $household_served = session('household_served');
-    $toilet_count = session('toilet_count');
-    $road_code = session('road_code');
-    $action_type = session('action_type');
-   
-    // Process each field in the form
-    foreach ($this->createFormFields as &$section) {
-        foreach ($section['fields'] as &$field) {
-            switch ($field->inputId) {
-                case 'proposed_emptying_date':
-                    $field->inputValue = $nextEmptyingDate;
-                    $field->disabled = ($action_type == "confirm");
-                    break;
-                    
-                case 'population_served':
-                    $field->inputValue = $population_served;
-                    $field->disabled = !empty($population_served);
-                    break;
-                    
-                case 'household_served':
-                    $field->inputValue = $household_served;
-                    $field->disabled = !empty($household_served);
-                    break;
-                    
-                case 'toilet_count':
-                    $field->inputValue = $toilet_count;
-                    $field->disabled = !empty($toilet_count);
-                    break;
-                    
-              case 'bin':
-                    $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
-                    $field->selectedValue = $selectedBin;
-                    $field->disabled = !empty($selectedBin);
-                    break;
-                    
-                case 'customer_name':
-                    $field->inputValue = $ownerName;
-                    $field->disabled = !empty($ownerName);
-                    break;
-                    
-                   case 'road_code':
-                    $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
-                    $field->selectedValue = $selectedRoadCode;
-                    $field->disabled = !empty($selectedRoadCode);
-                    break;
-                    
-                case 'customer_contact':
-                    $field->inputValue = $ownerContact;
-                    $field->disabled = !empty($ownerContact);
-                    break;
-                    
-                case 'customer_gender':
-                    $field->selectedValue = $ownerGender;
-                    $field->disabled = !empty($ownerGender);
-                    break;
-                    
-                case 'containment_id':
-                    $field->inputValue = $containmentId;
-                    $field->disabled = !empty($containmentId);
-                    break;
-                    
-                case 'ward':
-                    $field->selectedValue = $ward;
-                    $field->disabled = !empty($ward);
-                    break;
+    {   
+        // Retrieve all session values
+        $nextEmptyingDate = session('next_emptying_date');
+        $bin = session('bin');
+        $ownerName = session('owner_name');
+        $ownerContact = session('owner_contact');
+        $containmentId = session('containment_id');
+        $ownerGender = session('owner_gender');
+        $ward = session('ward');
+        $population_served = session('population_served');
+        $household_served = session('household_served');
+        $toilet_count = session('toilet_count');
+        $road_code = session('road_code');
+        $action_type = session('action_type');
+    
+        // Process each field in the form
+        foreach ($this->createFormFields as &$section) {
+            foreach ($section['fields'] as &$field) {
+                switch ($field->inputId) {
+                    case 'proposed_emptying_date':
+                        $field->inputValue = $nextEmptyingDate;
+                        $field->disabled = ($action_type == "confirm");
+                        break;
+                        
+                    case 'population_served':
+                        $field->inputValue = $population_served;
+                        $field->disabled = !empty($population_served);
+                        break;
+                        
+                    case 'household_served':
+                        $field->inputValue = $household_served;
+                        $field->disabled = !empty($household_served);
+                        break;
+                        
+                    case 'toilet_count':
+                        $field->inputValue = $toilet_count;
+                        $field->disabled = !empty($toilet_count);
+                        break;
+                        
+                case 'bin':
+                        $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
+                        $field->selectedValue = $selectedBin;
+                        $field->disabled = !empty($selectedBin);
+                        break;
+                        
+                    case 'customer_name':
+                        $field->inputValue = $ownerName;
+                        $field->disabled = !empty($ownerName);
+                        break;
+                        
+                    case 'road_code':
+                        $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
+                        $field->selectedValue = $selectedRoadCode;
+                        $field->disabled = !empty($selectedRoadCode);
+                        break;
+                        
+                    case 'customer_contact':
+                        $field->inputValue = $ownerContact;
+                        $field->disabled = !empty($ownerContact);
+                        break;
+                        
+                    case 'customer_gender':
+                        $field->selectedValue = $ownerGender;
+                        $field->disabled = !empty($ownerGender);
+                        break;
+                        
+                    case 'containment_id':
+                        $field->inputValue = $containmentId;
+                        $field->disabled = !empty($containmentId);
+                        break;
+                        
+                    case 'ward':
+                        $field->selectedValue = $ward;
+                        $field->disabled = !empty($ward);
+                        break;
+                }
             }
         }
+        
+        return $this->createFormFields;
     }
-    
-    return $this->createFormFields;
-}
     
     /**
      * Get form fields for showing application.
