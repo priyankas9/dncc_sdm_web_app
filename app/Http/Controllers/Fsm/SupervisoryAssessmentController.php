@@ -37,7 +37,7 @@ class SupervisoryAssessmentController extends Controller
     {
         $data = $request->all();
        
-            $pdfBodyData = SupervisoryAssessment::select('*');
+            $pdfBodyData = SupervisoryAssessment::select('*')->orderBy('id', 'desc');
             
             return DataTables::of($pdfBodyData)
              ->filter(function ($query) use ($data) {
