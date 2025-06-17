@@ -160,26 +160,45 @@ class ApplicationController extends Controller
      * @param  int  $id
      * @return Redirector|RedirectResponse
      */
-    public function destroy($id)
+     public function destroy($id)
     {
         try {
             $application = Application::findOrFail($id);
-            if($application->emptying()->exists()){
-                return redirect('fsm/application')->with('error','Cannot delete Application that has associated Emptying Information');
-            }
-            if($application->sludge_collection()->exists()){
-                return redirect('fsm/application')->with('error','Cannot delete Application that has associated Sludge Collection Information');
-            }
-            if($application->feedback()->exists()){
-                return redirect('fsm/application')->with('error','Cannot delete Application that has associated Feedback Information');
-            }
-            $application->delete();
-        } catch (\Throwable $e) {
-            return redirect('fsm/application')->with('error','Failed to delete Application');
-        }
-        return redirect('fsm/application')->with('success','Application deleted successfully');
 
+            if ($application->emptying()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Emptying Information');
+            }
+            if ($application->sludge_collection()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Sludge Collection Information');
+            }
+            if ($application->feedback()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Feedback Information');
+            }
+
+            $bin = Application::where('id', $id)->pluck('bin');  
+           
+            //  New Part: Find associated containment IDs from build_contains
+            $containmentIds = DB::table('building_info.build_contains')
+                ->where('bin', $bin)
+                ->whereNull('deleted_at')
+                ->pluck('containment_id');
+     
+            // Update status = 0 for those containments
+            if ($containmentIds->isNotEmpty()) {
+                DB::table('fsm.containments')
+                    ->whereIn('id', $containmentIds)
+                    ->update(['status' => 0]);
+            }
+
+            $application->delete();
+
+        } catch (\Throwable $e) {
+            return redirect('fsm/application')->with('error', 'Failed to delete Application');
+        }
+
+        return redirect('fsm/application')->with('success', 'Application deleted successfully');
     }
+
 
     /**
      * Get the history of changes on the specified application.
