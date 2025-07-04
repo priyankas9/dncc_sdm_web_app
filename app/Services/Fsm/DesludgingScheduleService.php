@@ -108,46 +108,50 @@ class DesludgingScheduleService
     }
     
     return Datatables::of($collection)
-        ->addColumn('action', function ($building) {
-            return
-              '<a href="javascript:void(0);"
-                class="btn btn-md mb-1 confirm-emptying-btn"
-                title="Confirm Schedule Desludging"
-                class="btn btn-sm mb-1 confirm-emptying-btn"
-                style="background-color: #17A2B8; color: white; margin-right: 2px;"
-                data-action_type="confirm"
-                data-bin="' . $building->bin . '"
-                data-containment_id ="' . $building->id  . '"
-                data-ward ="' . $building->ward  . '"
-                data-road_code ="' . $building->road_code  . '"
-                data-household_served ="' . $building->household_served  . '"
-                data-population_served ="' . $building->population_served  . '"
-                data-toilet_count ="' . $building->toilet_count  . '"
-                data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
-                data-owner_contact="' . $building->owner_contact . '"
-                data-next_emptying_date="' . $building->next_emptying_date . '"
-                data-owner_gender="' . $building->owner_gender . '">
-                <i class="fa-solid fa-check"></i>
-              </a>' .
-              '<a href="javascript:void(0);"
+     ->addColumn('action', function ($building) {
+    $buttons = '';
+            if (auth()->user()->can('Confirm Schedule Desludging')) {
+                $buttons .= '<a href="javascript:void(0);" 
+                    class="btn btn-md mb-1 confirm-emptying-btn"
+                    title="Confirm Schedule Desludging"
+                    style="background-color: #17A2B8; color: white; margin-right: 2px;"
+                    data-action_type="confirm"
+                    data-bin="' . $building->bin . '"
+                    data-containment_id="' . $building->id  . '"
+                    data-ward="' . $building->ward  . '"
+                    data-road_code="' . $building->road_code  . '"
+                    data-household_served="' . $building->household_served  . '"
+                    data-population_served="' . $building->population_served  . '"
+                    data-toilet_count="' . $building->toilet_count  . '"
+                    data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
+                    data-owner_contact="' . $building->owner_contact . '"
+                    data-next_emptying_date="' . $building->next_emptying_date . '"
+                    data-owner_gender="' . $building->owner_gender . '">
+                    <i class="fa-solid fa-check"></i>
+                </a>';
+            }
+            if (auth()->user()->can('Reschedule Schedule Desludging')) {
+            $buttons .= '<a href="javascript:void(0);"
                 title="Reschedule Desludging"
                 class="btn btn-md mb-1 reschedule-emptying-btn"
                 style="background-color:rgb(235, 158, 15); color: white; margin-right: 2px;"
                 data-bin="' . $building->bin . '"
                 data-action_type="reschedule"
-                data-ward ="' . $building->ward  . '"
-                data-containment_id ="' . $building->id  . '"
-                data-toilet_count ="' . $building->toilet_count  . '"
-                data-household_served ="' . $building->household_served  . '"
-                data-population_served ="' . $building->population_served  . '"
-                data-road_code ="' . $building->road_code  . '"
+                data-ward="' . $building->ward  . '"
+                data-containment_id="' . $building->id  . '"
+                data-toilet_count="' . $building->toilet_count  . '"
+                data-household_served="' . $building->household_served  . '"
+                data-population_served="' . $building->population_served  . '"
+                data-road_code="' . $building->road_code  . '"
                 data-owner_name="' . htmlspecialchars($building->owner_name, ENT_QUOTES, 'UTF-8') . '"
                 data-owner_contact="' . $building->owner_contact . '"
                 data-next_emptying_date="' . $building->next_emptying_date . '"
                 data-owner_gender="' . $building->owner_gender . '">
-                 <i class="fa-regular fa-clock"></i>
-              </a>' .
-            '<button title="Disagree for Schedule Desludging"
+                <i class="fa-regular fa-clock"></i>
+            </a>';
+            }
+        if (auth()->user()->can('Delete Schedule Desludging')) {
+            $buttons .= '<button title="Disagree for Schedule Desludging"
                 class="btn btn-md mb-1 btn-unconfirm-emptying ' . ($building->status == 4 ? 'static-ping' : '') . '"
                 style="background-color:rgb(184, 23, 26); color: white;"
                 data-bin="' . $building->bin . '"
@@ -156,6 +160,8 @@ class DesludgingScheduleService
                 data-next_emptying_date="' . $building->next_emptying_date . '">
                 <i class="fa-solid fa-xmark"></i>
             </button>';
+        }
+            return $buttons;
         })
         ->rawColumns(['action'])
         ->make(true);
@@ -181,7 +187,7 @@ class DesludgingScheduleService
                 AND b.deleted_at IS NULL
             WHERE   
             -- checks if WASA status is not paid
-			    b.wasa_status = false OR b.wasa_status IS NULL
+			    b.wasa_status = 'false' OR b.wasa_status IS NULL
                 -- this flag ensures that once containment is emptied through the schedule, it will not be selected again
 			AND c.emptied_status = false
             -- this flag checks for 0: not scheduled and 4: denied once only
@@ -360,7 +366,6 @@ class DesludgingScheduleService
     try {
         $site_settings = $this->fetchSiteSettings()->keyBy('name');
         $containments = $this->getContainmentData();
-
         $priorityCount = $containments->whereNull('priority')->count();
         if ($priorityCount != 0) {
             $this->setPriority(null);

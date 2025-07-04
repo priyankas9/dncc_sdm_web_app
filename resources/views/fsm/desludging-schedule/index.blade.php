@@ -61,11 +61,15 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 
 <div class="card" id="cards">
     <div class="card-header">
+        @can('Regenerate Schedule Desludging')
         <a href="#" id="regenerate-btn" class="btn btn-info">Regenerate Desludging Schedule</a>
+        @endcan
+         @can('Export Schedule Desludging')
         <a href="#" id="export" class="btn btn-info">Export to CSV</a>
-      
-     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter"
-                        aria-expanded="false" aria-controls="collapseFilter">Show Filter</a>
+      @endcan
+      @can('Filter Schedule Desludging')
+     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">Show Filter</a> 
+        @endcan
     </div><!-- /.card-header -->
     <div id="loader-overlay" style="display: none;">
     <div class="loader-content">

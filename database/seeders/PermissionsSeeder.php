@@ -629,6 +629,154 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]
             ],
+             [
+                "group" => "Supervisory Assessment",
+                "perms" => [
+                    [
+                        "type" => "List",
+                        "name" => "List Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "View",
+                        "name" => "View Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "Add",
+                        "name" => "Add Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "Edit",
+                        "name" => "Edit Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "Delete",
+                        "name" => "Delete Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Export Supervisory Assessment"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Generate Supervisory Assessment Report"
+                    ],
+                    [
+                        "type" => "History",
+                        "name" => "View Supervisory Assessment History"
+                    ],
+                ]
+            ],
+            [
+                "group" => "Schedule Desludging",
+                "perms" => [
+                    [
+                        "type" => "List",
+                        "name" => "List Schedule Desludging"
+                    ],
+                    [
+                        "type" => "View",
+                        "name" => "View Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Regenerate",
+                        "name" => "Regenerate Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Confirm",
+                        "name" => "Confirm Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Delete",
+                        "name" => "Delete Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Export Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Reschedule",
+                        "name" => "Reschedule Schedule Desludging"
+                    ],
+                    [
+                        "type" => "Filter",
+                        "name" => "Filter Schedule Desludging"
+                    ],
+                ]
+            ],
+             [
+                "group" => "Site Setting",
+                "perms" => [
+                    [
+                        "type" => "List",
+                        "name" => "List Site Setting"
+                    ],
+                    [
+                        "type" => "View",
+                        "name" => "View Site Setting"
+                    ],
+                    [
+                        "type" => "Add",
+                        "name" => "Add Site Setting"
+                    ],
+                    [
+                        "type" => "Edit",
+                        "name" => "Edit Site Setting"
+                    ],
+                    [
+                        "type" => "Delete",
+                        "name" => "Delete Site Setting"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Export Site Setting"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Generate Site Setting Report"
+                    ],
+                    [
+                        "type" => "History",
+                        "name" => "View Site Setting History"
+                    ],
+                ]
+            ],
+             [
+                "group" => "Schedule Reintegration",
+                "perms" => [
+                    [
+                        "type" => "List",
+                        "name" => "List Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "View",
+                        "name" => "View Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "Confirm",
+                        "name" => "Confirm Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "Edit",
+                        "name" => "Edit Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "Delete",
+                        "name" => "Delete Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Export Schedule Reintegration"
+                    ],
+                    [
+                        "type" => "Export",
+                        "name" => "Generate Schedule Reintegration Report"
+                    ],
+                    [
+                        "type" => "History",
+                        "name" => "View Schedule Reintegration History"
+                    ],
+                ]
+            ],
             [
                 "group" => "Emptyings",
                 "perms" => [
@@ -709,6 +857,10 @@ class PermissionsSeeder extends Seeder
                     [
                         "type" => "API - Sewer Connection",
                         "name" => "Access Sewer Connection API"
+                    ],
+                     [
+                        "type" => "API - Supervisory Assessment",
+                        "name" => "Access Supervisory Assessment API"
                     ],
                 ]
             ],

@@ -19,12 +19,9 @@ class DesludgingScheduleController extends Controller
     public function __construct(DesludgingScheduleService $desludgingScheduleService)
     {
         $this->middleware('auth');
-        $this->middleware('permission:List Hotspot Identifications', ['only' => ['index']]);
-        $this->middleware('permission:View Hotspot Identification', ['only' => ['show']]);
-        $this->middleware('permission:Add Hotspot Identification', ['only' => ['create', 'store']]);
-        $this->middleware('permission:Edit Hotspot Identification', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:Delete Hotspot Identification', ['only' => ['destroy']]);
-        $this->middleware('permission:Export Hotspot Identification', ['only' => ['export']]);
+        $this->middleware('permission:List Schedule Desludging', ['only' => ['index']]);
+        $this->middleware('permission:View Schedule Desludging', ['only' => ['getData']]);
+       
         $this->desludgingScheduleService = $desludgingScheduleService;
     }
     public function index()

@@ -52,17 +52,20 @@ class DesludgingReintegrationController extends Controller
       // Add the action column
      
        return Datatables::of($buildingResults)
-            ->addColumn('action', function ($building) {
-                return
-                  '<a href="javascript:void(0);"
-                    class="btn btn-md mb-1 confirm-emptying-btn"
-                    title="Confirm Schedule Desludging"
-                    class="btn btn-sm mb-1 confirm-emptying-btn"
-                    style="background-color: #17A2B8; color: white; margin-right: 2px;"
-                    data-action_type="confirm"
-                    >
-                    <i class="fa-solid fa-check"></i>
-                  </a>';
+         ->addColumn('action', function ($building) {
+                $action = '';
+
+                if (auth()->user()->can('Confirm Schedule Reintegration')) {
+                    $action .= '<a href="javascript:void(0);" 
+                                class="btn btn-sm mb-1 confirm-emptying-btn"
+                                title="Confirm Schedule Desludging"
+                                style="background-color: #17A2B8; color: white; margin-right: 2px;"
+                                data-action_type="confirm">
+                                <i class="fa-solid fa-check"></i>
+                            </a>';
+                }
+
+                return $action;
             })
             ->rawColumns(['action'])
             ->make(true);
