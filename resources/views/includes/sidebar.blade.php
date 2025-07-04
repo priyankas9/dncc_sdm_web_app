@@ -253,6 +253,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 'List Emptyings',
                 'List Feedbacks',
                 'List Sludge Collections',
+                'List Schedule Desludging',
                 'List Help Desks') || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
                 <li class="nav-item  {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/emptying/*','fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'menu-is-opening menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active subnav' : '' }}">
@@ -261,14 +262,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             Emptying Service IMS <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
+
                     <ul class="nav nav-treeview">
+                        @can('List Schedule Desludging')
                         <li class="nav-item">
                          <a href="{{ action('Fsm\DesludgingScheduleController@index') }}" class="nav-link {{ request()->is('fsm/desludging-schedule/*','fsm/desludging-schedule') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                                 <p>Desludging Schedule </p>
                           </a>
                         </li>
-                       
+                       @endcan
                      
                         @can('List Applications')
                         <li class="nav-item">
@@ -329,12 +332,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             </li>
             @endif
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a href="{{ action('Pdf\PdfController@index') }}" class="nav-link {{ request()->is('pdf/pdf') ? 'active' : '' }}">
                 <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
                     <p>Pdf Generation</p>
                 </a>
-            </li>
+            </li> -->
             @if(Auth::user()->hasanyPermissionInGroup(['Sewer Connection']) || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
             <li class="nav-item">
                 <a href="{{ action('SewerConnection\SewerConnectionController@index') }}" class="nav-link {{ request()->is('sewerconnection/sewerconnection') ? 'active' : '' }}">

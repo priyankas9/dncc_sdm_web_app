@@ -71,6 +71,9 @@ class RolesSeeder extends Seeder
             [
                 'name' => 'Guest',
             ],
+            [
+                'name' => 'Municipality - Supervisory Assessment',
+            ],
         ];
         foreach ($roles as $role){
             Role::updateOrCreate($role);
@@ -94,5 +97,6 @@ class RolesSeeder extends Seeder
         $this->call(RolePermissions\ServiceProviderHelpDeskSeeder::class);
         $this->call(RolePermissions\TreatmentPlantAdminSeeder::class);
         $this->call(RolePermissions\GuestSeeder::class);
+        $this->call(RolePermissions\MunicipalitySupervisoryAssessmentSeeder::class);
     }
 }
