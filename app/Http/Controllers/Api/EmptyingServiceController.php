@@ -109,8 +109,10 @@ class EmptyingServiceController extends Controller
                 $join->on(DB::raw('CAST(applications.bin AS VARCHAR)'), '=', 'buildings.bin');
             })
             ->leftJoin('utility_info.roads', 'applications.road_code', '=', 'roads.code') // Join with Road model
-            ->leftJoin('fsm.containments', 'applications.containment_id', '=', 'containments.id');
-    
+            ->leftJoin('fsm.containments', 'applications.containment_id', '=', 'containments.id')
+             ->where('applications.emptying_status', false)
+            ->where('applications.supervisory_assessment_status', false)
+             ->whereNull('applications.deleted_at');
             // Apply role-specific filtering
             if ($user->hasRole('Service Provider - Emptying Operator')) {
                 $query->where('applications.service_provider_id', $user->service_provider_id);
