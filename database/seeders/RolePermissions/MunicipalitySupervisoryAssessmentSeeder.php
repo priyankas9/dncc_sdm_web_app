@@ -35,7 +35,12 @@ class MunicipalitySupervisoryAssessmentSeeder extends Seeder
                     );
                      $createdRole->givePermissionTo(Permission::all()->whereIn('group',['API'])
                             ->where('name','Access Supervisory Assessment API'));
+                     $createdRole->givePermissionTo(Permission::all()->whereIn('group', ['Building Dashboard'])->whereIn('name',['Building Use Composition Chart',
+                    'Ward-Wise Distribution of Buildings Chart','Sanitation CountBox','Building CountBox']));
 
+                    // FSM Dashboard permissions
+                    $createdRole->givePermissionTo(Permission::all()->whereIn('group', ['FSM Dashboard'])->whereIn('name',['Containment Types Categorized by Land Use Chart',
+                    'Containment Types Categorized by Building Usage Chart','Ward-Wise Distribution of Containment Types in Residential Buildings Chart','Ward-Wise Distribution of Containment Types Chart','Proportion of Different Containment Types Chart']));
                         $createdRole->givePermissionTo(Permission::all()->whereIn('group', ['Roads', 'Drain', 'Sewers', 'WaterSupply Network'])
                         ->whereIn('type', ['View', 'List']));
                     $createdRole->givePermissionTo(Permission::all()->whereIn('group', ['Maps'])
