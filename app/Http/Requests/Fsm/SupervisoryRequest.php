@@ -93,9 +93,9 @@ class SupervisoryRequest extends FormRequest
             'number_of_pit_rings.integer' => 'The Number of Pit Rings must be an integer.',
             'number_of_pit_rings.gt' => 'The Number of Pit Rings must be greater than 0.',
     
-            'pit_diameter.required' => 'The Pit Diameter (mm)is required.',
-            'pit_diameter.numeric' => 'The Pit Diameter (mm) must be numeric.',
-            'pit_diameter.gt' => 'The Pit Diameter (mm) must be greater than 0.',
+            'pit_diameter.required' => 'The Pit Diameter (m)is required.',
+            'pit_diameter.numeric' => 'The Pit Diameter (m) must be numeric.',
+            'pit_diameter.gt' => 'The Pit Diameter (m) must be greater than 0.',
     
             'pit_depth.required' => 'The Pit Depth (m) is required.',
             'pit_depth.numeric' => 'The Pit Depth (m)  must be numeric.',

@@ -323,7 +323,7 @@ public function edit($id)
         'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
         'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
         'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
-        'Number of Pit Rings', 'Pit Diameter (mm)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
+        'Number of Pit Rings', 'Pit Diameter (m)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
         'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
     ];
 
