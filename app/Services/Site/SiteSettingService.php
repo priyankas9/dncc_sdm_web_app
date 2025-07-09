@@ -46,7 +46,7 @@ class SiteSettingService
 
     // Mapping of request fields to setting names
     $settingsMap = [
-        'Next_Emptying_Date_Assignment_Period' => 'Next Emptying Date Assignment Period',
+        'Next_Emptying_Date_Assignment_Period_(Days)' => 'Next Emptying Date Assignment Period (Days)',
         'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
         'Schedule_Desludging_Start_Date' => 'Schedule Desludging Start Date',
         'Wards_for_Schedule_Desludging' => 'Wards for Schedule Desludging',

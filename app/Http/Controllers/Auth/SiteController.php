@@ -105,7 +105,7 @@ class SiteController extends Controller
     // Define validation rules
     $rules = [];
     $customAttributes = [
-        'Next_Emptying_Date_Assignment_Period' => 'Next Emptying Date Assignment Period',
+        'Next_Emptying_Date_Assignment_Period_(Days)' => 'Next Emptying Date Assignment Period (Days)',
         'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
         'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
         'Working_Hours' => 'Working Hours',
@@ -131,7 +131,7 @@ class SiteController extends Controller
     }
 
     // Additional specific validation rules
-    $rules['Next_Emptying_Date_Assignment_Period'] = 'required|integer|min:365';
+    $rules['Next_Emptying_Date_Assignment_Period_(Days)'] = 'required|integer|min:365';
     $rules['Trip_Capacity_Per_Day'] = 'required|integer|min:1';
     $rules['Schedule_Regeneration_Period'] = 'required|integer|min:1';
 
