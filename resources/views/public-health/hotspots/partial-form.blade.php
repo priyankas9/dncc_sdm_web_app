@@ -312,11 +312,10 @@
                 })
             ],
             view: new ol.View({
-                center: ol.proj.transform([85.37004580498977,27.643296216592432], 'EPSG:4326', 'EPSG:3857'),
-                // zoom: 12,
+                center: ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'),
                 minZoom: 12.5,
                 maxZoom: 19,
-                extent: ol.proj.transformExtent([85.32348539192756,27.58711426558866,85.44082675863419, 27.684646263435823 ], 'EPSG:4326', 'EPSG:3857')
+                extent: ol.proj.transformExtent([90.34, 23.75, 90.44, 23.84], 'EPSG:4326', 'EPSG:3857')
             })
         });
         map.addControl(layerSwitcher);
