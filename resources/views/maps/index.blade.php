@@ -1745,8 +1745,6 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             // Base Layers Object
             var bLayer = {
                 osm: {name: 'OpenStreetMap', type: 'osm'},
-                bing_aerial: {name: 'Bing Aerial', type: 'bing', imagerySet: 'Aerial'},
-                bing_aerial_labels: {name: 'Bing Aerial with Labels', type: 'bing', imagerySet: 'AerialWithLabels'},
                 google_streets: {name: 'Google Streets', type: 'google', mapType: 'roadmap'},
                 google_hybrid: {name: 'Google Hybrid', type: 'google', mapType: 'hybrid'},
                 google_satellite: {name: 'Google Satellite', type: 'google', mapType: 'satellite'},
