@@ -981,6 +981,7 @@ class EmptyingService
                 $containment->next_emptying_date = now()->addYears(3);
                 $containment->emptied_status = true;
                 $containment->no_of_times_emptied = $containment->no_of_times_emptied ? 1 : $containment->no_of_times_emptied  + 1;
+                $containment->status = 3;
                 $containment->save();
                 if ($application->emptying_status) {
     
