@@ -131,7 +131,7 @@ class SiteController extends Controller
     }
 
     // Additional specific validation rules
-    $rules['Next_Emptying_Date_Assignment_Period'] = 'required|integer|min:1|max:365';
+    $rules['Next_Emptying_Date_Assignment_Period'] = 'required|integer|min:365';
     $rules['Trip_Capacity_Per_Day'] = 'required|integer|min:1';
     $rules['Schedule_Regeneration_Period'] = 'required|integer|min:1';
 
