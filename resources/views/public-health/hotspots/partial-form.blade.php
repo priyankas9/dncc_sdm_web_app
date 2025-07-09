@@ -180,7 +180,8 @@
         var gurl_wfs = gurl + 'wfs';
         var authkey = '<?php echo Config::get("constants.AUTH_KEY"); ?>';
         // URL of GeoServer Legends
-        var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&BBOX=89.1281,23.502, 89.2068,23.5892&LAYER=";
+       var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
+
         var buildingsLayer = new ol.layer.Image({
             visible: false,
             title: "Buildings",
@@ -374,7 +375,7 @@
             map.getView().setCenter(ol.proj.transform([<?php echo $long;?>, <?php echo $lat;?>], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(14);
             @else
-            map.getView().setCenter(ol.proj.transform([85.38334613018505,27.634613503939818], 'EPSG:4326', 'EPSG:3857'));
+            map.getView().setCenter(ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(12);
             @endif
         }
