@@ -71,7 +71,7 @@ class DesludgingScheduleService
                     ON a.containment_id = c.id AND a.emptying_status = false
                WHERE   
                         c.next_emptying_date IS Not NULL AND
-                        (c.status = 0 OR c.status = 4 OR c.status IS null )
+                        (c.status = 0 OR c.status = 4 OR c.status = 3 OR c.status IS null )
                 ORDER BY c.id
             ) final_result
             ORDER BY final_result.next_emptying_date;
