@@ -322,7 +322,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
             var bin = $(this).data('bin');
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: 'Do you want to removed from desludging schedule ?',
+                    text: 'Do you want to be removed from desludging schedule ?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
