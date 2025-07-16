@@ -16,10 +16,13 @@ class StructureTypeSeeder extends Seeder
     public function run()
     {
         $types =  array(
-            [ 1 , 'RCC framed' ],
-            [ 2 , 'Load bearing' ],
-            [ 3 , 'CGI Sheet' ],
-            [ 4 , 'Wooden/Mud' ]
+            [ 1 , 'Pucca' ],
+            [ 2 , 'Tin' ],
+            [ 3 , 'Kutcha' ],
+            [ 4 , 'Semi Pucca' ],
+            [ 5 , 'Other' ],
+            [ 6 , 'N/A']
+
 
         );
      
