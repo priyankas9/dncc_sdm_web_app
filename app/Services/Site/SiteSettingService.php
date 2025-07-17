@@ -57,6 +57,7 @@ class SiteSettingService
         'Holiday_Dates' => 'Holiday Dates',
         'Weekend' => 'Weekend',
         'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
+        'Auto_Assign_Service_Provider' => 'Auto Assign Service Provider',
     ];
 
     foreach ($settingsMap as $field => $settingName) {
