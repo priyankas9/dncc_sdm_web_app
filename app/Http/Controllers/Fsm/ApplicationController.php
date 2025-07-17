@@ -7,6 +7,7 @@ use App\Http\Requests\Fsm\ApplicationRequest;
 use App\Models\BuildingInfo\Building;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\ServiceProvider;
+use App\Models\Site\SiteSetting;
 use App\Services\Fsm\ApplicationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -62,18 +63,54 @@ class ApplicationController extends Controller
      *
      * @return View
      */
-    public function create(Request $request)
-    {
-        $bin = session('bin');
-        $action_type = $request->query('action_type');
-       
-        return view('fsm.applications.create', [
-            'formAction' => $this->applicationService->getCreateFormAction(),
-            'formFields' => $this->applicationService->getCreateFormFields(), 
-            'indexAction' => $this->applicationService->getIndexAction(),'bin' => $bin,
-          
-        ], compact('action_type'));
+ public function create(Request $request)
+{
+    $bin = session('bin');
+    $action_type = $request->query('action_type');
+
+    // Fetch Auto Assign Setting
+    $autoAssignSetting = SiteSetting::where('name', 'Auto Assign Service Provider')->first();
+    $autoAssign = $autoAssignSetting->value == '1';
+
+    $assignedServiceProviderId = null;
+    $assignedServiceProviderName = null; // 👈 for displaying the name
+    $serviceProviders = [];
+
+    if ($autoAssign) {
+        $sequence = $this->applicationService->calculate_sequence();
+        if (!empty($sequence)) {
+            $assignedServiceProviderId = $sequence[0];
+
+            // Fetch name from DB based on ID
+            $provider = DB::table('fsm.service_providers')
+                ->where('id', $assignedServiceProviderId)
+                ->select('company_name as name') // alias for easier blade usage
+                ->first();
+
+            if ($provider) {
+                $assignedServiceProviderName = $provider->name;
+            }
+        }
+    } else {
+        $serviceProviders = DB::table('fsm.service_providers')
+            ->where('status', true)
+            ->get();
     }
+
+    return view('fsm.applications.create', [
+        'formAction' => $this->applicationService->getCreateFormAction(),
+        'formFields' => $this->applicationService->getCreateFormFields(), 
+        'indexAction' => $this->applicationService->getIndexAction(),
+        'bin' => $bin,
+        'assignedServiceProviderId' => $assignedServiceProviderId,
+        'assignedServiceProviderName' => $assignedServiceProviderName, // 👈 pass to Blade
+        'autoAssign' => $autoAssign,
+        'serviceProviders' => $serviceProviders,
+    ]);
+}
+
+
+
 
 
     /**
@@ -154,6 +191,10 @@ class ApplicationController extends Controller
         return $this->applicationService->updateApplication($request,$id);
     }
 
+    public function sequenceserviceprovider()
+    {
+        return $this->applicationService->calculate_sequence();
+    }
     /**
      * Remove the specified application from storage.
      *

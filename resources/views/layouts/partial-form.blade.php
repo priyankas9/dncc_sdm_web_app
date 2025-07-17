@@ -41,12 +41,45 @@ A dynamic form layout
                             @if($field->inputType === 'number')
                                 {!! Form::number($field->inputId,$field->inputValue,['class' => $field->inputClass, 'placeholder' => $field->placeholder,'disabled' => $field->disabled, 'oninput'=>$field->oninput]) !!}
                             @endif
-                            @if($field->inputType === 'select')
-                                {!! Form::select($field->inputId,$field->selectValues,$field->selectedValue,['class' => $field->inputClass, 'placeholder' => $field->placeholder,'disabled' => $field->disabled]) !!}
+                           @if($field->inputType === 'select')
+                        @if($field->inputId === 'service_provider_id')
+                            @if($autoAssign)
+                                <!-- Hidden input to actually submit the ID -->
+                        <input type="hidden" name="service_provider_id" value="{{ $assignedServiceProviderId }}">
+
+                        <!-- Read-only input to display the name -->
+                       
+                        <input type="text" class="form-control" id="service_provider_name" value="{{ $assignedServiceProviderName }}" readonly>
+                            @elseif($serviceProviders->isEmpty())
+                                <div class="alert alert-warning">No service providers available.</div>  
+
+                        @else
+                           
+                            <select name="service_provider_id" id="service_provider_id" class="form-control" required>
+                                @foreach($serviceProviders as $provider)
+                                    <option value="{{ $provider->id }}" {{ $field->selectedValue == $provider->id ? 'selected' : '' }}>
+                                        {{ $provider->company_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
+                            @else
+                                {!! Form::select(
+                                    $field->inputId,
+                                    $field->selectValues,
+                                    $field->selectedValue,
+                                    [
+                                        'class' => $field->inputClass,
+                                        'placeholder' => $field->placeholder,
+                                        'disabled' => $field->disabled
+                                    ]
+                                ) !!}
                                 @if($field->disabled)
-                                {!! Form::hidden($field->inputId,$field->selectedValue) !!}
+                                    {!! Form::hidden($field->inputId, $field->selectedValue) !!}
                                 @endif
                             @endif
+                        @endif
+
                             @if($field->inputType === 'label')
                                 {!! Form::label($field->inputId,$field->labelValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
                             @endif

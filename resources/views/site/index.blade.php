@@ -143,6 +143,9 @@
             } elseif (str_contains($details['data_type'], 'select')) {
                 $inputType = 'select';
             }
+            elseif (str_contains($details['data_type'], 'boolean')) {
+                $inputType = 'boolean';
+            }
         @endphp
         @if ($inputType === 'text')
             {{-- Input for comma-separated holiday dates --}}
@@ -174,6 +177,28 @@
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
                 'oninput' => "this.value = this.value < 1 ? '' : this.value",  'placeholder' => $details['name']
             ]) !!}
+        @elseif ($inputType === 'boolean')
+            <div class="boolean-wrapper" data-key="{{ $key }}">
+                <div class="form-check form-check-inline">
+                    {!! Form::radio($key, 1, old($key, $details['value']) == 1, [
+                        'class' => 'form-check-input',
+                        'id' => $key . '_yes'
+                    ]) !!}
+                    <label class="form-check-label mr-3" for="{{ $key . '_yes' }}">
+                        {{ $details['options'][1] == 1 ? 'Yes' : $details['options'][1] }}
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    {!! Form::radio($key, 0, old($key, $details['value']) == 0, [
+                        'class' => 'form-check-input',
+                        'id' => $key . '_no'
+                    ]) !!}
+                    <label class="form-check-label" for="{{ $key . '_no' }}">
+                        {{ $details['options'][0] == 0 ? 'No' : $details['options'][0] }}
+                    </label>
+                </div>
+            </div>
+
         @else
             {!! Form::$inputType($key, old($key, $details['value']), [
                 'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),  'placeholder' => $details['name']
@@ -257,7 +282,7 @@ $(document).ready(function () {
     function toggleReadOnly(readonly) {
         $('input').not('.flatpickr-multiple').prop('readonly', readonly);
         $('select').prop('disabled', readonly);
-
+        $('.boolean-wrapper input[type=radio]').prop('disabled', readonly);
         if (readonly) {
             // Disable select2s visually
             $('.select2-multi').prop('disabled', true).trigger('change');

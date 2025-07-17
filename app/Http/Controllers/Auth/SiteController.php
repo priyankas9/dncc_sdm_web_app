@@ -58,6 +58,21 @@ class SiteController extends Controller
                 'data_type' => $setting->data_type,
                 'options' => $optionsArray // Use the cleaned options array
             ];
+        } elseif ($setting->data_type === 'boolean') {
+        // convert '0,1' options into ['0', '1']
+        $optionsString = trim($setting->options, '"\'');
+        $optionsArray = explode(',', $optionsString);
+        $optionsArray = array_map(function ($option) {
+            return trim($option, '"\' ');
+        }, $optionsArray);
+
+        $data[$setting->name] = [
+            'name' => $setting->name,
+            'value' => $setting->value,
+            'remarks' => $setting->remarks,
+            'data_type' => $setting->data_type,
+            'options' => $optionsArray
+        ];
         } else {
             $data[$setting->name] = [
                 'name' => $setting->name,
@@ -95,66 +110,66 @@ class SiteController extends Controller
      * @return \Illuminate\Http\Response
      */
    public function store(Request $request)
-{
-    // Get all input data
-    $data = $request->all();
+  {
+        // Get all input data
+        $data = $request->all();
 
-    // Retrieve existing site settings for validation rules
-    $performance_test = SiteSetting::get();
+        // Retrieve existing site settings for validation rules
+        $performance_test = SiteSetting::get();
 
-    // Define validation rules
-    $rules = [];
-    $customAttributes = [
-        'Next_Emptying_Date_Assignment_Period_(Days)' => 'Next Emptying Date Assignment Period (Days)',
-        'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
-        'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
-        'Working_Hours' => 'Working Hours',
-        // Add other field mappings as needed
-    ];
+        // Define validation rules
+        $rules = [];
+        $customAttributes = [
+            'Next_Emptying_Date_Assignment_Period_(Days)' => 'Next Emptying Date Assignment Period (Days)',
+            'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
+            'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
+            'Working_Hours' => 'Working Hours',
+            // Add other field mappings as needed
+        ];
 
-    // Dynamic rules based on data_type
-    foreach ($performance_test as $setting) {
-        $fieldName = str_replace(' ', '_', $setting->name);
-        
-        if (str_contains($setting->data_type, 'integer')) {
-            $rules[$fieldName] = 'nullable|integer';
-        } elseif (str_contains($setting->data_type, 'date')) {
-            $rules[$fieldName] = 'nullable|date';
-        } elseif (str_contains($setting->data_type, 'select') || str_contains($setting->data_type, 'multi-select')) {
-            $rules[$fieldName] = 'nullable';
-        } else {
-            $rules[$fieldName] = 'nullable|string';
+        // Dynamic rules based on data_type
+        foreach ($performance_test as $setting) {
+            $fieldName = str_replace(' ', '_', $setting->name);
+            
+            if (str_contains($setting->data_type, 'integer')) {
+                $rules[$fieldName] = 'nullable|integer';
+            } elseif (str_contains($setting->data_type, 'date')) {
+                $rules[$fieldName] = 'nullable|date';
+            } elseif (str_contains($setting->data_type, 'select') || str_contains($setting->data_type, 'multi-select')) {
+                $rules[$fieldName] = 'nullable';
+            } else {
+                $rules[$fieldName] = 'nullable|string';
+            }
+            
+            // Add remark field rule
+            $rules[$fieldName.'_remark'] = 'nullable|string';
         }
-        
-        // Add remark field rule
-        $rules[$fieldName.'_remark'] = 'nullable|string';
-    }
 
-    // Additional specific validation rules
-    $rules['Next_Emptying_Date_Assignment_Period_(Days)'] = 'required|integer|min:365';
-    $rules['Trip_Capacity_Per_Day'] = 'required|integer|min:1';
-    $rules['Schedule_Regeneration_Period'] = 'required|integer|min:1';
+        // Additional specific validation rules
+        $rules['Next_Emptying_Date_Assignment_Period_(Days)'] = 'required|integer|min:365';
+        $rules['Trip_Capacity_Per_Day'] = 'required|integer|min:1';
+        $rules['Schedule_Regeneration_Period'] = 'required|integer|min:1';
 
-    // Validate the data
-    $validator = Validator::make($data, $rules, [], $customAttributes);
+        // Validate the data
+        $validator = Validator::make($data, $rules, [], $customAttributes);
 
-    if ($validator->fails()) {
-        return redirect()
-            ->back()
-            ->withErrors($validator)
-            ->withInput();
-    }
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
-    // If validation passes, proceed with update
-    $updateResult = $this->sitesetting->storeOrUpdate($data);
+        // If validation passes, proceed with update
+        $updateResult = $this->sitesetting->storeOrUpdate($data);
 
-    if ($updateResult) {
+        if ($updateResult) {
+            return redirect('auth/site-setting')
+                ->with('success', 'Site settings updated successfully!');
+        }
+
         return redirect('auth/site-setting')
-            ->with('success', 'Site settings updated successfully!');
-    }
-
-    return redirect('auth/site-setting')
-        ->with('info', 'No changes were made to site settings.');
+            ->with('info', 'No changes were made to site settings.');
 }
 
     /**
