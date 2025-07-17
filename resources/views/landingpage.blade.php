@@ -41,7 +41,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     <!-- ======= Header ======= -->
     <header id="header" class="d-flex align-items-center">
         <div class="container d-flex align-items-center justify-content-between">
-            <a href="{{URL::to('/')}}" class="logo"><img src="{{ asset('img/logo-imis.png') }}" alt="IMIS LOGO" /></a>
+            <a href="{{URL::to('/')}}" class="logo"><img src="{{ asset('img/logo-dncc.png') }}" alt="IMIS LOGO" /></a>
 
             <nav id="navbar" class="navbar-landing">
                 <ul>

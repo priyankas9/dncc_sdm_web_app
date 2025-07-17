@@ -4425,7 +4425,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
                 script_html += '<div class="print-header">';
                 script_html += '<div class="print-logo">';
-                script_html += '<img src="{{ asset("/img/logo-imis.png") }}" />';
+                script_html += '<img src="{{ asset("/img/logo-dncc.png") }}" />';
                 script_html += '</div>';
                 script_html += '<div class="print-title">';
                 script_html += 'IMIS  Municipality';
