@@ -44,7 +44,7 @@
 
     <body>
         <div class="container">
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/logo-imis.png'))) }}" class="logo" style=" width: 120px;">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/logo-dncc.png'))) }}" class="logo" style=" width: 120px;">
             <div class="header">
                 <h1 class="heading" style="text-transform:uppercase; margin: 0;">Municipality</h1>
                 <h2 style="text-transform:uppercase; margin: 10px; ">KEY PERFORMANCE INDICATORS REPORT</h2>

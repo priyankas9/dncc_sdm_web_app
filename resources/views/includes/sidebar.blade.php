@@ -5,16 +5,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     <a href="{{ url('/') }}" class="brand-link">
         <img src="" alt="">
         <span class="brand-text font-weight-light ">
-            <img src="{{ asset('/img/logo-imis.png') }}" alt="Municipality Logo" id="sidebar-logo" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height: .8;
-            margin-right: 0.5rem; margin-top:3px; height:40px; width:80%">
+            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
+            margin-right: 0.5rem;  height:50px; width:40%; margin-left : 20%">
         </span>
     </a>
     @else
     <a href="{{ url('/') }}" class="brand-link" id="sidebar-brand-link">
-        <img src="{{ asset('/img/logo-imis.png') }}" alt="Municipality Logo" id="sidebar-logo" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height: .8;
-        margin-right: 0.5rem; margin-top:3px; max-height:33px; width:70px">
-        <img src="{{ asset('/img/logo-imis.png') }}" alt=" Municipality Logo" id="hello-text" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height : .8;
-         margin-right: 0.5rem; margin-left:3%; max-height:60px; width:80%; display: none; ">
+        <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
+        margin-right: 0.5rem; max-height:33px; width:70px">
+        <img src="{{ asset('/img/logo-dncc.png') }}" alt=" Municipality Logo" id="hello-text" style=" 
+         margin-right: 0.5rem; margin-left:20%; max-height:60px; width:50%; display: none; ">
     </a>
     @endif
     <div class="sidebar" style='overflow-y: scroll; font-family: Open Sans, sans-serif'>
