@@ -77,8 +77,10 @@
             ];
             if (showOptions.includes(selectedText)) {
                 $('#sewer-code').show();
+                 $('#wasa-status').show();
             } else {
                 $('#sewer-code').hide();
+                 $('#wasa-status').hide();
             }
         });
 
@@ -197,6 +199,35 @@
         localStorage.setItem("selectedDrainCode", selectedDrainCode);
         });
 
+ function updateWasaBillDisplay() {
+    const waterYes = $('#water_status').val() === 'Yes';
+    const wasaYes = $('#wasa_status').val() === 'Yes';
 
+    $('#wasa-bill').hide(); // Always hide first
+
+    if (waterYes) {
+        $('#wasa-bill').insertAfter('#water-bill').show();
+    } else if (wasaYes) {
+        $('#wasa-bill').insertAfter('#wasa-status').show();
+    }
+    }
+    $(document).ready(function () {
+        $('#water_status, #wasa_status').on('change', updateWasaBillDisplay);
+
+        // Run once on page load
+        updateWasaBillDisplay();
+    });
+    function toggleWasaBill() {
+        var waterStatus = $('#water-bill select').val();
+        var wasaStatus = $('#wasa-status select').val();
+
+        if (waterStatus === 'Yes' || wasaStatus === 'Yes') {
+            $('#wasa-bill').show();
+        } else {
+            $('#wasa-bill').hide();
+        }
+    }
+  $('#water-bill select, #wasa-status select').on('change', toggleWasaBill);
+  toggleWasaBill();
     </script>
 @endpush

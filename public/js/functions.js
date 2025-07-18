@@ -154,9 +154,11 @@ function dynamicBuildingForm() {
         if ($("#water-id :selected").text() == "Municipal/Public Water Supply") {
             $('#water-customer-id').show();
             $('#water-pipe-id').show();
+            $('#water-bill').show();
         } else {
             $('#water-customer-id').hide();
             $('#water-pipe-id').hide();
+            $('#water-bill').hide();
         }
     });
 
@@ -169,6 +171,37 @@ function dynamicBuildingForm() {
             $('#distance-from-well').hide();
         }
     });
+    function updateWasaBillDisplay() {
+    const waterYes = $('#water_status').val() === 'Yes';
+    const wasaYes = $('#wasa_status').val() === 'Yes';
+
+    $('#wasa-bill').hide(); // Always hide first
+
+    if (waterYes) {
+        $('#wasa-bill').insertAfter('#water-bill').show();
+    } else if (wasaYes) {
+        $('#wasa-bill').insertAfter('#wasa-status').show();
+    }
+    }
+
+    $(document).ready(function () {
+        $('#water_status, #wasa_status').on('change', updateWasaBillDisplay);
+
+        // Run once on page load
+        updateWasaBillDisplay();
+    });
+    function toggleWasaBill() {
+        var waterStatus = $('#water-bill select').val();
+        var wasaStatus = $('#wasa-status select').val();
+
+        if (waterStatus === 'Yes' || wasaStatus === 'Yes') {
+            $('#wasa-bill').show();
+        } else {
+            $('#wasa-bill').hide();
+        }
+    }
+  $('#water-bill select, #wasa-status select').on('change', toggleWasaBill);
+  toggleWasaBill();
 
     // hides if toilet presence No
     // shows if toilet presence Yes
@@ -214,6 +247,34 @@ function dynamicBuildingForm() {
     }
 });
 
+        } 
+        else if($("#toilet-presence :selected").text() == "No") 
+        {
+            $('#defecation-place').show();
+            $('#toilet-info').hide();
+            $('#shared-toilet').hide();
+            $('#toilet-connection').hide();
+            $('#shared-toilet-popn').hide();
+            $('#containment-info').hide();
+            $('#containment-id').hide();
+            $('#drain-code').hide();
+            $('#sewer-code').hide();
+            $('#wasa-status').hide();
+        }
+        else
+        {
+            $('#defecation-place').hide();
+            $('#toilet-info').hide();
+            $('#shared-toilet').hide();
+            $('#toilet-connection').hide();
+            $('#shared-toilet-popn').hide();
+            $('#containment-info').hide();
+            $('#containment-id').hide();
+            $('#drain-code').hide();
+            $('#sewer-code').hide();
+            $('#wasa-status').hide();
+        }
+    });
 
     //show ctpt field only when defecation-place is Community Toilet
     $('#defecation-place').on('change', function () {
@@ -231,6 +292,7 @@ function dynamicBuildingForm() {
             $('#containment-id').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').show();
 
         }
@@ -239,6 +301,7 @@ function dynamicBuildingForm() {
             $('#containment-info').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         }
         else if ($("#toilet-connection :selected").text() == "Drain Network") {
@@ -246,6 +309,7 @@ function dynamicBuildingForm() {
             $('#containment-id').hide();
             $('#containment-info').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         }
         else if ($("#toilet-connection :selected").text() == "Sewer Network") {
@@ -253,6 +317,7 @@ function dynamicBuildingForm() {
             $('#containment-id').hide();
             $('#containment-info').hide();
             $('#sewer-code').show();
+             $('#wasa-status').show();
             $('#vacutug-accessible').hide();
         }
         else {
@@ -260,6 +325,7 @@ function dynamicBuildingForm() {
             $('#containment-info').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         }
     });
@@ -287,8 +353,10 @@ function dynamicBuildingForm() {
         ];
         if (showOptions.includes(selectedText)) {
             $('#sewer-code').show();
+             $('#wasa-status').show();
         } else {
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
         }
     });
 
@@ -656,8 +724,10 @@ function onloadDynamicContainmentType() {
     if (showOptions.includes(selectedText)) {
 
         $('#sewer-code').show();
+         $('#wasa-status').show();
     } else {
         $('#sewer-code').hide();
+         $('#wasa-status').hide();
     }
 
 
@@ -785,6 +855,7 @@ function onloadDynamicContainmentType() {
             $('#containment-id').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
         }
     }
 
@@ -795,6 +866,7 @@ function onloadDynamicContainmentType() {
             $('#containment-id').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').show();
             var selectedTextDrain = $("#containment-type option:selected").text();
             var showOptions = [
@@ -814,8 +886,10 @@ function onloadDynamicContainmentType() {
             ];
             if (showOptions.includes(selectedTextSewer)) {
                 $('#sewer-code').show();
+                 $('#wasa-status').show();
             } else {
                 $('#sewer-code').hide();
+                 $('#wasa-status').hide();
             }
 
             var selectedTextOthers = $("#containment-type option:selected").text();
@@ -848,24 +922,28 @@ function onloadDynamicContainmentType() {
             $('#containment-info').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         } else if ($("#toilet-connection :selected").text() === "Drain Network") {
             $('#drain-code').show();
             $('#containment-id').hide();
             $('#containment-info').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         } else if ($("#toilet-connection :selected").text() === "Sewer Network") {
             $('#drain-code').hide();
             $('#containment-id').hide();
             $('#containment-info').hide();
             $('#sewer-code').show();
+             $('#wasa-status').show();
             $('#vacutug-accessible').hide();
         } else {
             $('#containment-id').hide();
             $('#containment-info').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
             $('#vacutug-accessible').hide();
         }
     }
@@ -920,6 +998,7 @@ function onloadDynamicContainmentType() {
             $('#containment-id').hide();
             $('#drain-code').hide();
             $('#sewer-code').hide();
+             $('#wasa-status').hide();
         }
 
     }
