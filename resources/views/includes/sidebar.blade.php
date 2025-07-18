@@ -5,16 +5,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     <a href="{{ url('/') }}" class="brand-link">
         <img src="" alt="">
         <span class="brand-text font-weight-light ">
-            <img src="{{ asset('/img/logo-imis.png') }}" alt="Municipality Logo" id="sidebar-logo" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height: .8;
-            margin-right: 0.5rem; margin-top:3px; height:40px; width:80%">
+            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
+            margin-right: 0.5rem;  height:50px; width:40%; margin-left : 20%">
         </span>
     </a>
     @else
     <a href="{{ url('/') }}" class="brand-link" id="sidebar-brand-link">
-        <img src="{{ asset('/img/logo-imis.png') }}" alt="Municipality Logo" id="sidebar-logo" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height: .8;
-        margin-right: 0.5rem; margin-top:3px; max-height:33px; width:70px">
-        <img src="{{ asset('/img/logo-imis.png') }}" alt=" Municipality Logo" id="hello-text" style="filter: brightness(0) invert(1) grayscale(1); float:left; line-height : .8;
-         margin-right: 0.5rem; margin-left:3%; max-height:60px; width:80%; display: none; ">
+        <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
+        margin-right: 0.5rem; max-height:33px; width:70px">
+        <img src="{{ asset('/img/logo-dncc.png') }}" alt=" Municipality Logo" id="hello-text" style=" 
+         margin-right: 0.5rem; margin-left:20%; max-height:60px; width:50%; display: none; ">
     </a>
     @endif
     <div class="sidebar" style='overflow-y: scroll; font-family: Open Sans, sans-serif'>
@@ -105,7 +105,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             'fsm/feedback','fsm/feedback/*',
                             'fsm/help-desks/*','fsm/help-desks',
                             'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test',
-                            'fsm/pdf-generation/*','fsm/pdf-generation'
+                            'fsm/pdf-generation/*','fsm/pdf-generation','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*'
                         )
                             ? 'menu-is-opening menu-open'
                             : '' }}">
@@ -123,7 +123,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                                 'fsm/feedback','fsm/feedback/*',
                                 'fsm/help-desks/*','fsm/help-desks',
                                 'fsm/treatment-plant-test/*','fsm/treatment-plant-test','fsm/treatment-plant-performance-test/*','fsm/treatment-plant-performance-test'
-                                ,'fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration'
+                                ,'fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*'
                             )
                                 ? 'active'
                                 : '' }}">
@@ -253,27 +253,25 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 'List Emptyings',
                 'List Feedbacks',
                 'List Sludge Collections',
+                'List Schedule Desludging',
                 'List Help Desks') || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
-                <li class="nav-item  {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/emptying/*','fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'menu-is-opening menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active subnav' : '' }}">
+                <li class="nav-item  {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/emptying/*','fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'menu-is-opening menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->is('fsm/application/*', 'fsm/application','fsm/emptying', 'fsm/sludge-collection/*','fsm/sludge-collection', 'fsm/feedback/*','fsm/feedback', 'fsm/help-desks/*','fsm/help-desks','fsm/desludging-schedule/*','fsm/desludging-schedule','fsm/desludging-reintegration/*','fsm/desludging-reintegration','fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active subnav' : '' }}">
                         <i class="nav-icon fa-regular fa-building"></i>
                         <p>
                             {{__('Emptying Service IMS')}} <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
+
                     <ul class="nav nav-treeview">
+                        @can('List Schedule Desludging')
                         <li class="nav-item">
                          <a href="{{ action('Fsm\DesludgingScheduleController@index') }}" class="nav-link {{ request()->is('fsm/desludging-schedule/*','fsm/desludging-schedule') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
                                 <p>Desludging Schedule </p>
                           </a>
                         </li>
-                        <li class="nav-item">
-                         <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
-                            <i class="far fa-circle nav-icon"></i>
-                                <p>Scheduled<br> Desludging <br>Reintegration</p>
-                          </a>
-                        </li>
+                       @endcan
                      
                         @can('List Applications')
                         <li class="nav-item">
@@ -283,6 +281,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             </a>
                         </li>
                         @endcan
+                        <li class="nav-item">
+                            <a href="{{ route('supervisory-assessment.index') }}" class="nav-link {{ request()->is('fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Supervisory Assessment</p>
+                            </a>
+                        </li>
                         @can('List Emptyings')
                         <li class="nav-item">
                             <a href="{{ route('emptying.index') }}" class="nav-link {{ request()->is('fsm/emptying','fsm/emptying/*') ? 'active' : '' }}">
@@ -307,6 +311,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             </a>
                         </li>
                         @endcan
+                         <li class="nav-item">
+                         <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
+                            <i class="far fa-circle nav-icon"></i>
+                                <p>Scheduled<br> Desludging <br>Reintegration</p>
+                          </a>
+                        </li>
                         @can('List Help Desks')
                         <li class="nav-item">
                             <a href="{{ action('Fsm\HelpDeskController@index') }}" class="nav-link {{ request()->is('fsm/help-desks/*','fsm/help-desks') ? 'active' : '' }}">
@@ -321,12 +331,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             </ul>
             </li>
             @endif
-            <li class="nav-item">
-                <a href="{{ action('Pdf\PdfGenerationController@index') }}" class="nav-link {{ request()->is('pdf/pdf-generation') ? 'active' : '' }}">
-                <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
-                    <p>PDF Generation</p>
-                </a>
             </li>
+            <!-- <li class="nav-item">
+                <a href="{{ action('Pdf\PdfController@index') }}" class="nav-link {{ request()->is('pdf/pdf') ? 'active' : '' }}">
+                <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
+                    <p>Pdf Generation</p>
+                </a>
+            </li> -->
             @if(Auth::user()->hasanyPermissionInGroup(['Sewer Connection']) || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
             <li class="nav-item">
                 <a href="{{ action('SewerConnection\SewerConnectionController@index') }}" class="nav-link {{ request()->is('sewerconnection/sewerconnection') ? 'active' : '' }}">
@@ -608,9 +619,9 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
                         </ul>
                     </li>
-                    <li class="nav-item {{ request()->is('auth/*') ? 'menu-is-opening menu-open' : '' }}">
-                                <a href="{{ action('Site\SiteSettingController@index') }}"
-                                    class="nav-link {{ request()->is('site/site-setting') ? 'active subnav' : '' }}">
+                  <li class="nav-item {{ request()->is('auth/') ? 'menu-is-opening menu-open' : '' }}">
+                                <a href="{{ action('Auth\SiteController@index') }}"
+                                    class="nav-link {{ request()->is('auth/site-setting','auth/site-setting/') ? 'active' : '' }}">
                                     <i class="nav-icon fa-solid fa-microscope"></i>
                                     <p>Site Setting</p>
                                 </a>

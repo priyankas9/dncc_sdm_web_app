@@ -225,7 +225,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         var gurl_wfs = gurl + 'wfs';
         var authkey = '<?php echo Config::get("constants.AUTH_KEY"); ?>';
         // URL of GeoServer Legends
-        var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&BBOX=89.1281,23.502, 89.2068,23.5892&LAYER=";
+        var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
 
         var buildingsLayer = new ol.layer.Image({
             visible: false,
@@ -342,11 +342,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 })
             ],
             view: new ol.View({
-                center: ol.proj.transform([85.37004580498977,27.643296216592432], 'EPSG:4326', 'EPSG:3857'),
-                // zoom: 12,
+                center: ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'),
                 minZoom: 12.5,
                 maxZoom: 19,
-                extent: ol.proj.transformExtent([85.32348539192756,27.58711426558866,85.44082675863419, 27.684646263435823 ], 'EPSG:4326', 'EPSG:3857')
+                extent: ol.proj.transformExtent([90.34, 23.75, 90.44, 23.84], 'EPSG:4326', 'EPSG:3857')
             })
         });
         map.addControl(layerSwitcher);
@@ -436,7 +435,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         setInitialZoom();
 
         function setInitialZoom() {
-            map.getView().setCenter(ol.proj.transform([85.38334613018505,27.634613503939818], 'EPSG:4326', 'EPSG:3857'));
+            map.getView().setCenter(ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(12);
         }
         $(document).ready(function(){

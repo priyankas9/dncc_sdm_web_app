@@ -2,12 +2,12 @@
 // Last Modified Date: 18-04-2024
 // Developed By: Innovative Solution Pvt. Ltd. (ISPL)  
 namespace App\Http\Controllers\Fsm;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Fsm\ApplicationRequest;
 use App\Models\BuildingInfo\Building;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\ServiceProvider;
+use App\Models\Site\SiteSetting;
 use App\Services\Fsm\ApplicationService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -63,14 +63,55 @@ class ApplicationController extends Controller
      *
      * @return View
      */
-    public function create()
-    {
-        return view('fsm.applications.create',[
-            'formAction' => $this->applicationService->getCreateFormAction(),
-            'formFields' => $this->applicationService->getCreateFormFields(),
-            'indexAction' => $this->applicationService->getIndexAction()
-        ]);
+ public function create(Request $request)
+{
+    $bin = session('bin');
+    $action_type = $request->query('action_type');
+
+    // Fetch Auto Assign Setting
+    $autoAssignSetting = SiteSetting::where('name', 'Auto Assign Service Provider')->first();
+    $autoAssign = $autoAssignSetting->value == '1';
+
+    $assignedServiceProviderId = null;
+    $assignedServiceProviderName = null; // 👈 for displaying the name
+    $serviceProviders = [];
+
+    if ($autoAssign) {
+        $sequence = $this->applicationService->calculate_sequence();
+        if (!empty($sequence)) {
+            $assignedServiceProviderId = $sequence[0];
+
+            // Fetch name from DB based on ID
+            $provider = DB::table('fsm.service_providers')
+                ->where('id', $assignedServiceProviderId)
+                ->select('company_name as name') // alias for easier blade usage
+                ->first();
+
+            if ($provider) {
+                $assignedServiceProviderName = $provider->name;
+            }
+        }
+    } else {
+        $serviceProviders = DB::table('fsm.service_providers')
+            ->where('status', true)
+            ->get();
     }
+
+    return view('fsm.applications.create', [
+        'formAction' => $this->applicationService->getCreateFormAction(),
+        'formFields' => $this->applicationService->getCreateFormFields(), 
+        'indexAction' => $this->applicationService->getIndexAction(),
+        'bin' => $bin,
+        'assignedServiceProviderId' => $assignedServiceProviderId,
+        'assignedServiceProviderName' => $assignedServiceProviderName, // 👈 pass to Blade
+        'autoAssign' => $autoAssign,
+        'serviceProviders' => $serviceProviders,
+    ]);
+}
+
+
+
+
 
     /**
      * Get the building details for the selected address.
@@ -81,6 +122,7 @@ class ApplicationController extends Controller
      */
     public function buildingDetails(Request $request)
     {
+       
         return $this->applicationService->getBuildingDetails($request);
     }
 
@@ -123,19 +165,62 @@ class ApplicationController extends Controller
      * @param  int  $id
      * @return View
      */
-    public function edit($id)
-    {
-        $application = Application::find($id);
-        if ($application) {
-            $page_title =__("Edit Application");
-            $formFields = $this->applicationService->getEditFormFields($application);
-            $formAction = $this->applicationService->getEditFormAction($application);
-            $indexAction = $this->applicationService->getIndexAction();
-            return view('fsm.applications.edit',compact('page_title','formFields','formAction','indexAction','application'),['cardForm'=>true]);
-        } else {
-            abort(404);
-        }
+     public function edit($id)
+{
+    $application = Application::find($id);
+    if (!$application) {
+        abort(404);
     }
+
+    $page_title = "Edit Application";
+    $formFields = $this->applicationService->getEditFormFields($application);
+    $formAction = $this->applicationService->getEditFormAction($application);
+    $indexAction = $this->applicationService->getIndexAction();
+
+    // Auto-assign logic (same as create)
+    $autoAssignSetting = SiteSetting::where('name', 'Auto Assign Service Provider')->first();
+    $autoAssign = $autoAssignSetting && $autoAssignSetting->value == '1';
+
+    $assignedServiceProviderId = null;
+    $assignedServiceProviderName = null;
+    $serviceProviders = [];
+
+    if ($autoAssign) {
+        $sequence = $this->applicationService->calculate_sequence();
+        if (!empty($sequence)) {
+            $assignedServiceProviderId = $sequence[0];
+
+            $provider = DB::table('fsm.service_providers')
+                ->where('id', $assignedServiceProviderId)
+                ->select('company_name as name')
+                ->first();
+
+            if ($provider) {
+                $assignedServiceProviderName = $provider->name;
+            }
+        }
+    } else {
+        $serviceProviders = DB::table('fsm.service_providers')
+            ->where('status', true)
+            ->get();
+    }
+
+    return view('fsm.applications.edit', [
+        'page_title' => $page_title,
+        'formFields' => $formFields,
+        'formAction' => $formAction,
+        'indexAction' => $indexAction,
+        'application' => $application,
+        'cardForm' => true,
+
+        // ✅ Pass these to avoid "undefined" errors in the partial
+        'autoAssign' => $autoAssign,
+        'assignedServiceProviderId' => $assignedServiceProviderId,
+        'assignedServiceProviderName' => $assignedServiceProviderName,
+        'serviceProviders' => $serviceProviders,
+    ]);
+}
+
 
     /**
      * Update the specified application in storage.
@@ -149,32 +234,55 @@ class ApplicationController extends Controller
         return $this->applicationService->updateApplication($request,$id);
     }
 
+    public function sequenceserviceprovider()
+    {
+        return $this->applicationService->calculate_sequence();
+    }
     /**
      * Remove the specified application from storage.
      *
      * @param  int  $id
      * @return Redirector|RedirectResponse
      */
-    public function destroy($id)
+     public function destroy($id)
     {
         try {
             $application = Application::findOrFail($id);
-            if($application->emptying()->exists()){
-                return redirect('fsm/application')->with('error',__('Cannot delete Application that has associated Emptying Information.'));
-            }
-            if($application->sludge_collection()->exists()){
-                return redirect('fsm/application')->with('error',__('Cannot delete Application that has associated Sludge Collection Information.'));
-            }
-            if($application->feedback()->exists()){
-                return redirect('fsm/application')->with('error',__('Cannot delete Application that has associated Feedback Information.'));
-            }
-            $application->delete();
-        } catch (\Throwable $e) {
-            return redirect('fsm/application')->with('error',__('Failed to delete Application.'));
-        }
-        return redirect('fsm/application')->with('success',__('Application deleted successfully.'));
 
+            if ($application->emptying()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Emptying Information');
+            }
+            if ($application->sludge_collection()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Sludge Collection Information');
+            }
+            if ($application->feedback()->exists()) {
+                return redirect('fsm/application')->with('error', 'Cannot delete Application that has associated Feedback Information');
+            }
+
+            $bin = Application::where('id', $id)->pluck('bin');  
+           
+            //  New Part: Find associated containment IDs from build_contains
+            $containmentIds = DB::table('building_info.build_contains')
+                ->where('bin', $bin)
+                ->whereNull('deleted_at')
+                ->pluck('containment_id');
+     
+            // Update status = 0 for those containments
+            if ($containmentIds->isNotEmpty()) {
+                DB::table('fsm.containments')
+                    ->whereIn('id', $containmentIds)
+                    ->update(['status' => 0]);
+            }
+
+            $application->delete();
+
+        } catch (\Throwable $e) {
+            return redirect('fsm/application')->with('error', 'Failed to delete Application');
+        }
+
+        return redirect('fsm/application')->with('success', 'Application deleted successfully');
     }
+
 
     /**
      * Get the history of changes on the specified application.

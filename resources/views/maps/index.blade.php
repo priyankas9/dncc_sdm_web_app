@@ -1329,7 +1329,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         	<strong>Developed by:</strong> <a href="http://www.innovativesolution.com.np">Innovative Solution Pvt. Ltd.</a>
     	</div>
         <strong> Base IMIS <i class="fa-regular fa-copyright"> </i>  2022-{{ \Carbon\Carbon::now()->format('Y') }} by <a href="http://www.innovativesolution.com.np">
-    Innovative Solution Pvt. Ltd.</a> & <a href="https://www.gwsc.ait.ac.th/">Global Water & Sanitation Center-Asian Institute of Technology (GWSC-AIT)</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1">CC BY-NC-SA 4.0 </a>
+    ISPL</a> & <a href="https://www.gwsc.ait.ac.th/">GWSC-AIT</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1">CC BY-NC-SA 4.0 </a>
 </strong>
 
         <!-- Default to the left -->
@@ -2174,8 +2174,6 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             // Base Layers Object
             var bLayer = {
                 osm: {name: 'OpenStreetMap', type: 'osm'},
-                bing_aerial: {name: 'Bing Aerial', type: 'bing', imagerySet: 'Aerial'},
-                bing_aerial_labels: {name: 'Bing Aerial with Labels', type: 'bing', imagerySet: 'AerialWithLabels'},
                 google_streets: {name: 'Google Streets', type: 'google', mapType: 'roadmap'},
                 google_hybrid: {name: 'Google Hybrid', type: 'google', mapType: 'hybrid'},
                 google_satellite: {name: 'Google Satellite', type: 'google', mapType: 'satellite'},
@@ -5263,7 +5261,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
                 script_html += '<div class="print-header">';
                 script_html += '<div class="print-logo">';
-                script_html += '<img src="{{ asset("/img/logo-imis.png") }}" />';
+                script_html += '<img src="{{ asset("/img/logo-dncc.png") }}" />';
                 script_html += '</div>';
                 script_html += '<div class="print-title">';
                 script_html += 'IMIS  Municipality';

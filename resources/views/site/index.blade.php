@@ -1,60 +1,89 @@
 @extends('layouts.dashboard')
 @push('style')
 <style type="text/css">
-    .dataTables_filter {
-        display: none;
-    }
+   /* Hide DataTables search box */
+        .dataTables_filter {
+            display: none;
+        }
 
-    .form-title-row {
-        display: flex;
-        align-items: center;
-    }
+        /* Title row styling */
+        .form-title-row {
+            display: flex;
+            align-items: center;
+        }
 
-    .form-title-row h2 {
-        margin: 0;
-        padding: 2px 0;
-    }
+        .form-title-row h2 {
+            margin: 0;
+            padding: 2px 0;
+        }
 
-    .disabled-select {
-        color: black;
-    }
+        /* Disabled select appearance */
+        .disabled-select {
+            color: black;
+        }
 
-    /* Change the text color of the selected options in the Select2 dropdown */
-    /* Change the text color of the selected options in the Select2 dropdown */
-    /* Change the text color of the selected options in the dropdown */
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        color: black;
-    }
+        /* Select2 full width */
+        .select2-container {
+            width: 100% !important;
+        }
 
-    .readonly-select2 .select2-selection__choice {
-        color: black !important;
-        /* Ensures text color is black */
-        background-color: #f0f0f0;
-        /* Optional: Change background color to differentiate */
-    }
+        /* Multi-select choice styling */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: red;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+        }
 
-    .select2-multi {
-        color: red;
-    }
+        /* Hide remove button in readonly multi-select */
+        .readonly-select2 .select2-selection__choice__remove {
+            display: none;
+        }
 
-    .readonly-select2 .select2-selection__choice__remove {
-        display: none;
-        /* Optional: Hide the remove button if you don't want users to deselect options */
-    }
+        /* Selected option in dropdown list */
+        .select2-container--default .select2-results__option[aria-selected="true"] {
+            color: red !important;
+        }
 
-    .select2-selection__choice {
-        color: black;
-    }
+        /* Hover highlight color for options */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #e0e0e0;
+            color: black;
+        }
 
-    .select2-selection__choice__display {
-        color: red;
-    }
+        /* Placeholder text */
+        .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+            color: #999;
+        }
 
-    /* Change the text color of the selected options in the dropdown list */
-    .select2-container--default .select2-results__option[aria-selected="true"] {
-        color: red !important;
-    }
+        /* Margin consistency */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+        }
+
+        /* Flatpickr multiple input styling */
+        .flatpickr-multiple {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        /* Buttons spacing */
+        .card-footer button,
+        .card-footer span {
+            margin-right: 8px;
+        }
+        input[disabled].flatpickr-multiple {
+            pointer-events: none;
+            background-color: #e9ecef;
+            opacity: 1;
+        }
 </style>
+
 @endpush
 @section('title', $page_title)
 @section('content')
@@ -63,7 +92,6 @@
 @include('layouts.components.error-alert')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <div class="card">
-
     <div class="card-body">
         {!! Form::model([
         'method' => 'PATCH',
@@ -71,8 +99,6 @@
         'class' => 'form-horizontal',
         'id' => 'editForm',
         ]) !!}
-
-
         <div class="container-fluid">
             <div class="row form-title-row">
                 <div class="col-sm-3">
@@ -94,7 +120,6 @@
         @php
             $inputType = 'text';  // Default input type
             $options = [];  // Placeholder for options
-
             // Clean up options if provided
             if (isset($details['options'])) {
                 if (is_string($details['options'])) {
@@ -105,21 +130,23 @@
                     $options = array_map('trim', $details['options']);
                 }
             }
-
             // Set input type based on data_type
             if (str_contains($details['data_type'], 'integer')) {
                 $inputType = 'number';
             } elseif (str_contains($details['data_type'], 'date')) {
                 $inputType = 'date';
+                
             } elseif (str_contains($details['data_type'], 'multi')) {
                 $inputType = 'multi';
             } elseif (str_contains($details['data_type'], 'minput')) {
-                $inputType = 'text';  // Text input for comma-separated dates
+                $inputType = 'minput'; // Text input for comma-separated dates
             } elseif (str_contains($details['data_type'], 'select')) {
                 $inputType = 'select';
             }
+            elseif (str_contains($details['data_type'], 'boolean')) {
+                $inputType = 'boolean';
+            }
         @endphp
-
         @if ($inputType === 'text')
             {{-- Input for comma-separated holiday dates --}}
             {!! Form::text($key, old($key, $details['value']), [
@@ -128,24 +155,59 @@
             ]) !!}
         @elseif ($inputType === 'select')
             {!! Form::select($key, array_combine($options, $options), old($key, $details['value']), [
-                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '') ,  'placeholder' => $details['name']
+            ]) !!}
+        @elseif ($inputType === 'date')
+            {!! Form::date($key, old($key, $details['value']), [
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
+                'onclick' => 'this.showPicker();', 'placeholder' => $details['name']
             ]) !!}
         @elseif ($inputType === 'multi')
-            {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
-                'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
-                'multiple' => 'multiple'
+              {!! Form::select($key . '[]', array_combine($options, $options), old($key, explode(',', $details['value'])), [
+            'class' => 'form-control select2-multi' . ($errors->has($key) ? ' is-invalid' : ''),
+            'multiple' => 'multiple',   'placeholder' => $details['name']
+                 ]) !!}
+            @elseif ($inputType === 'minput')
+            {!! Form::text($key, old($key, $details['value']), [
+                'class' => 'form-control flatpickr-multiple' . ($errors->has($key) ? ' is-invalid' : ''),
+                  'placeholder' => $details['name']
             ]) !!}
+        @elseif ($inputType === 'number')
+            {!! Form::number($key, old($key, $details['value']), [
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),
+                'oninput' => "this.value = this.value < 1 ? '' : this.value",  'placeholder' => $details['name']
+            ]) !!}
+        @elseif ($inputType === 'boolean')
+            <div class="boolean-wrapper" data-key="{{ $key }}">
+                <div class="form-check form-check-inline">
+                    {!! Form::radio($key, 1, old($key, $details['value']) == 1, [
+                        'class' => 'form-check-input',
+                        'id' => $key . '_yes'
+                    ]) !!}
+                    <label class="form-check-label mr-3" for="{{ $key . '_yes' }}">
+                        {{ $details['options'][1] == 1 ? 'Yes' : $details['options'][1] }}
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    {!! Form::radio($key, 0, old($key, $details['value']) == 0, [
+                        'class' => 'form-check-input',
+                        'id' => $key . '_no'
+                    ]) !!}
+                    <label class="form-check-label" for="{{ $key . '_no' }}">
+                        {{ $details['options'][0] == 0 ? 'No' : $details['options'][0] }}
+                    </label>
+                </div>
+            </div>
+
         @else
             {!! Form::$inputType($key, old($key, $details['value']), [
-                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : '')
+                'class' => 'form-control' . ($errors->has($key) ? ' is-invalid' : ''),  'placeholder' => $details['name']
             ]) !!}
         @endif
-
         @if ($errors->has($key))
             <span class="invalid-feedback">{{ $errors->first($key) }}</span>
         @endif
     </div>
-
     <div class="col-sm-5">
         {!! Form::text($key . '_remark', old($key . '_remark', $details['remarks']), [
             'class' => 'form-control' . ($errors->has($key . '_remark') ? ' is-invalid' : ''),
@@ -155,18 +217,9 @@
             <span class="invalid-feedback">{{ $errors->first($key . '_remark') }}</span>
         @endif
     </div>
-</div>
-
-        @endforeach
-
-
     </div>
-
-
-
-
-
-
+        @endforeach
+    </div>
 </div><!-- /.box-body -->
 <div class="card-footer">
     <span id="editButton" class="btn btn-info">Edit</span>
@@ -175,67 +228,98 @@
 </div>
 {!! Form::close() !!}
 </div>
-
-
 </div><!-- /.box -->
 @stop
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Function to toggle readonly attribute
-        function toggleReadOnly(readonly) {
-            $('input').prop('readonly', readonly);
-            $('select').prop('disabled', readonly);
-        }
+$(document).ready(function () {
+    // Initialize Select2 for multi-select fields
+    $('.select2-multi').select2({
+        width: '100%'
+    });
 
-        // Initially set form fields as read-only
-        toggleReadOnly(true);
-
-        // Edit button click event
-        $('#editButton').click(function() {
-            $('input').removeAttr('readonly');
-            $('select').removeAttr('disabled');
-            $('#editButton').hide();
-            $('#saveButton').show();
-        });
-
-        // Check for errors and update buttons accordingly
-        var hasErrors = $('.alert-danger').length > 0;
-
-        if (hasErrors) {
-            $('input').removeAttr('readonly');
-            $('select').removeAttr('disabled');
-            $('#editButton').hide();
-            $('#saveButton').show();
-        } else {
-            $('#saveButton').hide();
-            $('#editButton').show();
-        }
-
-        // Initialize select2 for multi-select fields
-        $('.select2-multi').select2({
-            placeholder: 'Select options',
-            allowClear: true
-        }).on('select2:select', function(e) {
-            // Add inline style to selected options
-            $(this).next('.select2-container').find('.select2-selection__choice').css('color', 'black');
-        });
-
-        // Handle form submission for multi-select fields
-        $('form').on('submit', function(e) {
-            const multiselectFields = $('select[multiple]');
-            multiselectFields.each(function() {
-                const selectedOptions = $(this).val();
-                const hiddenInput = $('<input>')
-                    .attr('type', 'hidden')
-                    .attr('name', this.name.replace('[]', ''))
-                    .val(selectedOptions.join(','));
-                $(this).after(hiddenInput);
-                $(this).prop('disabled', true);
-            });
+    // Initialize flatpickr and store instances
+    const flatpickrInstances = [];
+    $('.flatpickr-multiple').each(function() {
+        const instance = flatpickr(this, {
+            mode: 'multiple',
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y',
+            onReady: function(selectedDates, dateStr, instance) {
+                // Store the instance
+                flatpickrInstances.push(instance);
+                // Set initial state based on readonly
+                if ($(instance.element).prop('readonly')) {
+                    disableFlatpickrInstance(instance);
+                }
+            }
         });
     });
+
+    // Function to disable a flatpickr instance
+    function disableFlatpickrInstance(instance) {
+        instance.set('clickOpens', false);
+        instance._input.disabled = true;
+        instance._input.readOnly = true;
+        instance._input.style.pointerEvents = 'none';
+        instance._input.style.backgroundColor = '#e9ecef';
+        instance.close(); // Ensure calendar is closed
+    }
+
+    // Function to enable a flatpickr instance
+    function enableFlatpickrInstance(instance) {
+        instance.set('clickOpens', true);
+        instance._input.disabled = false;
+        instance._input.readOnly = false;
+        instance._input.style.pointerEvents = 'auto';
+        instance._input.style.backgroundColor = '#fff';
+    }
+
+    // Function to toggle readonly/disabled state
+    function toggleReadOnly(readonly) {
+        $('input').not('.flatpickr-multiple').prop('readonly', readonly);
+        $('select').prop('disabled', readonly);
+        $('.boolean-wrapper input[type=radio]').prop('disabled', readonly);
+        if (readonly) {
+            // Disable select2s visually
+            $('.select2-multi').prop('disabled', true).trigger('change');
+            
+            // Disable all flatpickr instances
+            flatpickrInstances.forEach(instance => {
+                disableFlatpickrInstance(instance);
+            });
+        } else {
+            $('.select2-multi').prop('disabled', false).trigger('change');
+            
+            // Enable all flatpickr instances
+            flatpickrInstances.forEach(instance => {
+                enableFlatpickrInstance(instance);
+            });
+        }
+    }
+
+    // Initially readonly
+    toggleReadOnly(true);
+
+    // Edit button click
+    $('#editButton').click(function () {
+        toggleReadOnly(false);
+        $('#editButton').hide();
+        $('#saveButton').show();
+    });
+
+    // Check if form has validation errors, then unlock fields
+    if ($('.alert-danger').length > 0) {
+        toggleReadOnly(false);
+        $('#editButton').hide();
+        $('#saveButton').show();
+    } else {
+        $('#saveButton').hide();
+        $('#editButton').show();
+    }
+});
 </script>
 @endpush

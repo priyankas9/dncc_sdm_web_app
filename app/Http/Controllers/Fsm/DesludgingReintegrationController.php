@@ -43,17 +43,31 @@ class DesludgingReintegrationController extends Controller
                       AND b.deleted_at IS NULL
                   LEFT JOIN building_info.owners AS o ON o.bin = b.bin AND o.deleted_at IS  NULL
                   WHERE  (c.status = '4' OR c.status = '5') 
-      AND (b.wasa_status IS NULL OR b.wasa_status = false) AND c.deleted_at IS NULL) final_result 
-       order by  final_result.next_emptying_date ASC";
+      AND (b.wasa_status IS NULL OR b.wasa_status = 'false') AND c.deleted_at IS NULL) final_result 
+       order by  final_result.next_emptying_date DESC
+        ";
+
+        // Execute the query and get the results
       $buildingResults = DB::SELECT($query);
       // Add the action column
-      foreach ($buildingResults as $key => $building) {
-        $buildingResults[$key]->action =
-            '<a href="/view/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">View</a> ' .
-            '<a href="/edit/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Edit</a> ' .
-            '<a href="/delete/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;" onclick="return confirm(\'Are you sure you want to delete this item?\')">Delete</a> ' .
-            '<a href="/download/' . $building->bin . '" class="btn btn-sm" style="background-color: #17A2B8; color: white;">Download</a>';
-    }
-      return DataTables::of($buildingResults)->make(true);
+     
+       return Datatables::of($buildingResults)
+         ->addColumn('action', function ($building) {
+                $action = '';
+
+                if (auth()->user()->can('Confirm Schedule Reintegration')) {
+                    $action .= '<a href="javascript:void(0);" 
+                                class="btn btn-sm mb-1 confirm-emptying-btn"
+                                title="Confirm Schedule Desludging"
+                                style="background-color: #17A2B8; color: white; margin-right: 2px;"
+                                data-action_type="confirm">
+                                <i class="fa-solid fa-check"></i>
+                            </a>';
+                }
+
+                return $action;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }

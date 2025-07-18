@@ -119,6 +119,10 @@ class Application extends Model
         return $this->hasOne(Emptying::class,'application_id','id');
     }
 
+    public function supervisory_assessment(){
+        return $this->hasOne(SupervisoryAssessment::class,'application_id','id');
+    }
+
     /**
      * Get the help desk associated with the application.
      *

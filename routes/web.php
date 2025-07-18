@@ -40,8 +40,8 @@ Route::get('/', function () {
 Route::middleware('fixed_token_auth')->get('redirect-to-map/{ebps_id}', [ApiServiceController::class, 'getMapUrl'])->name('maps.view');
 
 
-Route::get('/files', 'FileController@index')->name('files.index');
-Route::post('/files/upload', 'FileController@upload')->name('files.upload');
+// Route::get('/files', 'FileController@index')->name('files.index');
+// Route::post('/files/upload', 'FileController@upload')->name('files.upload');
 
 
 
@@ -107,22 +107,22 @@ Route::group([
     Route::resource('building-surveys', 'BuildingSurveyController');
 });
 
+/**
+ * Layer Info
+ */
+Route::group([
+    'name' => 'low-income-communities',
+    'prefix' => 'layer-info',
+    'namespace' => 'LayerInfo'
+], function () {
     /**
-     * Layer Info
+     * Low Income Community
      */
-    Route::group([
-        'name' => 'low-income-communities',
-        'prefix' => 'layer-info',
-        'namespace' => 'LayerInfo'
-    ], function () {
-        /**
-        * Low Income Community
-        */
-        Route::get('low-income-communities/data', 'LowIncomeCommunityController@getData');
-        Route::get('low-income-communities/export', 'LowIncomeCommunityController@export');
-        Route::get('low-income-communities/{id}/history', 'LowIncomeCommunityController@history');
-        Route::resource('low-income-communities', 'LowIncomeCommunityController');
-    });
+    Route::get('low-income-communities/data', 'LowIncomeCommunityController@getData');
+    Route::get('low-income-communities/export', 'LowIncomeCommunityController@export');
+    Route::get('low-income-communities/{id}/history', 'LowIncomeCommunityController@history');
+    Route::resource('low-income-communities', 'LowIncomeCommunityController');
+});
 /**
  * Users Routes
  */
@@ -142,6 +142,9 @@ Route::group([
 
     Route::resource("roles", "RoleController");
     Route::get('searchPermission/{id}', 'RoleController@searchPermission');
+
+    Route::resource('/site-setting', 'SiteController');
+    Route::get('/site-setting/data', 'SiteController@getData');
 });
 
 // Tax Payment routes
@@ -252,18 +255,8 @@ Route::group([
 /**
  * Pdf Generation Routes
  */
-Route::group([
-    'name' => 'pdf',
-    'prefix' => 'pdf',
-    'namespace' => 'PdfGeneration',
-    'middleware' => 'auth'
-], function () {
-    Route::get('/pdf', [PdfGenerationController::class, 'index'])->name('pdf.index');
-    Route::get('pdf/data', 'PdfGenerationController@getData');
 
-    
-    // Route::resource('pdf/pdf-generation', 'PdfGenerationController');
-});
+
 /**
  * FSM Info Routes
  */
@@ -280,25 +273,29 @@ Route::group([
 
     Route::get('/treatment-plant-performance-test/data', 'TreatmentplantPerformanceTestController@getData');
     Route::resource('/treatment-plant-performance-test', 'TreatmentplantPerformanceTestController');
-    
+
 
     Route::get('fsmdashboard', 'FsmDashboardController@index')->name('fsmdashboard');
     Route::get('/store-kpi', 'KpiDashboardController@storekpi');
     Route::get('/data', 'KpiDashboardController@data');
     Route::get('/card', 'KpiDashboardController@card');
-
+    Route::get('/supervisory-assessment/export', 'SupervisoryAssessmentController@download')->name('supervisory-assessment.export');
+    Route::get('/supervisory-assessment/data', 'SupervisoryAssessmentController@getData');
+    Route::get('supervisoryassessment/{id}/history', 'SupervisoryAssessmentController@history')->name('supervisory-assessment.history');
     Route::get('generate-report/{year?}/{serviceprovider?}', 'KpiDashboardController@generateReport');
     Route::resource('/kpi-dashboard', 'KpiDashboardController');
-    
+    Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
+
     /**
      *
 
      * Desludging Schedule & Desludging Schedule Reintegration Routes
      */
+    Route::post('/schedule-desludging/trips-allocated-range', 'DesludgingScheduleController@trips_allocated_range')->name('schedule.tripsallocated.range');
     Route::post('/desludging-schedule/disagreeEmptying/{bin}', 'DesludgingScheduleController@disagreeEmptying');
     Route::get('/serviceprovider', [DesludgingScheduleController::class, 'getServiceProviderData']);
     Route::get('/desludging-reintegration/data', 'DesludgingReintegrationController@getData');
-    Route::resource('/supervisory-assessment', 'SupervisoryAssessmentController');
+
     Route::resource('/desludging-reintegration', 'DesludgingReintegrationController');
     Route::get('/desludging-schedule/data', 'DesludgingScheduleController@getData');
     Route::get('/desludging-schedule/export', 'DesludgingScheduleController@export');
@@ -307,7 +304,7 @@ Route::group([
     Route::post('/confirm-application', 'DesludgingScheduleController@confirmApplication')->name('desludging-schedule.confirm-application');
     Route::get('/set-emptying-date', 'DesludgingScheduleController@set_emptying_date')->name('set.emptying.date');
     Route::get('/test', 'DesludgingScheduleController@test');
-    
+    Route::post('/schedule/confirm', 'DesludgingScheduleController@redirectToApplication')->name('schedule.confirm');
 
     /**
      * Kpi Target Routes
@@ -392,7 +389,7 @@ Route::group([
     Route::post('containments/{id}/store', 'ContainmentController@storeContainment');
 
     Route::get('containments/export', 'ContainmentController@export');
-    Route::get('containments/export-building-containment','ContainmentController@exportBuildingContainment');
+    Route::get('containments/export-building-containment', 'ContainmentController@exportBuildingContainment');
 
     Route::get('containments/{id}/history', 'ContainmentController@history');
     Route::get('containments/{id}/type-change-history', 'ContainmentController@typeChangeHistory');
@@ -467,8 +464,6 @@ Route::group([
 
 
     Route::resource('sludge-collection', 'SludgeCollectionController');
-
-
 });
 
 /**
@@ -589,7 +584,7 @@ Route::group([
 
     Route::resource('water-samples', 'WaterSamplesController');
 
-     /**
+    /**
      *Hotspot Indentification Routes
      */
     Route::get('hotspots/data', 'HotspotController@getData');
@@ -600,19 +595,30 @@ Route::group([
 
     Route::resource('hotspots', 'HotspotController');
 });
+
+Route::group([
+    'name' => 'pdf',
+    'prefix' => 'pdf',
+    'middleware' => 'auth',
+    'namespace' => 'Pdf'
+], function () {
+    Route::resource('pdf-generation', 'PdfController')->except(['show']);
+    Route::get('pdf-generation/{id}', 'PdfController@generatePdfReport');
+    Route::get('pdf/data', 'PdfController@getData')->name('pdf.getData');
+});
+
 /**
  * Site SSettings Routes
  */
-Route::group([
-    'name' => 'site',
-    'prefix' => 'site',
-    'middleware' => 'auth',
-    'namespace' => 'Site'
-], function () {
-    Route::resource('/site-setting', 'SiteSettingController');
-
-    Route::get('/site-setting/data', 'SiteSettingController@getData');
-});
+// Route::group([
+//     'name' => 'site',
+//     'prefix' => 'site',
+//     'middleware' => 'auth',
+//     'namespace' => 'Site'
+// ], function () {
+//     Route::resource('/site-setting', 'SiteSettingController');
+//     Route::get('/site-setting/data', 'SiteSettingController@getData');
+// });
 
 Route::group([
     'name' => 'language',
@@ -630,6 +636,7 @@ Route::group([
     Route::post('/save-translation/{languageId}', 'LanguageController@saveStepTranslation');
     Route::resource('setup', 'LanguageController');
 });
+
 Route::group(['middleware' => ['auth']], function () {
     /**
      * Logout Routes

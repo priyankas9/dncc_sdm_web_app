@@ -220,6 +220,7 @@ class RoleController extends Controller
         $roles = Permission::where('group','Roles')->orderBy('type')->get();
         $api = Permission::where('group','API')->orderBy('type')->get();
         $language = Permission::where('group','Language')->orderBy('type')->get();
+        $superVisoryAssessment = Permission::where('group','Supervisory Assessment')->orderBy('type')->get();
 
         $groupedPermissions = collect([
             'Dashboard' => $dashboard,
@@ -263,6 +264,7 @@ class RoleController extends Controller
             'Roles' => $roles,
             'API' => $api,
             'Language' => $language,
+            'Supervisory Assessment' => $superVisoryAssessment,
         ]);
 
         return $groupedPermissions;

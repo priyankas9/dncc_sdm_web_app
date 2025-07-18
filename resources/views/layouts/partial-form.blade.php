@@ -3,14 +3,18 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 {{--
 A dynamic form layout
 --}}
-
+@php
+   $isConfirm = session('action_type') === 'confirm';
+    $isReschedule = session('action_type') === 'reschedule';
+   
+@endphp
 @if(!empty($cardForm))
     <div class="col-sm-12 col-md-8 col-lg-8">
     @foreach($formFields as $group)
             <div class="card" @if(!empty($group['id'])) id="{{ $group['id'] }}" @endif @if(!empty($group['hidden'])) @if($group['hidden'] === true) style="display: none" @endif @endif>
                 <div class="card-header">
                     {{ $group['title'] }}
-                    @if(!empty($group["copyDetails"]))
+                      @if(!empty($group["copyDetails"]))
                         @if($group["copyDetails"])
                             <div class="clearfix float-right">
                                 <div class="icheck-primary d-inline">
@@ -37,12 +41,45 @@ A dynamic form layout
                             @if($field->inputType === 'number')
                                 {!! Form::number($field->inputId,$field->inputValue,['class' => $field->inputClass, 'placeholder' => $field->placeholder,'disabled' => $field->disabled, 'oninput'=>$field->oninput]) !!}
                             @endif
-                            @if($field->inputType === 'select')
-                                {!! Form::select($field->inputId,$field->selectValues,$field->selectedValue,['class' => $field->inputClass, 'placeholder' => $field->placeholder,'disabled' => $field->disabled]) !!}
+                           @if($field->inputType === 'select')
+                        @if($field->inputId === 'service_provider_id')
+                            @if($autoAssign)
+                                <!-- Hidden input to actually submit the ID -->
+                        <input type="hidden" name="service_provider_id" value="{{ $assignedServiceProviderId }}">
+
+                        <!-- Read-only input to display the name -->
+                       
+                        <input type="text" class="form-control" id="service_provider_name" value="{{ $assignedServiceProviderName }}" readonly>
+                            @elseif($serviceProviders->isEmpty())
+                                <div class="alert alert-warning">No service providers available.</div>  
+
+                        @else
+                           
+                            <select name="service_provider_id" id="service_provider_id" class="form-control" required>
+                                @foreach($serviceProviders as $provider)
+                                    <option value="{{ $provider->id }}" {{ $field->selectedValue == $provider->id ? 'selected' : '' }}>
+                                        {{ $provider->company_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
+                            @else
+                                {!! Form::select(
+                                    $field->inputId,
+                                    $field->selectValues,
+                                    $field->selectedValue,
+                                    [
+                                        'class' => $field->inputClass,
+                                        'placeholder' => $field->placeholder,
+                                        'disabled' => $field->disabled
+                                    ]
+                                ) !!}
                                 @if($field->disabled)
-                                {!! Form::hidden($field->inputId,$field->selectedValue) !!}
+                                    {!! Form::hidden($field->inputId, $field->selectedValue) !!}
                                 @endif
                             @endif
+                        @endif
+
                             @if($field->inputType === 'label')
                                 {!! Form::label($field->inputId,$field->labelValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
                             @endif
@@ -50,17 +87,50 @@ A dynamic form layout
                                 {!! Form::radio($field->inputId,$field->labelValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
                             @endif
                             @if($field->inputType === 'multiple-select')
-                                {!! Form::select($field->inputId,$field->selectValues,$field->selectedValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
+                            {!! Form::select($field->inputId ,
+                                $field->selectValues,
+                                $field->selectedValue,['class' => $field->inputClass,'disabled' => $field->disabled]) !!}
+
+                            @if($field->disabled)
+                                <input type="hidden" name="{{ $field->inputId }}" value="{{ is_array($field->selectedValue) ? implode(',', $field->selectedValue) : $field->selectedValue }}">
+                            @endif
                             @endif
                             @if($field->inputType === 'date')
-                            {!! Form::date($field->inputId, $field->inputValue, [
-                                'onclick' => 'this.showPicker()', 
-                                'class' => $field->inputClass, 
-                                'disabled' => $field->disabled,
-                                'autocomplete' => 'off'
-                            ]) !!}
+                                @if($isConfirm)
+                                    {{-- Confirm state: Native date picker --}}
+                                    {!! Form::date($field->inputId, $field->inputValue, [
+                                        'onclick' => 'this.showPicker()', 
+                                        'class' => $field->inputClass, 
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off',
+                                        'max' => session('next_emptying_date'),
+                                    ]) !!}
+                                @elseif($isReschedule)
+                                    {{-- Reschedule state: Text input styled as date picker --}}
+                                    {!! Form::text($field->inputId, $field->inputValue, [
+                                        'class' => $field->inputClass . ' flatpickr-reschedule',
+                                        'id' => $field->inputId,
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off',
+                                        'placeholder' => 'mm/dd/yyyy',
+                                        'style' => 'background-color: #fff !important; cursor: pointer;'
+                                    ]) !!}
+                                @else
+                                    {!! Form::text($field->inputId, $field->inputValue, [
+                                        'class' => $field->inputClass . ' flatpickr-reschedule', // <- add flatpickr class
+                                        'id' => $field->inputId,
+                                        'disabled' => $field->disabled,
+                                        'autocomplete' => 'off',
+                                        'placeholder' => 'mm/dd/yyyy',
+                                        'style' => 'background-color: #fff !important; cursor: pointer;'
+                                    ]) !!}
+                                @endif
 
 
+                                {{-- Hidden input when disabled --}}
+                                @if($field->disabled)
+                                    <input type="hidden" name="{{ $field->inputId }}" value="{{ $field->inputValue }}">
+                                @endif
                             @endif
                             @if($field->inputType === 'file_viewer')
                                     <div class="input-group mb-3">
@@ -113,6 +183,9 @@ A dynamic form layout
                                             </script>
                                         @endpush
                                     </div>
+                                @endif
+                                @if(isset($action_type))
+                                    <input type="hidden" name="action_type" value="{{ $action_type }}">
                                 @endif
                         </div>
                     </div>

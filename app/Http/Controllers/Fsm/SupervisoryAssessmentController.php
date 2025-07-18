@@ -3,14 +3,24 @@
 namespace App\Http\Controllers\Fsm;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Fsm\SupervisoryAssessmentRequest;
+use App\Http\Requests\Fsm\SupervisoryRequest;
 use App\Models\BuildingInfo\BuildContain;
 use App\Models\BuildingInfo\Owner;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
 use App\Models\Fsm\ContainmentType;
 use App\Models\Fsm\SupervisoryAssessment;
+use Box\Spout\Common\Type;
+use Box\Spout\Writer\Style\Color;
+use Box\Spout\Writer\Style\StyleBuilder;
+use Box\Spout\Writer\WriterFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Venturecraft\Revisionable\Revision;
+use Yajra\DataTables\DataTables;
 
 class SupervisoryAssessmentController extends Controller
 {
@@ -23,29 +33,92 @@ class SupervisoryAssessmentController extends Controller
     {
         return view('fsm.supervisory-assessment.index');
     }
+    public function getData(Request $request)
+    {
+        $data = $request->all();
+       
+            $pdfBodyData = SupervisoryAssessment::select('*')->orderBy('id', 'desc');
+            
+            return DataTables::of($pdfBodyData)
+             ->filter(function ($query) use ($data) {
+                // if ($data['trtpltid']) {
+                //     $query->where('id', $data['trtpltid']);
+                // }
+                if ($data['owner_name']) {
 
+                    $query->where('owner_name', 'ILIKE', '%' .  trim($data['owner_name']) . '%');
+                }
+
+                if ($data['application_id']) {
+                    $query->where('application_id', 'ILIKE', '%' . $data['application_id'] . '%');
+                }
+
+                if ($data['holding_num']) {
+                    $query->where('holding_number', 'ILIKE', '%'.$data['holding_num'].'%');
+                }
+            })
+                ->addColumn('action', function ($model) {
+                    $content = \Form::open(['method' => 'DELETE',
+                    'route' => ['supervisory-assessment.destroy', $model->id]]);
+                    if (Auth::user()->can('View Emptying')) {
+                        $content .= '<a title="Detail" href="' . route('supervisory-assessment.show', [$model->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-list"></i></a> ';
+                    }
+                    if (Auth::user()->can('View Emptyings History')) {
+                    $content .= '<a title="History" href="' . route('supervisory-assessment.history', $model->id) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-history"></i></a> ';
+                    }
+                    if (Auth::user()->can('Delete Emptying')) {
+                        $content .= '<a title="Delete"  class="delete  btn-danger btn  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
+                    }
+                    $content .= \Form::close();
+                    return $content;
+                })
+                ->rawColumns(['emptying_status', 'feedback_status', 'action'])
+                ->make(true);
+               
+    }
+    
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
-    {      
-        $value = rtrim(request()->getQueryString(), '=');
-       
-        $page_title = 'Add Supervisory Assessment';
-        // Get the slug from the query string
-        $slug = array_keys($request->query())[0] ?? null;
-        $owner_detail  = Owner::where('bin', $slug)->first();
-        $application = Application::where('bin', $slug)->first();
-        $containment_id = BuildContain::where('bin', $slug)->first()->containment_id;
-        $containment = Containment::where('id', $containment_id)->first();
-        $type_id = Containment::where('id', $containment_id)->first()->type_id;
-        $containment_type = ContainmentType::pluck('type', 'id');
-        
-        return view('fsm.supervisory-assessment.create', compact('page_title', 'slug', 'owner_detail', 'type_id', 'containment_type', 'containment', 'application', 'value'));
 
+  public function create(Request $request)
+{      
+    $value = rtrim(request()->getQueryString(), '=');
+    
+    $page_title = 'Add Supervisory Assessment';
+    $slug = array_keys($request->query())[0] ?? null;
+    $supervisoryassessment = new SupervisoryAssessment(); // Empty instance
+    $owner_detail = Owner::where('bin', $slug)->first();
+    $application = Application::where('bin', $slug)->first();
+    
+    // Get containment details
+    $build_contain = BuildContain::where('bin', $slug)->first();
+    $containment = $build_contain ? Containment::find($build_contain->containment_id) : null;
+    $type_id = $containment ? $containment->type_id : null;
+    
+    // Get all types for dropdown
+    $containment_types = ContainmentType::all();
+    
+    // Pre-fill the supervisoryassessment with type_id if available
+    if ($type_id) {
+        $supervisoryassessment->containment_type = $type_id;
+        $supervisoryassessment->containmentType = ContainmentType::find($type_id); // Load relationship
     }
+
+    return view('fsm.supervisory-assessment.create', compact(
+        'page_title', 
+        'slug', 
+        'owner_detail', 
+        'type_id', 
+        'containment_types', 
+        'containment',
+        'application', 
+        'value',
+        'supervisoryassessment' // Now contains type_id if available
+    ));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -53,13 +126,13 @@ class SupervisoryAssessmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    { 
-        
-       
+    public function store(SupervisoryRequest $request)
+    {   $slug = $request->slug; 
+        $application = Application::where('bin', $slug)->first();
     
         // Store the data
         $assessment = new SupervisoryAssessment();
+        $assessment->application_id = $application->id;
         $assessment->holding_number = $request->holding_number;
         $assessment->owner_name = $request->owner_name;
         $assessment->owner_gender = $request->owner_gender;
@@ -84,7 +157,7 @@ class SupervisoryAssessmentController extends Controller
         $assessment->save();
     
         // Update the application status
-        $slug = $request->slug;
+
         $application = Application::where('bin', $slug)->first();
         $application->supervisory_assessment_status = true;
         $application->save();
@@ -93,7 +166,23 @@ class SupervisoryAssessmentController extends Controller
         return redirect(route('application.index'))->with('success', 'Supervisory Assessment created successfully');
     }
     
-    
+    public function history($id)
+    {
+        try {
+            $supervisoryassessment = SupervisoryAssessment::findOrFail($id);
+            $revisions = Revision::all()
+                ->where('revisionable_type', get_class($supervisoryassessment))
+                ->where('revisionable_id', $id)
+                ->groupBy(function ($item) {
+                    return $item->created_at->format("D M j Y");
+                })
+                ->sortByDesc('created_at')
+                ->reverse();
+        } catch (\Throwable $e) {
+            return redirect(route('supervisory-assessment.index'))->with('error', 'Failed to generate history.');
+        }
+        return view('fsm.supervisory-assessment.history', compact('supervisoryassessment', 'revisions'));
+    }
 
     /**
      * Display the specified resource.
@@ -101,22 +190,40 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
+  public function show($id)
+{
+    $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
+    
+    if ($supervisoryassessment) {
+        $page_title = "Supervisory Assessment Details";
+        return view('fsm.supervisory-assessment.show', compact('page_title', 'supervisoryassessment'));
+    } else {
+        abort(404);
     }
+}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+public function edit($id)
+{
+    $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
+    
+    if ($supervisoryassessment) {
+        $page_title = "Edit Supervisory Assessment";
+        $application = Application::find($supervisoryassessment->application_id);
+        $owner_detail = SupervisoryAssessment::where('id', $id)->first();
+        $containment = SupervisoryAssessment::where('id', $id)->first();
+        $containment_types = ContainmentType::all(); // Get all types for dropdown
+        $indexAction = url()->previous();
+        
+        return view('fsm.supervisory-assessment.edit', compact(
+            'page_title',
+            'supervisoryassessment',
+            'containment_types',
+            'indexAction','owner_detail','containment','application'
+        ));
+    } else {
+        abort(404);
     }
-
+}
     /**
      * Update the specified resource in storage.
      *
@@ -124,9 +231,34 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SupervisoryRequest $request, $id)
     {
-        //
+        $assessment = SupervisoryAssessment::find($id);
+        if ($assessment) {
+            $assessment->holding_number = $request->holding_number;
+            $assessment->owner_name = $request->owner_name;
+            $assessment->owner_gender = $request->owner_gender;
+            $assessment->owner_contact = $request->owner_contact;
+            $assessment->containment_type = $request->containment_type;
+            $assessment->containment_outlet_connection = $request->containment_outlet_connection;
+            $assessment->containment_volume = $request->containment_volume;
+            $assessment->road_width = $request->road_width;
+            $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
+            $assessment->septic_tank_length = $request->septic_tank_length;
+            $assessment->septic_tank_width = $request->septic_tank_width;
+            $assessment->septic_tank_depth = $request->septic_tank_depth;
+            $assessment->number_of_pit_rings = $request->number_of_pit_rings;
+            $assessment->pit_diameter = $request->pit_diameter;
+            $assessment->pit_depth = $request->pit_depth;
+            $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
+            $assessment->number_of_trips = $request->number_of_trips;
+            $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
+            $assessment->advance_paid_amount = $request->advance_paid_amount;
+            $assessment->save();
+            return redirect('fsm/supervisory-assessment')->with('success','Supervisory Assessment updated successfully');
+        } else {
+            return redirect('fsm/supervisory-assessment')->with('error','Failed to update supervisory assessment');
+        }
     }
 
     /**
@@ -135,8 +267,148 @@ class SupervisoryAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+ public function destroy($id)
+{
+    $supervisoryassessment = SupervisoryAssessment::find($id);
+
+    if (!$supervisoryassessment) {
+        return redirect('fsm/supervisory-assessment')->with('error', 'Supervisory Assessment not found.');
     }
+
+    // Check application emptying status if application_id exists
+    if ($supervisoryassessment->application_id) {
+        $application = Application::find($supervisoryassessment->application_id);
+
+        if ($application && $application->emptying_status) {
+            return redirect('fsm/supervisory-assessment')
+                ->with('error', 'Cannot delete — emptying has already been done for this application.');
+        }
+    }
+
+    // Start transaction
+    DB::beginTransaction();
+
+    try {
+        // Store application_id before deletion
+        $applicationId = $supervisoryassessment->application_id;
+        
+        // Delete the assessment
+        $supervisoryassessment->delete();
+        
+        // Update the corresponding application's status
+        if ($applicationId) {
+            Application::where('id', $applicationId)
+                ->update(['supervisory_assessment_status' => false]);
+        }
+        
+        DB::commit();
+        
+        return redirect('fsm/supervisory-assessment')->with('success', 'Supervisory Assessment deleted successfully!');
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect('fsm/supervisory-assessment')
+            ->with('error', 'Failed to delete supervisory assessment: ' . $e->getMessage());
+    }
+}
+   public function download()
+{
+    $searchData = request('searchData');
+    $owner_name = request('owner_name');
+    $application_id = request('application_id');
+    $holding_num = request('holding_num');
+
+    // Custom header labels you want in the CSV
+    $columns = [
+        'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
+        'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
+        'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
+        'Number of Pit Rings', 'Pit Diameter (m)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
+        'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
+    ];
+
+    // Build query with join to containment_types
+    $query = SupervisoryAssessment::select(
+        'supervisory_assessments.id',
+        'supervisory_assessments.application_id',
+        'supervisory_assessments.holding_number',
+        'supervisory_assessments.owner_name',
+        'supervisory_assessments.owner_gender',
+        'supervisory_assessments.owner_contact',
+        'fsm.containment_types.type as containment_type', // Get the type name instead of ID
+        'supervisory_assessments.containment_outlet_connection',
+        'supervisory_assessments.containment_volume',
+        'supervisory_assessments.road_width',
+        'supervisory_assessments.distance_from_nearest_road',
+        'supervisory_assessments.septic_tank_length',
+        'supervisory_assessments.septic_tank_width',
+        'supervisory_assessments.septic_tank_depth',
+        'supervisory_assessments.number_of_pit_rings',
+        'supervisory_assessments.pit_diameter',
+        'supervisory_assessments.pit_depth',
+        'supervisory_assessments.appropriate_desludging_vehicle_size',
+        'supervisory_assessments.number_of_trips',
+        'supervisory_assessments.confirmed_emptying_date',
+        'supervisory_assessments.advance_paid_amount'
+    )
+    ->leftJoin('fsm.containment_types', 'supervisory_assessments.containment_type', '=', 'fsm.containment_types.id')
+    ->whereNull('supervisory_assessments.deleted_at');
+
+    if (!empty($owner_name)) {
+        $query->where('supervisory_assessments.owner_name', 'ILIKE', '%' . $owner_name . '%');
+    }
+    if (!empty($application_id)) {
+        $query->where('supervisory_assessments.application_id', 'ILIKE', '%' . $application_id . '%');
+    }
+    if (!empty($holding_num)) {
+        $query->where('supervisory_assessments.holding_number', 'ILIKE', '%' . $holding_num . '%');
+    }
+
+    $style = (new StyleBuilder())
+        ->setFontBold()
+        ->setFontSize(13)
+        ->setBackgroundColor(Color::rgb(228, 228, 228))
+        ->build();
+
+    $writer = WriterFactory::create(Type::CSV);
+
+    $writer->openToBrowser('Supervisory Assessment.csv')
+        ->addRowWithStyle($columns, $style);
+
+    $query->chunk(5000, function ($records) use ($writer) {
+        foreach ($records as $data) {
+            $values = [
+                $data->id,
+                $data->application_id,
+                $data->holding_number,
+                $data->owner_name,
+                $data->owner_gender,
+                $data->owner_contact,
+                $data->containment_type, // This will now be the type name from the joined table
+                $data->containment_outlet_connection,
+                $data->containment_volume,
+                $data->road_width,
+                $data->distance_from_nearest_road,
+                $data->septic_tank_length,
+                $data->septic_tank_width,
+                $data->septic_tank_depth,
+                $data->number_of_pit_rings,
+                $data->pit_diameter,
+                $data->pit_depth,
+                $data->appropriate_desludging_vehicle_size,
+                $data->number_of_trips,
+                $data->confirmed_emptying_date,
+                $data->advance_paid_amount
+            ];
+
+            $writer->addRow($values);
+        }
+    });
+
+    $writer->close();
+}
+
+
+    
+    
 }

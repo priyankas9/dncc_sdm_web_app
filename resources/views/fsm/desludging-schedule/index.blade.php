@@ -1,54 +1,75 @@
 <!-- Last Modified Date: 19-04-2024
 Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 @extends('layouts.dashboard')
+@section('title', $page_title)
 @push('style')
-
-@endpush
 <style type="text/css">
+
     .dataTables_filter {
         display: none;
     }
  /* Fullscreen overlay */
- #loader-overlay {
-        display: none; /* Hidden by default */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-        z-index: 9999; /* High priority */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        #loader-overlay {
+                display: none; /* Hidden by default */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+                z-index: 9999; /* High priority */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-    /* Loader content */
-    .loader-content {
-        text-align: center;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px;
-    }
+            /* Loader content */
+            .loader-content {
+                text-align: center;
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 0px 10px;
+            }
 
-    /* Spinner icon */
-    .fa-spinner {
-        font-size: 30px;
-        margin-bottom: 10px;
-    }
-    .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
-.btn-labeled {padding-top: 0;padding-bottom: 0;}
-.btn { margin-bottom:10px; }
+            /* Spinner icon */
+            .fa-spinner {
+                font-size: 30px;
+                margin-bottom: 10px;
+            }
+            .btn-label {position: relative;left: -12px;display: inline-block;padding: 6px 12px;background: rgba(0,0,0,0.15);border-radius: 3px 0 0 3px;}
+        .btn-labeled {padding-top: 0;padding-bottom: 0;}
+        .btn { margin-bottom:10px; }
+        .static-ping {
+        position: relative;
+        }
+
+        .static-ping::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        width: 10px;
+        height: 10px;
+        background-color:rgb(8, 182, 245); /* or whatever color you like */
+        border-radius: 50%;
+        z-index: 2;
+        }
 </style>
-
-@section('title', $page_title)
+@endpush
 @section('content')
 
-<div class="card">
+<div class="card" id="cards">
     <div class="card-header">
+        @can('Regenerate Schedule Desludging')
         <a href="#" id="regenerate-btn" class="btn btn-info">Regenerate Desludging Schedule</a>
+        @endcan
+         @can('Export Schedule Desludging')
         <a href="#" id="export" class="btn btn-info">Export to CSV</a>
+      @endcan
+      @can('Filter Schedule Desludging')
+     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">Show Filter</a> 
+        @endcan
     </div><!-- /.card-header -->
     <div id="loader-overlay" style="display: none;">
     <div class="loader-content">
@@ -58,28 +79,85 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
     </div>
 
     <div class="card-body">
+           <div class="row">
+                        <div class="col-12">
+                            <div class="accordion" id="accordionFilter">
+                                <div class="accordion-item">
+                                    <div id="collapseFilter" class="collapse" aria-labelledby="filter"
+                                        data-parent="#accordionFilter">
+                                        <div class="accordion-body">
+                                            <form class="form-horizontal" id="filter-form">
+                                                <div class="form-group row">
+                                                    <label for="bin" class="col-md-2 col-form-label ">BIN</label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="bin" placeholder= "BIN" />
+                                                    </div>
+                                                    <label for="containment_id" class="col-md-2 col-form-label ">Containment ID
+                                                    </label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="containment_id" placeholder= "Containment ID"/>
+                                                    </div>
+                                                    <label for="holding_num" class="col-md-2 col-form-label ">Holding Number
+                                                    </label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="holding_num" placeholder= "Holding Number"/>
+                                                    </div>
+                                                    
+                                                </div>
+                                                 <div class="form-group row">
+                                                   
+                                                      <label for="owner_name" class="col-md-2 col-form-label ">Owner Name</label>
+                                                    <div class="col-md-2">
+                                                        <input type="text" class="form-control" id="owner_name" placeholder= "Owner Name" />
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer text-right">
+                                                    <button type="submit" class="btn btn-info ">Filter</button>
+                                                    <button type="reset" id="reset-filter" class="btn btn-info">Reset</button>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
         <div style="overflow: auto; width: 100%;">
             <table id="data-table" class="table table-bordered table-striped dtr-inline" width="100%">
                 <thead>
                     <tr>
                         <th>BIN</th>
+                        <th>Containment ID</th>
                         <th>House Number</th>
                         <th>Area Name</th>
                         <th>Road Number</th>
                         <th>Owner Name</th>
                         <th>Owner Contact</th>
                         <th>Next Emptying Date</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
             </table>
         </div>
     </div><!-- /.box-body -->
-
+    <form id="confirmEmptyingForm" method="POST" action="{{ route('schedule.confirm') }}" style="display: none;">
+    @csrf
+    <input type="hidden" name="ward">
+    <input type="hidden" name="containment_id">
+    <input type="hidden" name="bin">
+    <input type="hidden" name="owner_name">
+    <input type="hidden" name="owner_contact">
+    <input type="hidden" name="next_emptying_date">
+    <input type="hidden" name="owner_gender">
+    <input type="hidden" name="road_code">
+    <input type="hidden" name="household_served">
+    <input type="hidden" name="population_served">
+    <input type="hidden" name="toilet_count">
+    <input type="hidden" name="action_type" >
+    </form>
     <!-- Bootstrap Modal -->
-  @include('fsm.desludging-schedule.confirm')
-  @include('fsm.desludging-schedule.reschedule')
-    @stop
+@stop
     @push('scripts')
     <!-- Include SweetAlert2 from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -96,11 +174,21 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 ], // Add this line to set the default order by the next_emptying_date column
                 ajax: {
                     url: '{!! url("fsm/desludging-schedule/data") !!}',
+                    data:function(d) {
+                        d.owner_name = $('#owner_name').val();
+                        d.containment_id = $('#containment_id').val();
+                        d.holding_num = $('#holding_num').val();
+                        d.bin = $('#bin').val();
+                    }
                 },
                 columns: [{
                         data: 'bin',
                         name: 'bin'
                     },
+                   {
+                        data: 'id',
+                        name: 'id'
+                },
                     {
                         data: 'house_number',
                         name: 'house_number'
@@ -124,7 +212,14 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                     },
                     {
                         data: 'next_emptying_date',
-                        name: 'next_emptying_date'
+                        name: 'next_emptying_date',
+                        render: function(data, type, row) {
+                            if (!data) return '';
+                            const date = new Date(data);
+                            const day = date.toLocaleDateString('en-US', { weekday: 'long' }); // e.g., Monday
+                            const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); // e.g., 22 Apr 2024
+                            return `${formattedDate},${day}`;
+                        }
                     },
                     {
                         data: 'action',
@@ -135,18 +230,49 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 ]
             });
             resetDataTable(dataTable);
-
+            var owner_name = '',
+                holding_num = '',
+                containment_id = '',
+                bin = '';
             $('#filter-form').on('submit', function(e) {
                 e.preventDefault();
+                 owner_name = $('#owner_name').val();
+                containment_id = $('#containment_id').val();
+                holding_num = $('#holding_num').val();
                 dataTable.draw();
             });
 
             $("#export").on("click", function(e) {
                 e.preventDefault();
                 var searchData = $('input[type=search]').val();
-                window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData;
+                 owner_name = $('#owner_name').val();
+                 containment_id = $('#containment_id').val();
+                 holding_num = $('#holding_num').val();
+                 bin = $('#bin').val();
+                window.location.href = "{!! url('fsm/desludging-schedule/export?searchData=') !!}" + searchData + 
+                    "&owner_name=" + owner_name +
+                    "&containment_id=" + containment_id +
+                    "&holding_num=" + holding_num + "&bin=" + bin;
             });
-
+           
+            $(document).on('click', '.confirm-emptying-btn , .reschedule-emptying-btn', function (e) {
+                e.preventDefault();
+                const form = document.getElementById('confirmEmptyingForm');
+                form.querySelector('[name="ward"]').value = $(this).data('ward');
+                form.querySelector('[name="containment_id"]').value = $(this).data('containment_id');
+                form.querySelector('[name="bin"]').value = $(this).data('bin');
+                form.querySelector('[name="owner_name"]').value = $(this).data('owner_name');
+                form.querySelector('[name="owner_contact"]').value = $(this).data('owner_contact');
+                form.querySelector('[name="owner_gender"]').value = $(this).data('owner_gender');
+                form.querySelector('[name="next_emptying_date"]').value = $(this).data('next_emptying_date');
+                form.querySelector('[name="road_code"]').value = $(this).data('road_code');
+                form.querySelector('[name="population_served"]').value = $(this).data('population_served');
+                form.querySelector('[name="household_served"]').value = $(this).data('household_served');
+                form.querySelector('[name="toilet_count"]').value = $(this).data('toilet_count');
+                form.querySelector('[name="action_type"]').value = $(this).data('action_type');
+                form.submit();
+            });
+          
             $('#regenerate-btn').on('click', function(e) {
             e.preventDefault(); // Prevent default link behavior
             // Show the loader overlay
@@ -190,171 +316,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 }
             });
             });
-          
-            // When the modal is shown
-            $(document).on('click', '.btn-confirm-emptying', function() {
-                var bin = $(this).data('bin');
-                var nextEmptyingDate = $(this).data('next-emptying-date'); // Prefilled value (next emptying date)
-                
-                var owner_name = $(this).data('owner_name');
-                var owner_contact = $(this).data('owner_contact');
-                $('#binId_confirm').val(bin); // Set bin in hidden input field
-                $('#proposed_emptying_date').val(nextEmptyingDate);
-                $('#customer_name').val(owner_name);
-                $('#customer_contact').val(owner_contact);
-                // Prefill the proposed emptying date
-                $('#proposed_emptying_date').attr('min', nextEmptyingDate); // Set max date to prefilled next emptying date
-
-                $('#confirmEmptyingModal').modal('show');
-                if (nextEmptyingDate) {
-                // Convert to Date object and subtract one day
-                var maxDate = new Date(nextEmptyingDate);
-                maxDate.setDate(maxDate.getDate() - 1); // Subtract one day
-                // Format date as YYYY-MM-DD
-                var formattedDate = maxDate.toISOString().split('T')[0];
-                // Set max attribute
-                $('#supervisory_assessment_date').attr('max', formattedDate);
-              
-            }
-            });
-            $(document).on('click', '.btn-reschedule-emptying', function() 
-            {
-                var bin = $(this).data('bin');
-                var nextEmptyingDate = $(this).data('next-emptying-date'); // Prefilled value (next emptying date)
-                var owner_name = $(this).data('owner_name');
-                var owner_contact = $(this).data('owner_contact');
-                $('#binId_reschedule').val(bin); // Set bin in hidden input field
-                $('#proposed_emptying_dates').val(nextEmptyingDate);
-                $('#customer_names').val(owner_name);
-                $('#customer_contacts').val(owner_contact);
-                // Prefill the proposed emptying date
-                $('#proposed_emptying_dates').attr('min', nextEmptyingDate); // Set max date to prefilled next emptying date
-                $('#rescheduleEmptyingModals').modal('show');
-               
-            });
-            
-            // Handle the form submission with validation
-            $('#emptyingFormContainer').on('submit', function(e) {
-                e.preventDefault();
-                let form = $('#emptyingFormContainer');
-                let formData = form.serialize();
-                var prefilledEmptyingDate = $('#proposed_emptying_date').attr('max'); 
-                var userSelectedDate = $('#proposed_emptying_date').val(); 
-                
-                if (userSelectedDate < prefilledEmptyingDate) {
-                    Swal.fire({
-                        title: 'Invalid Date',
-                        text: 'The proposed emptying date must be after the prefilled next emptying date.',
-                        icon: 'error'
-                    });
-                    return;
-                }
-              
-                $.ajax({
-                    url: 'desludging-schedule/submit-application',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: 'Success',
-                                text: response.message,
-                                icon: 'success'
-                            }).then(function() {
-                                $('#confirmEmptyingModal').modal('hide');
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: response.message,
-                                icon: 'error'
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessages = '';
-
-                            $.each(errors, function(key, value) {
-                                errorMessages += value + '<br>';
-                            });
-
-                            Swal.fire({
-                                title: 'Validation Error',
-                                html: errorMessages,
-                                icon: 'error'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.',
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
-            });
-            //
-            $('#rescheduleFormContainer').on('submit', function(e) {
-                e.preventDefault();
-             
-                // Serialize form data manually
-                var formData = $('form').serialize();
-                $.ajax({
-                    url: 'desludging-schedule/submit-application',
-                    type: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            Swal.fire({
-                                title: 'Success',
-                                text: response.message,
-                                icon: 'success'
-                            }).then(function() {
-                                $('#rescheduleEmptyingModalLabel').modal('hide');
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: response.message,
-                                icon: 'error'
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMessages = '';
-
-                            $.each(errors, function(key, value) {
-                                errorMessages += value + '<br>';
-                            });
-
-                            Swal.fire({
-                                title: 'Validation Error',
-                                html: errorMessages,
-                                icon: 'error'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'An error occurred. Please try again.',
-                                icon: 'error'
-                            });
-                        }
-                    }
-                });
-            });
        
         //disagreeemptying
         $(document).on('click', '.btn-unconfirm-emptying', function() {
             var bin = $(this).data('bin');
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: 'Do you want to removed from desludging schedule ?',
+                    text: 'Do you want to be removed from desludging schedule ?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -397,4 +365,4 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 
         });
     </script>
-    @endpush
+@endpush

@@ -981,6 +981,7 @@ class EmptyingService
                 $containment->next_emptying_date = now()->addYears(3);
                 $containment->emptied_status = true;
                 $containment->no_of_times_emptied = $containment->no_of_times_emptied ? 1 : $containment->no_of_times_emptied  + 1;
+                $containment->status = 3;
                 $containment->save();
                 if ($application->emptying_status) {
     
@@ -1064,7 +1065,7 @@ class EmptyingService
      *
      * @throws Exception
      */
-    public function updateEmptying(Request $request, $id)
+       public function updateEmptying(Request $request, $id)
     {   
         $emptying = Emptying::findOrFail($id);
         DB::beginTransaction();
@@ -1091,17 +1092,16 @@ class EmptyingService
                             DB::rollBack(); 
                             return redirect()->back()->withInput()->with('error', __("Error! Unable to save images."));
                         }
-
                     } else {
                         DB::rollBack(); 
                         return redirect()->back()->withInput()->with('error', __("Error! Invalid image format."));
                     }
 
-
                 } elseif (!is_null($request->house_image)) {
                     $extension_house = $request->house_image->getClientOriginalExtension();
                     $check = in_array($extension_house, $allowedFileExt);
                     if ($check) {
+                            dd($application->bin);
                         try {
                             $filename_house = $application->bin . '.' . $extension_house;
                             $storeHouseImg = Image::make($request->house_image)->save(Storage::disk('local')->path('/public/emptyings/houses/' . $filename_house), 50);

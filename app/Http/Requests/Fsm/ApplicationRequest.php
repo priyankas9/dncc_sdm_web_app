@@ -36,8 +36,8 @@ class ApplicationRequest extends FormRequest
             'applicant_gender' => 'required',
             'applicant_contact' => 'required|integer',
             'containment_code' => '',
-            'proposed_emptying_date' => 'required|date|after_or_equal:'.date('m/d/Y'),
-            'supervisory_assessment_date' => 'nullable|date|before:proposed_emptying_date',
+            'proposed_emptying_date' => 'required|date',
+            'supervisory_assessment_date' => 'required|date|before_or_equal:proposed_emptying_date',
             'service_provider_id' => 'required|integer',
             'landmark' => '',
             'emergency_desludging_status' => 'required|boolean',
@@ -77,6 +77,10 @@ class ApplicationRequest extends FormRequest
             'population_served.min' => __('The Population Served must be at least 1.'),
             'toilet_count.integer' => __('The Toilet Count must be an integer.'),
             'toilet_count.min' => __('The Toilet Count must be at least 1.'),
+            'supervisory_assessment_date.required' => 'The Supervisory Assessment Date is required.',
+            'supervisory_assessment_date.date' => 'The Supervisory Assessment Date must be a valid date.',
+            'supervisory_assessment_date.before_or_equal' => 'The Supervisory Assessment Date must be before the Proposed Emptying Date.',
+          
             
 
         ];

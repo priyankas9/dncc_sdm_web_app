@@ -58,7 +58,8 @@ class AuthController extends Controller
                  'Municipality - Super Admin',
                  'Municipality - Building Surveyor',
                  'Municipality - Infrastructure Department',
-                 'Service Provider - Emptying Operator'
+                 'Service Provider - Emptying Operator',
+                 'Municipality - Supervisory Assessment'
              ];
      
              // Check if the user has any of the allowed roles
@@ -83,7 +84,8 @@ class AuthController extends Controller
                      "permissions" => [
                          "building-survey" => (bool)$user->can('Access Building Survey API'),
                          "save-emptying-service" => (bool)$user->can('Access Emptying Service API'),
-                         "sewer-connection" => (bool)$user->can('Access Sewer Connection API')
+                         "sewer-connection" => (bool)$user->can('Access Sewer Connection API'),
+                        "supervisory-assessment" => (bool)$user->can('Access Supervisory Assessment API'),
                      ],
                  ]
              ]);

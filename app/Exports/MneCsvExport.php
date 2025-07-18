@@ -150,7 +150,7 @@ class MneCsvExport implements FromView, WithEvents, WithColumnWidths, ShouldAuto
 
         $drawing = new Drawing();
         $drawing->setName('Logo');
-        $drawing->setPath(public_path('/img/logo-imis.jpg'));
+        $drawing->setPath(public_path('/img/logo-dncc.jpg'));
         $drawing->setHeight(100);
         $drawing->setCoordinates('A1');
         $drawing->setOffsetX(100);

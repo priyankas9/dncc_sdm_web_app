@@ -315,7 +315,7 @@ class ApplicationService
                     placeholder: 'Supervisory Assessment Date',
                 ),
                 new FormField(
-                    label: 'Proposed Emptying Date',
+                    label: __('Proposed Emptying Date'),
                     labelFor: 'proposed_emptying_date',
                     labelClass: 'col-md-2 col-form-label ',
                     inputType: 'date',
@@ -488,7 +488,7 @@ class ApplicationService
                         labelValue: date('m/d/Y', strtotime($application->supervisory_assessment_date)),
                     ),
                     new FormField(
-                        label: 'Proposed Emptying Date',
+                        label: __('Proposed Emptying Date'),
                         labelFor: 'proposed_emptying_date',
                         inputType: 'label',
                         inputId: 'proposed_emptying_date',
@@ -652,7 +652,7 @@ class ApplicationService
                         placeholder: 'Supervisory Assessment Date',
                     ),
                     new FormField(
-                        label: 'Proposed Emptying Date',
+                        label: __('Proposed Emptying Date'),
                         labelFor: 'proposed_emptying_date',
                         inputType: 'date',
                         inputId: 'proposed_emptying_date',

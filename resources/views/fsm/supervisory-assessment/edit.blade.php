@@ -1,38 +1,31 @@
+
 @extends('layouts.dashboard')
 @section('title', $page_title)
 @section('content')
 @include('layouts.components.error-list')
 @include('layouts.components.success-alert')
 @include('layouts.components.error-alert')
-
 <div class="card card-info">
-    {!! Form::open(['url' => 'fsm/supervisory-assessment', 'class' => 'form-horizontal']) !!}
-    
-    <!-- Hidden input to pass the slug value -->
-    <input type="hidden" name="slug" value="{{ $value }}">
-
-    @include('fsm.supervisory-assessment.partial-form', ['submitButtomText' => 'Save'])
-
-    {!! Form::close() !!}
+{!! Form::model($supervisoryassessment, [
+    'method' => 'PATCH',
+    'action' => ['Fsm\SupervisoryAssessmentController@update', $supervisoryassessment->id],
+    'class' => 'form-horizontal',
+   
+]) !!}
+    @include('fsm/supervisory-assessment.partial-form', ['submitButtomText' => 'Update'])
+{!! Form::close() !!}
 </div><!-- /.card -->
 @endsection
 @push('scripts')
 <script> 
      let tripData = {}; // global store
 
-   // assign proposed date from blade into JS variable
-const proposedEmptyingDate = "{{ $application ? $application->proposed_emptying_date : '' }}";
-
-flatpickr('.flatpickr-reschedule', {
+    flatpickr('.flatpickr-reschedule', {
     dateFormat: 'Y-m-d',
     allowInput: true,
-
-
     onReady: function (selectedDates, dateStr, instance) {
         if (instance.input.id === 'confirmed_emptying_date') {
-            
-
-            // Inject legend
+            // Inject legend at the top
             const legendHTML = `
                 <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
                     <div style="display: flex; flex-wrap: wrap; gap: 12px;">
@@ -59,15 +52,11 @@ flatpickr('.flatpickr-reschedule', {
             `;
             const calendarContainer = instance.calendarContainer;
             calendarContainer.insertAdjacentHTML("afterbegin", legendHTML);
+            fetchAndDisplayTrips(instance);
+        }
+    },
 
-            fetchAndDisplayTrips(instance);
-        }
-    },
- onMonthChange: function (selectedDates, dateStr, instance) {
-        if (instance.input.id === 'confirmed_emptying_date') {
-            fetchAndDisplayTrips(instance);
-        }
-    },
+
     onDayCreate: function (dObj, dStr, fp, dayElem) {
         const dateObj = dayElem.dateObj;
         if (!dateObj) return;
@@ -77,24 +66,25 @@ flatpickr('.flatpickr-reschedule', {
         const day = String(dateObj.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
 
-      
-
         if (tripData.hasOwnProperty(dateStr)) {
             const { trips, is_holiday, is_weekend } = tripData[dateStr];
 
+            // Clear previous styles
             dayElem.removeAttribute("style");
             dayElem.style.cursor = "pointer";
 
+            // Set tooltip
             let tooltip = `Trips Available: ${trips}`;
             if (is_holiday) tooltip += " (Holiday)";
             if (is_weekend) tooltip += " (Weekend)";
             dayElem.setAttribute("title", tooltip);
 
+            // Priority coloring: Holiday > Weekend > Trips
             if (is_holiday) {
-                dayElem.style.backgroundColor = "rgb(228, 173, 56)";
+                dayElem.style.backgroundColor = "rgb(228, 173, 56)"; // pink
                 dayElem.style.color = "#000000";
             } else if (is_weekend) {
-                dayElem.style.backgroundColor = "#cce5ff";
+                dayElem.style.backgroundColor = "#cce5ff"; // light blue
                 dayElem.style.color = "#004085";
             } else if (trips === 0) {
                 dayElem.style.backgroundColor = "#f8d7da";
@@ -158,8 +148,6 @@ flatpickr('.flatpickr-reschedule', {
 ]
 });
 
-
-
     // Supervisory assessment date picker initialized separately
    
 
@@ -205,7 +193,7 @@ flatpickr('.flatpickr-reschedule', {
         }
     });
 }
- // supervisory-assessment-form.js
+// supervisory-assessment-form.js
 document.addEventListener('DOMContentLoaded', function() {
     const displayField = document.getElementById('containment_type_display');
     const selectField = document.getElementById('containment_type_select');
