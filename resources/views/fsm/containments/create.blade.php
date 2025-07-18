@@ -55,8 +55,10 @@
     ];
     if (showOptions.includes(selectedText)) {
         $('#sewer-code').show();
+         $('#wasa-status').show();
     } else {
         $('#sewer-code').hide();
+         $('#wasa-status').hide();
     }
     });
 
@@ -143,8 +145,10 @@ function onloadDynamicContainmentType() {
     ];
     if (showOptions.includes(selectedText)) {
         $('#sewer-code').show();
+         $('#wasa-status').show();
     } else {
         $('#sewer-code').hide();
+         $('#wasa-status').hide();
     }
 
 

@@ -27,6 +27,16 @@
                 ]) !!}
             </div>
         </div>
+         <div class="form-group row required" id="wasa-status" style="display:none">
+        {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
+        <div class="col-sm-5">
+            {!! Form::select('wasa_status', ['Yes' => 'Yes', 'No' => 'No', 'NA' => 'NA'], null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'Water Bill Payment Status',
+                'autocomplete' => 'off',
+            ]) !!}
+        </div>
+    </div>
     @elseif(empty($containment_building->sewer_code) && !empty($containment_building))
         <div class="form-group row required" id="sewer-code">
             {!! Form::label('sewer_code',__('Sewer Code'), ['class' => 'col-sm-3 control-label  ']) !!}
@@ -38,6 +48,27 @@
                 ]) !!}
             </div>
         </div>
+         <div class="form-group row required" id="wasa-status" style="display:none">
+        {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
+        <div class="col-sm-5">
+            {!! Form::select('sewer_code', $sewer_code, null, [
+                'class' => 'form-control col-sm-10 sewer_code',
+                'placeholder' => 'WASA Bill Payment Status',
+            ]) !!}
+        </div>
+    </div>
+    <div id="wasa-bill" style="display: none;">
+    <div class="form-group row">
+        {!! Form::label('wasa_bill_no', 'WASA Bill No.', ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-5">
+            {!! Form::text('wasa_bill_no', null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'WASA Bill No.',
+                'autocomplete' => 'off',
+            ]) !!}
+        </div>
+    </div>
+</div>
     @endif
 
     @if (!empty($containment_building->drain_code) && !empty($containment_building))

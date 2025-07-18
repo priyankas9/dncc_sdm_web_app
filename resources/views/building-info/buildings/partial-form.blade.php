@@ -99,6 +99,7 @@
             ]) !!}
         </div>
     </div>
+     
 
     <div class="form-group row required">
         {!! Form::label('road_code', __('Road Code'), ['class' => 'col-sm-3 control-label']) !!}
@@ -109,9 +110,29 @@
             ]) !!}
         </div>
     </div>
+     <div class="form-group row required">
+        {!! Form::label('road_name', 'Road Name', ['class' => 'col-sm-3 control-label ']) !!}
+        <div class="col-sm-5">
+             {!! Form::text('road_name', null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'Road Name',
+                'autocomplete' => 'off',
 
-    <div class="form-group row">
-        {!! Form::label('house_number', __('House Number'), ['class' => 'col-sm-3 control-label']) !!}
+            ]) !!}
+        </div>
+    </div>
+    <div class="form-group row required">
+            {!! Form::label('block_number', 'Block Number', ['class' => 'col-sm-3 control-label ']) !!}
+            <div class="col-sm-5">
+                {!! Form::text('block_number', null, [
+                    'class' => 'form-control col-sm-10',
+                    'placeholder' => 'Block Number',
+                    'autocomplete' => 'off',
+                ]) !!}
+            </div>
+        </div>
+    <div class="form-group row ">
+        {!! Form::label('house_number', 'House Number', ['class' => 'col-sm-3 control-label ']) !!}
         <div class="col-sm-5">
             {!! Form::text('house_number', null, [
                 'class' => 'form-control col-sm-10',
@@ -420,7 +441,20 @@
             ]) !!}
         </div>
     </div>
-
+     <div id="water-bill" style="display: none;">
+        <div class="form-group row">
+            {!! Form::label('water_bill', 'Water Bill Payment Status', ['class' => 'col-sm-3 control-label ']) !!}
+            <div class="col-sm-5">
+                {!! Form::select('water_status', ['Yes' => 'Yes', 'No' => 'No', 'NA' => 'NA'], null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'Water Bill Payment Status',
+                'autocomplete' => 'off',
+                'id' => 'water_status'
+            ]) !!}
+            </div>
+        </div>
+    </div>
+    
     <div class="form-group row" id="well-presence">
         {!! Form::label('well_presence_status', __('Well in Premises'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-5">
@@ -579,6 +613,18 @@
         </div>
     </div>
 
+     <div class="form-group row required" id="wasa-status" style="display:none">
+        {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
+        <div class="col-sm-5">
+            {!! Form::select('wasa_status', ['Yes' => 'Yes', 'No' => 'No', 'NA' => 'NA'], null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'Water Bill Payment Status',
+                'autocomplete' => 'off',
+                'id' => 'wasa_status'
+            ]) !!}
+        </div>
+    </div>
+
     <!--  show if toilet connection is Drain Network -->
     <div class="form-group row required" style="display:none" id="drain-code">
         {!! Form::label('drain_code', __('Drain Code'), ['class' => 'col-sm-3 control-label  ']) !!}
@@ -616,6 +662,20 @@
         @endif
 
     </div>
+    <!-- Keep this at the bottom of your form -->
+<div id="wasa-bill" style="display: none;">
+    <div class="form-group row">
+        {!! Form::label('wasa_bill_no', 'WASA Bill No.', ['class' => 'col-sm-3 control-label']) !!}
+        <div class="col-sm-5">
+            {!! Form::text('wasa_bill_no', null, [
+                'class' => 'form-control col-sm-10',
+                'placeholder' => 'WASA Bill No.',
+                'autocomplete' => 'off',
+            ]) !!}
+        </div>
+    </div>
+</div>
+
 </div>
 <div class="form-group row">
     {!! Form::label('house_image', __('House Image'), ['class' => 'col-sm-3 control-label']) !!}
