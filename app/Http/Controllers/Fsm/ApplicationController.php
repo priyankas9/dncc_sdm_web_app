@@ -165,19 +165,62 @@ class ApplicationController extends Controller
      * @param  int  $id
      * @return View
      */
-    public function edit($id)
-    {
-        $application = Application::find($id);
-        if ($application) {
-            $page_title = "Edit Application";
-            $formFields = $this->applicationService->getEditFormFields($application);
-            $formAction = $this->applicationService->getEditFormAction($application);
-            $indexAction = $this->applicationService->getIndexAction();
-            return view('fsm.applications.edit',compact('page_title','formFields','formAction','indexAction','application'),['cardForm'=>true]);
-        } else {
-            abort(404);
-        }
+     public function edit($id)
+{
+    $application = Application::find($id);
+    if (!$application) {
+        abort(404);
     }
+
+    $page_title = "Edit Application";
+    $formFields = $this->applicationService->getEditFormFields($application);
+    $formAction = $this->applicationService->getEditFormAction($application);
+    $indexAction = $this->applicationService->getIndexAction();
+
+    // Auto-assign logic (same as create)
+    $autoAssignSetting = SiteSetting::where('name', 'Auto Assign Service Provider')->first();
+    $autoAssign = $autoAssignSetting && $autoAssignSetting->value == '1';
+
+    $assignedServiceProviderId = null;
+    $assignedServiceProviderName = null;
+    $serviceProviders = [];
+
+    if ($autoAssign) {
+        $sequence = $this->applicationService->calculate_sequence();
+        if (!empty($sequence)) {
+            $assignedServiceProviderId = $sequence[0];
+
+            $provider = DB::table('fsm.service_providers')
+                ->where('id', $assignedServiceProviderId)
+                ->select('company_name as name')
+                ->first();
+
+            if ($provider) {
+                $assignedServiceProviderName = $provider->name;
+            }
+        }
+    } else {
+        $serviceProviders = DB::table('fsm.service_providers')
+            ->where('status', true)
+            ->get();
+    }
+
+    return view('fsm.applications.edit', [
+        'page_title' => $page_title,
+        'formFields' => $formFields,
+        'formAction' => $formAction,
+        'indexAction' => $indexAction,
+        'application' => $application,
+        'cardForm' => true,
+
+        // ✅ Pass these to avoid "undefined" errors in the partial
+        'autoAssign' => $autoAssign,
+        'assignedServiceProviderId' => $assignedServiceProviderId,
+        'assignedServiceProviderName' => $assignedServiceProviderName,
+        'serviceProviders' => $serviceProviders,
+    ]);
+}
+
 
     /**
      * Update the specified application in storage.
