@@ -17,7 +17,7 @@
     </div>
 
     @if (!empty($containment_building->sewer_code) && !empty($containment_building))
-        <div class="form-group row required " id="sewer-code">
+        <div class="form-group row  " id="sewer-code">
             {!! Form::label('sewer_code', __('Sewer Code'), ['class' => 'col-sm-3 control-label  ']) !!}
             <div class="col-sm-5">
                 {!! Form::select('sewer_code', $sewer_code, $containment_building->sewer_code, [
@@ -27,7 +27,7 @@
                 ]) !!}
             </div>
         </div>
-         <div class="form-group row required" id="wasa-status" style="display:none">
+         <div class="form-group row " id="wasa-status" style="display:none">
         {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
         <div class="col-sm-5">
             {!! Form::select('wasa_status', ['Yes' => 'Yes', 'No' => 'No', 'NA' => 'NA'], null, [
@@ -38,7 +38,7 @@
         </div>
     </div>
     @elseif(empty($containment_building->sewer_code) && !empty($containment_building))
-        <div class="form-group row required" id="sewer-code">
+        <div class="form-group row " id="sewer-code">
             {!! Form::label('sewer_code',__('Sewer Code'), ['class' => 'col-sm-3 control-label  ']) !!}
             <div class="col-sm-5">
                 {!! Form::select('sewer_code', $sewer_code, $containment_building->sewer_code, [
@@ -48,7 +48,7 @@
                 ]) !!}
             </div>
         </div>
-         <div class="form-group row required" id="wasa-status" style="display:none">
+         <div class="form-group row" id="wasa-status" style="display:none">
         {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
         <div class="col-sm-5">
             {!! Form::select('sewer_code', $sewer_code, null, [
@@ -72,7 +72,7 @@
     @endif
 
     @if (!empty($containment_building->drain_code) && !empty($containment_building))
-        <div class="form-group row required" id="drain-code">
+        <div class="form-group row " id="drain-code">
             {!! Form::label('drain_code', __('Drain Code'), ['class' => 'col-sm-3 control-label  ']) !!}
             <div class="col-sm-5">
                 {!! Form::select('drain_code', $drain_code, $containment_building->drain_code, [
@@ -83,7 +83,7 @@
             </div>
         </div>
     @elseif(empty($containment_building->drain_code) && !empty($containment_building))
-        <div class="form-group row required" id="drain-code">
+        <div class="form-group row " id="drain-code">
             {!! Form::label('drain_code', __('Drain Code'), ['class' => 'col-sm-3 control-label  ']) !!}
             <div class="col-sm-5">
                 {!! Form::select('drain_code', $drain_code, $containment_building->drain_code, [
