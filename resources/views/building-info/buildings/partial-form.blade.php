@@ -432,7 +432,7 @@
         </div>
     </div>
 
-    <div class="form-group row required" id="water-pipe-id" style="display: none;">
+    <div class="form-group row " id="water-pipe-id" style="display: none;">
         {!! Form::label('watersupply_pipe_code', __('Water Supply Pipe Line Code'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-5">
             {!! Form::select('watersupply_pipe_code', $waterSupply, null, [
@@ -603,7 +603,7 @@
         @include('fsm.containments.partial-form')
     @endif
     <!--  show if toilet connection is Sewer Network -->
-    <div class="form-group row required" id="sewer-code" style="display:none">
+    <div class="form-group row " id="sewer-code" style="display:none">
         {!! Form::label('sewer_code', __('Sewer Code'), ['class' => 'col-sm-3 control-label  ']) !!}
         <div class="col-sm-5">
             {!! Form::select('sewer_code', $sewer_code, null, [
@@ -613,7 +613,7 @@
         </div>
     </div>
 
-     <div class="form-group row required" id="wasa-status" style="display:none">
+     <div class="form-group row " id="wasa-status" style="display:none">
         {!! Form::label('wasa_status', 'WASA Bill Payment Status', ['class' => 'col-sm-3 control-label  ']) !!}
         <div class="col-sm-5">
             {!! Form::select('wasa_status', ['Yes' => 'Yes', 'No' => 'No', 'NA' => 'NA'], null, [
@@ -626,7 +626,7 @@
     </div>
 
     <!--  show if toilet connection is Drain Network -->
-    <div class="form-group row required" style="display:none" id="drain-code">
+    <div class="form-group row " style="display:none" id="drain-code">
         {!! Form::label('drain_code', __('Drain Code'), ['class' => 'col-sm-3 control-label  ']) !!}
         <div class="col-sm-5">
             {!! Form::select('drain_code', $drain_code, null, [
