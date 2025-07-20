@@ -49,6 +49,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 {!! Form::text('contact_number', null, ['class' => 'form-control', 'placeholder' => __('Contact Person Number'), 'oninput' => "validateOwnerContactInput(this)"]) !!}
             </div>
         </div>
+        <div class="form-group row required">
+            {!! Form::label('contract_document_pdf', __('Contract Document'), ['class' => 'col-sm-3 control-label']) !!}
+            <div class="col-sm-3">
+                {!! Form::file('contract_document_pdf', [
+                    'class' => 'form-control',
+                    'accept' => 'application/pdf',
+                    'required', // Optional
+                ]) !!}
+            </div>
+        </div>
 
         <div class="form-group row required">
             {!! Form::label('status', __('Status'), ['class' => 'col-sm-3 control-label']) !!}

@@ -3,9 +3,6 @@
 <div id="containment-info" style="display: none;margin:12px">
     <h2 class=""> {{ __("Containment Information") }} </h2>
 
-
-
-
     <div class="form-group row required" id='containment-type'>
         {!! Form::label('type_id',__('Containment Type'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-5">

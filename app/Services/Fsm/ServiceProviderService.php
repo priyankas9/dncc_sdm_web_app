@@ -129,6 +129,7 @@ class ServiceProviderService
             $serviceProvider->contact_person = $data['contact_person'] ? $data['contact_person'] : null;
             $serviceProvider->contact_gender = $data['contact_gender'] ? $data['contact_gender'] : null;
             $serviceProvider->contact_number = $data['contact_number'] ? $data['contact_number'] : null;
+            $serviceProvider->contract_document_pdf = $data['contract_document_pdf'] ?? null;
             $serviceProvider->status = $data['status'] ? $data['status'] : 0;
 
             $serviceProvider->save();
