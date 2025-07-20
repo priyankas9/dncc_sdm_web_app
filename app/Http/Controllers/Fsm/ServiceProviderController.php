@@ -82,23 +82,39 @@ class ServiceProviderController extends Controller
     public function store(ServiceProviderRequest $request)
     {
         $data = $request->all();
-        $serviceProviderId = $this->serviceProviderService->storeOrUpdate($id = null,$data);
-        if(!is_null($request->create_user))
-        {
-             $data['service_provider_id'] = $serviceProviderId;
-             $data['user_type'] = "Service Provider";
-             $data['roles']= "Service Provider - Admin";
-             $data['gender']= $request->contact_gender;
-             $data['username']=  explode('@', $request->email)[0];
-             $data['name'] = $data['company_name'];
-             
-             $this->userService->storeOrUpdate($id = null,$data);
-             $successMessage = __('Service Provider and Service Provider - Admin User created successfully.');
+
+        // Handle PDF upload
+      if ($request->hasFile('contract_document_pdf')) {
+            $file = $request->file('contract_document_pdf');
+
+            // Optional: sanitize company name for safe file names
+            $companyName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $request->company_name);
+            $filename = $companyName . '.pdf';
+
+            // Store the file in the 'public/contract_documents' folder
+            $path = $file->storeAs('contract_documents', $filename, 'public');
+
+            // Save path in DB
+            $data['contract_document_pdf'] = $path;
+        }
+
+        $serviceProviderId = $this->serviceProviderService->storeOrUpdate(null, $data);
+
+        if (!is_null($request->create_user)) {
+            $data['service_provider_id'] = $serviceProviderId;
+            $data['user_type'] = "Service Provider";
+            $data['roles'] = "Service Provider - Admin";
+            $data['gender'] = $request->contact_gender;
+            $data['username'] = explode('@', $request->email)[0];
+            $data['name'] = $data['company_name'];
+
+            $this->userService->storeOrUpdate(null, $data);
+            $successMessage = __('Service Provider and Service Provider - Admin User created successfully.');
         } else {
             $successMessage = __('Service Provider created successfully.');
-
         }
-        return redirect('fsm/service-providers')->with('success',$successMessage);
+
+        return redirect('fsm/service-providers')->with('success', $successMessage);
     }
 
     /**

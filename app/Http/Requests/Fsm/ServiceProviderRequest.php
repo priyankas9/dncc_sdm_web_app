@@ -54,6 +54,7 @@ class ServiceProviderRequest extends FormRequest
                         'company_location' => ['required', 'string', 'max:255'],
                         'contact_person' => ['required', 'string', 'max:255'],                                                                                                                                                              
                         'contact_number' => 'required|regex:/^[0-9]+$/',
+                        'contract_document_pdf' => 'required|file|mimes:pdf|max:5120', // Assuming max size is 2MB
                         'contact_gender' => 'required|string',
                         'status' => 'required|boolean',
                         'password' => ['required_if:create_user,on', 'nullable',Password::min(8)
@@ -86,6 +87,7 @@ class ServiceProviderRequest extends FormRequest
                             'company_location' => ['required', 'string', 'max:255'],
                             'contact_person' => ['required', 'string', 'max:255'],
                             'contact_number' => 'required|regex:/^[0-9]+$/',
+                            'contract_document_pdf' => 'required|file|mimes:pdf|max:5120',
                             'contact_gender' => 'required|string',
                             'status' => 'required|boolean',
                         ];
