@@ -26,7 +26,7 @@ class DesludgingScheduleController extends Controller
     }
     public function index()
     {
-        $page_title = "Desludging Schedule";
+        $page_title = __("Desludging Schedule") ;
         $serviceProvider = ServiceProvider::pluck("company_name", "id")->toArray();
         return view('fsm.desludging-schedule.index', compact('page_title', 'serviceProvider'));
     }

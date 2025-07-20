@@ -61,13 +61,13 @@ class SupervisoryAssessmentController extends Controller
                     $content = \Form::open(['method' => 'DELETE',
                     'route' => ['supervisory-assessment.destroy', $model->id]]);
                     if (Auth::user()->can('View Emptying')) {
-                        $content .= '<a title="Detail" href="' . route('supervisory-assessment.show', [$model->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-list"></i></a> ';
+                        $content .= '<a title="' . __("Detail") . '" href="' . route('supervisory-assessment.show', [$model->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-list"></i></a> ';
                     }
                     if (Auth::user()->can('View Emptyings History')) {
-                    $content .= '<a title="History" href="' . route('supervisory-assessment.history', $model->id) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-history"></i></a> ';
+                    $content .= '<a title="' . __("History") . '" href="' . route('supervisory-assessment.history', $model->id) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-history"></i></a> ';
                     }
                     if (Auth::user()->can('Delete Emptying')) {
-                        $content .= '<a title="Delete"  class="delete  btn-danger btn  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
+                        $content .= '<a title="' . __("Delete") . '"  class="delete  btn-danger btn  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
                     }
                     $content .= \Form::close();
                     return $content;
@@ -87,7 +87,7 @@ class SupervisoryAssessmentController extends Controller
 {      
     $value = rtrim(request()->getQueryString(), '=');
     
-    $page_title = 'Add Supervisory Assessment';
+    $page_title =__("Add Supervisory Assessment");
     $slug = array_keys($request->query())[0] ?? null;
     $supervisoryassessment = new SupervisoryAssessment(); // Empty instance
     $owner_detail = Owner::where('bin', $slug)->first();
@@ -163,12 +163,13 @@ class SupervisoryAssessmentController extends Controller
         $application->save();
     
         // Redirect with a success message
-        return redirect(route('application.index'))->with('success', 'Supervisory Assessment created successfully');
+        return redirect(route('application.index'))->with('success',  __('Supervisory Assessment created successfully'));
     }
     
     public function history($id)
     {
         try {
+            $page_title =  __("Supervisory Assessment History");
             $supervisoryassessment = SupervisoryAssessment::findOrFail($id);
             $revisions = Revision::all()
                 ->where('revisionable_type', get_class($supervisoryassessment))
@@ -181,7 +182,7 @@ class SupervisoryAssessmentController extends Controller
         } catch (\Throwable $e) {
             return redirect(route('supervisory-assessment.index'))->with('error', 'Failed to generate history.');
         }
-        return view('fsm.supervisory-assessment.history', compact('supervisoryassessment', 'revisions'));
+        return view('fsm.supervisory-assessment.history', compact('supervisoryassessment', 'page_title', 'revisions'));
     }
 
     /**
@@ -195,7 +196,7 @@ class SupervisoryAssessmentController extends Controller
     $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
     
     if ($supervisoryassessment) {
-        $page_title = "Supervisory Assessment Details";
+        $page_title = __("Supervisory Assessment Details");
         return view('fsm.supervisory-assessment.show', compact('page_title', 'supervisoryassessment'));
     } else {
         abort(404);
@@ -207,7 +208,7 @@ public function edit($id)
     $supervisoryassessment = SupervisoryAssessment::with(['containmentType', 'application', 'owner'])->find($id);
     
     if ($supervisoryassessment) {
-        $page_title = "Edit Supervisory Assessment";
+        $page_title =__("Edit Supervisory Assessment") ;
         $application = Application::find($supervisoryassessment->application_id);
         $owner_detail = SupervisoryAssessment::where('id', $id)->first();
         $containment = SupervisoryAssessment::where('id', $id)->first();
@@ -255,9 +256,9 @@ public function edit($id)
             $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
             $assessment->advance_paid_amount = $request->advance_paid_amount;
             $assessment->save();
-            return redirect('fsm/supervisory-assessment')->with('success','Supervisory Assessment updated successfully');
+            return redirect('fsm/supervisory-assessment')->with('success',__('Supervisory Assessment updated successfully'));
         } else {
-            return redirect('fsm/supervisory-assessment')->with('error','Failed to update supervisory assessment');
+            return redirect('fsm/supervisory-assessment')->with('error',__('Failed to update supervisory assessment'));
         }
     }
 
@@ -281,7 +282,7 @@ public function edit($id)
 
         if ($application && $application->emptying_status) {
             return redirect('fsm/supervisory-assessment')
-                ->with('error', 'Cannot delete — emptying has already been done for this application.');
+                ->with('error', __('Cannot delete — emptying has already been done for this application.'));
         }
     }
 
@@ -303,12 +304,12 @@ public function edit($id)
         
         DB::commit();
         
-        return redirect('fsm/supervisory-assessment')->with('success', 'Supervisory Assessment deleted successfully!');
+        return redirect('fsm/supervisory-assessment')->with('success', __('Supervisory Assessment deleted successfully!'));
         
     } catch (\Exception $e) {
         DB::rollBack();
         return redirect('fsm/supervisory-assessment')
-            ->with('error', 'Failed to delete supervisory assessment: ' . $e->getMessage());
+            ->with('error',  __('Failed to delete supervisory assessment:') . $e->getMessage());
     }
 }
    public function download()
@@ -320,11 +321,11 @@ public function edit($id)
 
     // Custom header labels you want in the CSV
     $columns = [
-        'Assessment Request ID', 'Application ID', 'Holding Number', 'Owner Name', 'Owner Gender', 'Owner Contact Number',
-        'Containment Type', 'Containment Outlet Connection', 'Containment Volume (m³)', 'Road Width (m)',
-        'Distance from Nearest Road (m)', 'Septic Tank Length (m)', 'Septic Tank Width (m)', 'Septic Tank Depth (m)',
-        'Number of Pit Rings', 'Pit Diameter (m)', 'Pit Depth (m)', 'Appropriate Desludging Vehicle Size',
-        'Number of Trips', 'Confirmed Emptying Date', 'Advance Paid Amount'
+        __('Assessment Request ID'), __('Application ID'), __('Holding Number'), __('Owner Name'), __('Owner Gender'), __('Owner Contact Number'),
+        __('Containment Type'), __('Containment Outlet Connection'), __('Containment Volume (m³)'), __('Road Width (m)'),
+        __('Distance from Nearest Road (m)'), __('Septic Tank Length (m)'), __('Septic Tank Width (m)'), __('Septic Tank Depth (m)'),
+        __('Number of Pit Rings'), __('Pit Diameter (m)'), __('Pit Depth (m)'), __('Appropriate Desludging Vehicle Size'),
+        __('Number of Trips'), __('Confirmed Emptying Date'), __('Advance Paid Amount')
     ];
 
     // Build query with join to containment_types

@@ -28,7 +28,7 @@ class SiteSettingController extends Controller
      */
     public function index()
 {
-    $page_title = "Site Setting";
+    $page_title =  __("Site Setting");
     $settings = DB::table('sdm_sitesettings')->orderBy('id')->get(['name', 'value', 'remarks', 'data_type', 'options']);
     
     $data = [];
@@ -99,7 +99,7 @@ class SiteSettingController extends Controller
         $data = $request->all();
         $result = $this->sitesetting->storeOrUpdate($data);
    
-        return redirect('site/site-setting')->with('success', ' Site Setting updated successfully');
+        return redirect('site/site-setting')->with('success', __('Site Setting updated successfully'));
     }
 
     /**

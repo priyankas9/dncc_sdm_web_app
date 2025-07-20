@@ -11,7 +11,7 @@ class DesludgingReintegrationController extends Controller
 {
     public function index()
     {
-        $page_title = "Scheduled Desludging Reintegration";
+        $page_title = __("Scheduled Desludging Reintegration");
        
 
         return view('fsm.desludging-reintegration.index', compact('page_title'));

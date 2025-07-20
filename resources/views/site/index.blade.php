@@ -102,13 +102,13 @@
         <div class="container-fluid">
             <div class="row form-title-row">
                 <div class="col-sm-3">
-                    <p style="font-size: 20px; font-style: bold;">Name</p>
+                    <p style="font-size: 20px; font-style: bold;">{{ __('Name')}}</p>
                 </div>
                 <div class="col-sm-2">
-                    <p style="font-size: 20px;font-style: bold;">Value</p>
+                    <p style="font-size: 20px;font-style: bold;">{{ __('Value')}}</p>
                 </div>
                 <div class="col-sm-2">
-                    <p style="font-size: 20px;font-style: bold;">Remarks</p>
+                    <p style="font-size: 20px;font-style: bold;">{{ __('Remarks')}}</p>
                 </div>
             </div>
             <hr>
@@ -222,8 +222,8 @@
     </div>
 </div><!-- /.box-body -->
 <div class="card-footer">
-    <span id="editButton" class="btn btn-info">Edit</span>
-    <button type="submit" id="saveButton" class="btn btn-info" style="display: none;">Save</button>
+    <span id="editButton" class="btn btn-info">{{__('Edit')}}</span>
+    <button type="submit" id="saveButton" class="btn btn-info" style="display: none;">{{__('Save')}}</button>
 </div><!-- /.box-footer -->
 </div>
 {!! Form::close() !!}
