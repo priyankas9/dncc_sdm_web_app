@@ -2,7 +2,7 @@
 Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 @extends('layouts.dashboard')
 @section('title', $page_title)
-@push('style')
+
 <style type="text/css">
 
     .dataTables_filter {
@@ -56,7 +56,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
         z-index: 2;
         }
 </style>
-@endpush
+
 @section('content')
 
 <div class="card" id="cards">
