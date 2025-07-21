@@ -233,6 +233,7 @@ function dynamicBuildingForm() {
         $('#containment-id').hide();
         $('#drain-code').hide();
         $('#sewer-code').hide();
+        $('#wasa-status').hide();
     }
     else {
         $('#defecation-place').hide();
@@ -244,37 +245,9 @@ function dynamicBuildingForm() {
         $('#containment-id').hide();
         $('#drain-code').hide();
         $('#sewer-code').hide();
+        $('#wasa-status').hide();
     }
 });
-
-        } 
-        else if($("#toilet-presence :selected").text() == "No") 
-        {
-            $('#defecation-place').show();
-            $('#toilet-info').hide();
-            $('#shared-toilet').hide();
-            $('#toilet-connection').hide();
-            $('#shared-toilet-popn').hide();
-            $('#containment-info').hide();
-            $('#containment-id').hide();
-            $('#drain-code').hide();
-            $('#sewer-code').hide();
-            $('#wasa-status').hide();
-        }
-        else
-        {
-            $('#defecation-place').hide();
-            $('#toilet-info').hide();
-            $('#shared-toilet').hide();
-            $('#toilet-connection').hide();
-            $('#shared-toilet-popn').hide();
-            $('#containment-info').hide();
-            $('#containment-id').hide();
-            $('#drain-code').hide();
-            $('#sewer-code').hide();
-            $('#wasa-status').hide();
-        }
-    });
 
     //show ctpt field only when defecation-place is Community Toilet
     $('#defecation-place').on('change', function () {
@@ -832,6 +805,7 @@ function onloadDynamicContainmentType() {
 
     function handleToiletPresenceChange() {
         if ($("#toilet-presence :selected").text() == "Yes") {
+            console.log('hello');
             $('#toilet-info').show();
             $('#toilet-connection').show();
             if ($("#use_category_id :selected").text() == "Community Toilet" ||  $("#use_category_id :selected").text() == "Public Toilet") {
