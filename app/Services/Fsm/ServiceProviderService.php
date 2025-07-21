@@ -136,23 +136,43 @@ class ServiceProviderService
             return $serviceProvider->id;
         } else {
             $serviceProvider = ServiceProvider::find($id);
-            $serviceProvider->company_name = $data['company_name'] ? $data['company_name'] : null;
-            $serviceProvider->email = $data['email'] ? $data['email'] : null;
-            $serviceProvider->ward = $data['ward'] ? $data['ward'] : null;
-            $serviceProvider->company_location = $data['company_location'] ? $data['company_location'] : null;
-            $serviceProvider->contact_person = $data['contact_person'] ? $data['contact_person'] : null;
-            $serviceProvider->contact_gender = $data['contact_gender'] ? $data['contact_gender'] : null;
-            $serviceProvider->contact_number = $data['contact_number'] ? $data['contact_number'] : null;
-            $serviceProvider->status = $data['status'] ? $data['status'] : 0;
 
+            // Handle file upload
+            if (!empty($data['contract_document_pdf']) && is_file($data['contract_document_pdf'])) {
+                // Delete old file if exists
+                if ($serviceProvider->contract_document_pdf && \Storage::disk('public')->exists($serviceProvider->contract_document_pdf)) {
+                    \Storage::disk('public')->delete($serviceProvider->contract_document_pdf);
+                }
+
+                // Generate new file name based on company name
+                $companyName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $data['company_name']);
+                $filename = $companyName . '.pdf';
+
+                // Store the new file
+                $path = $data['contract_document_pdf']->storeAs('contract_documents', $filename, 'public');
+
+                // Save new path
+                $serviceProvider->contract_document_pdf = $path;
+            }
+
+            // Update all other fields
+            $serviceProvider->company_name = $data['company_name'] ?? null;
+            $serviceProvider->email = $data['email'] ?? null;
+            $serviceProvider->ward = $data['ward'] ?? null;
+            $serviceProvider->company_location = $data['company_location'] ?? null;
+            $serviceProvider->contact_person = $data['contact_person'] ?? null;
+            $serviceProvider->contact_gender = $data['contact_gender'] ?? null;
+            $serviceProvider->contact_number = $data['contact_number'] ?? null;
+            $serviceProvider->status = $data['status'] ?? 0;
 
             $serviceProvider->save();
+
+            // Handle the status-related logic as you already have
             if ($data['status'] == 0) {
                 if ($serviceProvider->applications()->exists()) {
                     $applicationsCount =  $serviceProvider->applications()->where('emptying_status', 'false')->count();
 
                     if ($applicationsCount > 0) {
-                        /*While updating service provider status to not operational, update service_provider_id to null having emptying_status false i.e. if emptying service is not done yet for an application and corresponding service provider is deleted or not in operation, help desk should have privilege to assign another service provider */
                         $results = \App\Models\Fsm\Application::where(['service_provider_id' => $id, 'emptying_status' => 'false'])->get();
                         foreach ($results as $result) {
                             $application = \App\Models\Fsm\Application::find($result->id);
@@ -163,6 +183,7 @@ class ServiceProviderService
                 }
             }
         }
+
     }
 
     /**
