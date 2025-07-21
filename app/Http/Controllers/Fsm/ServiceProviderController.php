@@ -162,16 +162,49 @@ class ServiceProviderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(ServiceProviderRequest $request, $id)
-    {
-        $serviceProvider = ServiceProvider::find($id);
-        if ($serviceProvider) {
-            $data = $request->all();
-            $this->serviceProviderService->storeOrUpdate($serviceProvider->id,$data);
-            return redirect('fsm/service-providers')->with('success',__('Service Provider updated successfully.'));
-        } else {
-            return redirect('fsm/service-providers')->with('error',__('Failed to update Servie Provider.'));
-        }
+{
+    $serviceProvider = ServiceProvider::find($id);
+
+    if (!$serviceProvider) {
+        return redirect('fsm/service-providers')->with('error', __('Failed to update Service Provider.'));
     }
+
+    $data = $request->all();
+
+    // Handle PDF upload
+    if ($request->hasFile('contract_document_pdf')) {
+        $file = $request->file('contract_document_pdf');
+
+        if ($file->isValid()) {
+            // Define the filename as company_name.pdf (replace spaces, make lowercase, optional sanitize)
+            $companyName = strtolower(preg_replace('/\s+/', '_', $data['company_name']));
+            $filename = $companyName . '.pdf';
+
+            // Define full path
+            $storagePath = 'contract_documents/' . $filename;
+
+            // Delete old file if it exists
+            if ($serviceProvider->contract_document_pdf && \Storage::disk('public')->exists($serviceProvider->contract_document_pdf)) {
+                \Storage::disk('public')->delete($serviceProvider->contract_document_pdf);
+            }
+
+            // Store new file with the same filename
+            $file->storeAs('contract_documents', $filename, 'public');
+
+            // Update file path
+            $data['contract_document_pdf'] = $storagePath;
+        }
+    } else {
+        // Keep old path if no new file uploaded
+        $data['contract_document_pdf'] = $serviceProvider->contract_document_pdf;
+    }
+
+    $this->serviceProviderService->storeOrUpdate($serviceProvider->id, $data);
+
+    return redirect('fsm/service-providers')->with('success', __('Service Provider updated successfully.'));
+}
+
+
 
     /**
      * Remove the specified resource from storage.
