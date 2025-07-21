@@ -268,7 +268,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         <li class="nav-item">
                          <a href="{{ action('Fsm\DesludgingScheduleController@index') }}" class="nav-link {{ request()->is('fsm/desludging-schedule/*','fsm/desludging-schedule') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                                <p>Desludging Schedule </p>
+                                <p>{{__('Desludging Schedule')}} </p>
                           </a>
                         </li>
                        @endcan
@@ -284,7 +284,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         <li class="nav-item">
                             <a href="{{ route('supervisory-assessment.index') }}" class="nav-link {{ request()->is('fsm/supervisory-assessment','fsm/supervisory-assessment/*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Supervisory Assessment</p>
+                                <p>{{__('Supervisory Assessment')}}</p>
                             </a>
                         </li>
                         @can('List Emptyings')
@@ -314,7 +314,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                          <li class="nav-item">
                          <a href="{{ action('Fsm\DesludgingReintegrationController@index') }}" class="nav-link {{ request()->is('fsm/desludging-reintegration/*','fsm/desludging-reintegration') ? 'active' : '' }}">
                             <i class="far fa-circle nav-icon"></i>
-                                <p>Scheduled<br> Desludging <br>Reintegration</p>
+                                <p>{{__('Scheduled')}}<br>{{__('Desludging')}}  <br>{{__('Reintegration')}}</p>
                           </a>
                         </li>
                         @can('List Help Desks')
@@ -623,7 +623,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                                 <a href="{{ action('Auth\SiteController@index') }}"
                                     class="nav-link {{ request()->is('auth/site-setting','auth/site-setting/') ? 'active' : '' }}">
                                     <i class="nav-icon fa-solid fa-microscope"></i>
-                                    <p>Site Setting</p>
+                                    <p>{{__('Site Setting')}}</p>
                                 </a>
                     </li>
                 </ul>

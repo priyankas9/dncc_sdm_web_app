@@ -179,10 +179,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             <th>{{ __('House Number') }}</th>
                             <th>{{ __('Containment ID') }}</th>
                             <th>{{ __('Application Date') }}</th>
-                            <th>Supervisory Assessment Date</th>
+                            <th>{{ __('Supervisory Assessment Date') }}</th>
                             <th>{{ __('Proposed Emptying Date') }}</th>
                             <th>{{ __('Street Code') }}</th>
-                             <th>Supervisory Assessment Status</th>
+                             <th>{{ __('Supervisory Assessment Status') }}</th>
                             <th>{{ __('Emptying Status') }}</th>
                             <th>{{ __('Sludge Collection Status') }}</th>
                             <th>{{ __('Feedback Status') }}</th>
@@ -459,7 +459,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 // e.preventDefault();
                 if (localStorage.getItem('year_select') != null && localStorage.getItem('month_select') !=
                     null) {
-                    year_sel = localStorage.getItem('year_select');
+                year_sel = localStorage.getItem('year_select');
                     month_sel = localStorage.getItem('month_select');
                 } else {
                     year_sel = $('#year_select').val();

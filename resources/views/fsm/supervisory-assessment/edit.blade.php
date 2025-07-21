@@ -12,7 +12,7 @@
     'class' => 'form-horizontal',
    
 ]) !!}
-    @include('fsm/supervisory-assessment.partial-form', ['submitButtomText' => 'Update'])
+    @include('fsm/supervisory-assessment.partial-form', ['submitButtomText' => __('Update')])
 {!! Form::close() !!}
 </div><!-- /.card -->
 @endsection

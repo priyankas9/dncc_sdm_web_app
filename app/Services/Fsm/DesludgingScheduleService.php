@@ -113,7 +113,7 @@ class DesludgingScheduleService
             if (auth()->user()->can('Confirm Schedule Desludging')) {
                 $buttons .= '<a href="javascript:void(0);" 
                     class="btn btn-md mb-1 confirm-emptying-btn"
-                    title="Confirm Schedule Desludging"
+                    title="' . __("Confirm Schedule Desludging") . '"
                     style="background-color: #17A2B8; color: white; margin-right: 2px;"
                     data-action_type="confirm"
                     data-bin="' . $building->bin . '"
@@ -132,7 +132,7 @@ class DesludgingScheduleService
             }
             if (auth()->user()->can('Reschedule Schedule Desludging')) {
             $buttons .= '<a href="javascript:void(0);"
-                title="Reschedule Desludging"
+                title="' . __("Reschedule Desludging") . '"
                 class="btn btn-md mb-1 reschedule-emptying-btn"
                 style="background-color:rgb(235, 158, 15); color: white; margin-right: 2px;"
                 data-bin="' . $building->bin . '"
@@ -151,7 +151,7 @@ class DesludgingScheduleService
             </a>';
             }
         if (auth()->user()->can('Delete Schedule Desludging')) {
-            $buttons .= '<button title="Disagree for Schedule Desludging"
+            $buttons .= '<button title="' . __("Disagree for Schedule Desludging") . '"
                 class="btn btn-md mb-1 btn-unconfirm-emptying ' . ($building->status == 4 ? 'static-ping' : '') . '"
                 style="background-color:rgb(184, 23, 26); color: white;"
                 data-bin="' . $building->bin . '"

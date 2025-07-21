@@ -3,13 +3,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 {{--Extend the main layout--}}
 @extends('layouts.dashboard')
 {{--Add sections for the main layout--}}
-@section('title', 'Supervisory Assessment History')
+@section('title', $page_title)
 {{--Add sections for the index layout--}}
 
 {{--Include the layout inside the main content section--}}
 @section('content')
 <div class="card-header bg-transparent">
-    <a href="{{ action('Fsm\SupervisoryAssessmentController@index') }}" class="btn btn-info">Back to List</a>
+    <a href="{{ action('Fsm\SupervisoryAssessmentController@index') }}" class="btn btn-info">{{ __("Back to List") }}</a>
 </div><!-- /.card-header -->
     @include('layouts.history',compact('revisions'))
 @endsection

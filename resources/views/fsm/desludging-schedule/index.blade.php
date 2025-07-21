@@ -62,13 +62,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
 <div class="card" id="cards">
     <div class="card-header">
         @can('Regenerate Schedule Desludging')
-        <a href="#" id="regenerate-btn" class="btn btn-info">Regenerate Desludging Schedule</a>
+        <a href="#" id="regenerate-btn" class="btn btn-info">{{__('Regenerate Desludging Schedule')}}</a>
         @endcan
          @can('Export Schedule Desludging')
-        <a href="#" id="export" class="btn btn-info">Export to CSV</a>
+        <a href="#" id="export" class="btn btn-info">{{__('Export to CSV')}}</a>
       @endcan
       @can('Filter Schedule Desludging')
-     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">Show Filter</a> 
+     <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">{{__('Show Filter')}}</a> 
         @endcan
     </div><!-- /.card-header -->
     <div id="loader-overlay" style="display: none;">
@@ -88,32 +88,32 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                                         <div class="accordion-body">
                                             <form class="form-horizontal" id="filter-form">
                                                 <div class="form-group row">
-                                                    <label for="bin" class="col-md-2 col-form-label ">BIN</label>
+                                                    <label for="bin" class="col-md-2 col-form-label ">{{__('BIN')}}</label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="bin" placeholder= "BIN" />
+                                                        <input type="text" class="form-control" id="bin" placeholder= "{{ __('BIN') }}" />
                                                     </div>
-                                                    <label for="containment_id" class="col-md-2 col-form-label ">Containment ID
+                                                    <label for="containment_id" class="col-md-2 col-form-label ">{{__('Containment ID')}}
                                                     </label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="containment_id" placeholder= "Containment ID"/>
+                                                        <input type="text" class="form-control" id="containment_id" placeholder= "{{ __('Containment ID') }}"/>
                                                     </div>
-                                                    <label for="holding_num" class="col-md-2 col-form-label ">Holding Number
+                                                    <label for="holding_num" class="col-md-2 col-form-label ">{{__('Holding Number')}}
                                                     </label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="holding_num" placeholder= "Holding Number"/>
+                                                        <input type="text" class="form-control" id="holding_num" placeholder= "{{ __('Holding Number') }}"/>
                                                     </div>
                                                     
                                                 </div>
                                                  <div class="form-group row">
                                                    
-                                                      <label for="owner_name" class="col-md-2 col-form-label ">Owner Name</label>
+                                                      <label for="owner_name" class="col-md-2 col-form-label ">{{__('Owner Name')}}</label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="owner_name" placeholder= "Owner Name" />
+                                                        <input type="text" class="form-control" id="owner_name" placeholder= "{{ __('Owner Name') }}" />
                                                     </div>
                                                 </div>
                                                 <div class="card-footer text-right">
-                                                    <button type="submit" class="btn btn-info ">Filter</button>
-                                                    <button type="reset" id="reset-filter" class="btn btn-info">Reset</button>
+                                                    <button type="submit" class="btn btn-info ">{{__('Filter')}}</button>
+                                                    <button type="reset" id="reset-filter" class="btn btn-info">{{__('Reset')}}</button>
                                                 </div>
                                                 <div class="clearfix"></div>
                                             </form>
@@ -127,15 +127,15 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
             <table id="data-table" class="table table-bordered table-striped dtr-inline" width="100%">
                 <thead>
                     <tr>
-                        <th>BIN</th>
-                        <th>Containment ID</th>
-                        <th>House Number</th>
-                        <th>Area Name</th>
-                        <th>Road Number</th>
-                        <th>Owner Name</th>
-                        <th>Owner Contact</th>
-                        <th>Next Emptying Date</th>
-                        <th>Actions</th>
+                        <th>{{__('BIN')}}</th>
+                        <th>{{__('Containment ID')}}</th>
+                        <th>{{__('House Number')}}</th>
+                        <th>{{__('Area Name')}}</th>
+                        <th>{{__('Road Number')}}</th>
+                        <th>{{__('Owner Name')}}</th>
+                        <th>{{__('Owner Contact')}}</th>
+                        <th>{{__('Next Emptying Date')}}</th>
+                        <th>{{__('Actions')}}</th>
                     </tr>
                 </thead>
             </table>
@@ -283,10 +283,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                 success: function(response) {
                     if (response.status === 'success') {
                         Swal.fire({
-                            title: 'Success!',
+                            title: "{{__('Success!')}}",
                             text: response.message,
                             icon: 'success',
-                            confirmButtonText: 'OK'
+                            confirmButtonText: "{{__('OK')}}"
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 location.reload();
@@ -294,19 +294,19 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         });
                     } else {
                         Swal.fire({
-                            title: 'Error!',
+                            title: "{{__('Error!')}}",
                             text: response.message,
                             icon: 'error',
-                            confirmButtonText: 'OK'
+                            confirmButtonText: "{{__('OK')}}"
                         });
                     }
                 },
                 error: function(xhr, status, error) {
                     Swal.fire({
-                        title: 'Error!',
-                        text: 'Failed to regenerate the next emptying date. Please try again.',
+                        title: "{{__('Error!')}}",
+                        text: "{{__('Failed to regenerate the next emptying date. Please try again.')}}",
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: "{{__('OK')}}"
                     });
                     console.error('Error:', error);
                 },
@@ -321,14 +321,14 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
         $(document).on('click', '.btn-unconfirm-emptying', function() {
             var bin = $(this).data('bin');
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Do you want to be removed from desludging schedule ?',
+                    title: "{{__('Are you sure?')}}",
+                    text: "{{__('Do you want to be removed from desludging schedule ?')}}",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes',
-                    cancelButtonText: 'Cancel'
+                    confirmButtonText: "{{ __('Yes') }}",
+                    cancelButtonText: '{{ __('Cancel') }}',
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // If confirmed, send AJAX request to update status in the backend
@@ -342,8 +342,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                                 console.log('heyy',response); // Log the response for debugging
                                 // Show success message using SweetAlert2
                                 Swal.fire(
-                                    'Success',
-                                    'You have agreed to be removed from desludging schedule',
+                                    "{{__('Success')}}",
+                                    "{{__('You have agreed to be removed from desludging schedule')}}",
                                     'success'
                                 ).then(() => {
                                     // Reload the page after the SweetAlert confirmation
@@ -353,8 +353,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                             error: function(xhr, status, error) {
                                 // Display error message if the request fails
                                 Swal.fire(
-                                    'Error',
-                                    'There was an issue processing your request: ' + xhr.responseText,
+                                    "{{__('Error')}}",
+                                    "{{__('There was an issue processing your request:')}}" + xhr.responseText,
                                     'error'
                                 );
                             }

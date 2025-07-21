@@ -29,10 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (env('APP_ENV') === 'production') {
-            URL::forceScheme('https');
-        }
-        $this->setAppLocale();
+        // if (env('APP_ENV') === 'production') {
+        //     URL::forceScheme('https');
+        // }
+        // $this->setAppLocale();
     }
 
     // function to set languge as base lang or selected lang

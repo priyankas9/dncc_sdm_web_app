@@ -11,7 +11,7 @@
     <!-- Hidden input to pass the slug value -->
     <input type="hidden" name="slug" value="{{ $value }}">
 
-    @include('fsm.supervisory-assessment.partial-form', ['submitButtomText' => 'Save'])
+    @include('fsm.supervisory-assessment.partial-form', ['submitButtomText' => __('Save')])
 
     {!! Form::close() !!}
 </div><!-- /.card -->

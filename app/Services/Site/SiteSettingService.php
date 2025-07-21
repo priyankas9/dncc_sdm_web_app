@@ -46,18 +46,18 @@ class SiteSettingService
 
     // Mapping of request fields to setting names
     $settingsMap = [
-        'Next_Emptying_Date_Assignment_Period_(Days)' => 'Next Emptying Date Assignment Period (Days)',
-        'Trip_Capacity_Per_Day' => 'Trip Capacity Per Day',
-        'Schedule_Desludging_Start_Date' => 'Schedule Desludging Start Date',
-        'Wards_for_Schedule_Desludging' => 'Wards for Schedule Desludging',
-        'Notification_Period_Prior_to_Desludging' => 'Notification Period Prior to Desludging',
-        'Notification_Period_to_Non-compliant_households' => 'Notification Period to Non-compliant households',
-        'Next_Emptying_Date_Period' => 'Next Emptying Date Period',
-        'Working_Hours' => 'Working Hours',
-        'Holiday_Dates' => 'Holiday Dates',
-        'Weekend' => 'Weekend',
-        'Schedule_Regeneration_Period' => 'Schedule Regeneration Period',
-        'Auto_Assign_Service_Provider' => 'Auto Assign Service Provider',
+        'Next_Emptying_Date_Assignment_Period_(Days)' => __('Next Emptying Date Assignment Period (Days)'),
+        'Trip_Capacity_Per_Day' => __('Trip Capacity Per Day'),
+        'Schedule_Desludging_Start_Date' => __('Schedule Desludging Start Date'),
+        'Wards_for_Schedule_Desludging' => __('Wards for Schedule Desludging'),
+        'Notification_Period_Prior_to_Desludging' => __('Notification Period Prior to Desludging'),
+        'Notification_Period_to_Non-compliant_households' => __('Notification Period to Non-compliant households'),
+        'Next_Emptying_Date_Period' => __('Next Emptying Date Period'),
+        'Working_Hours' => __('Working Hours'),
+        'Holiday_Dates' => __('Holiday Dates'),
+        'Weekend' => __('Weekend'),
+        'Schedule_Regeneration_Period' => __('Schedule Regeneration Period'),
+        'Auto_Assign_Service_Provider' => __('Auto Assign Service Provider'),
     ];
 
     foreach ($settingsMap as $field => $settingName) {

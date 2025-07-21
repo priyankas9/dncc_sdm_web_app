@@ -3,10 +3,10 @@
 @section('content')
 <div class="card border-0">
     <div class="card-header">
-    <a href="{{ action('Fsm\SupervisoryAssessmentController@download') }}" id="export" class="btn btn-info">Export to CSV
+    <a href="{{ action('Fsm\SupervisoryAssessmentController@download') }}" id="export" class="btn btn-info">{{ __('Export to CSV') }}
     </a>
      <a href class="btn btn-info float-right" data-toggle="collapse" data-target="#collapseFilter"
-                        aria-expanded="false" aria-controls="collapseFilter">Show Filter</a>
+                        aria-expanded="false" aria-controls="collapseFilter">  {{ __('Show Filter') }}</a>
 
     </div><!-- /.card-header -->
     <div class="card-body">
@@ -19,24 +19,24 @@
                                         <div class="accordion-body">
                                             <form class="form-horizontal" id="filter-form">
                                                 <div class="form-group row">
-                                                    <label for="owner_name" class="col-md-2 col-form-label ">Owner Name</label>
+                                                    <label for="owner_name" class="col-md-2 col-form-label ">  {{ __('Owner Name') }}</label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="owner_name" placeholder= "Owner Name" />
+                                                        <input type="text" class="form-control" id="owner_name" placeholder= "{{ __('Owner Name') }}" />
                                                     </div>
-                                                    <label for="application_id" class="col-md-2 col-form-label ">Application ID
+                                                    <label for="application_id" class="col-md-2 col-form-label ">{{ __('Application ID') }}
                                                     </label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="application_id" placeholder= "Application ID"/>
+                                                        <input type="text" class="form-control" id="application_id" placeholder= "{{ __('Application ID') }}"/>
                                                     </div>
-                                                    <label for="holding_num" class="col-md-2 col-form-label ">Holding Number
+                                                    <label for="holding_num" class="col-md-2 col-form-label ">{{ __('Holding Number') }}
                                                     </label>
                                                     <div class="col-md-2">
-                                                        <input type="text" class="form-control" id="holding_num" placeholder= "Holding Number"/>
+                                                        <input type="text" class="form-control" id="holding_num" placeholder= "{{ __('Holding Number') }}"/>
                                                     </div>
                                                 </div>
                                                 <div class="card-footer text-right">
-                                                    <button type="submit" class="btn btn-info ">Filter</button>
-                                                    <button type="reset" id="reset-filter" class="btn btn-info">Reset</button>
+                                                    <button type="submit" class="btn btn-info ">{{ __('Filter') }}</button>
+                                                    <button type="reset" id="reset-filter" class="btn btn-info">{{ __('Reset') }}</button>
                                                 </div>
                                                 <div class="clearfix"></div>
                                             </form>
@@ -50,13 +50,13 @@
                 <table id="data-table" class="table table-bordered table-striped dtr-inline" width="100%">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Application ID</th>
-                        <th>Holding Number</th>
-                        <th>Owner Name</th>
-                        <th>Advance Paid Amount</th>
-                        <th>Confirm Emptying Date</th>
-                        <th>Actions</th>
+                        <th>{{ __('ID') }}</th>
+                        <th>{{ __('Application ID') }}</th>
+                        <th>{{ __('Holding Number') }}</th>
+                        <th>{{ __('Owner Name') }}</th>
+                        <th>{{ __('Advance Paid Amount') }}</th>
+                        <th>{{ __('Confirm Emptying Date') }}</th>
+                        <th>{{ __('Actions') }}</th>
                     </tr>
                 </thead>
             </table>
