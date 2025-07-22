@@ -574,6 +574,12 @@
         </div>
     </div>
 
+    <div class="form-group row" id="toilet-category-group" style="display: none;">
+    <label class="col-sm-3 control-label">Category</label>
+    <div class="col-sm-5">
+        <input type="text" id="toilet-category" class="form-control col-sm-10" readonly>
+    </div>
+    </div>
     {{-- Hide containment ID if containment data is being edited --}}
     <div class="form-group row required" id="containment-id" style="display:none">
         {!! Form::label('build_contain', __('BIN of Pre-Connected Building'), ['class' => 'col-sm-3 control-label']) !!}
