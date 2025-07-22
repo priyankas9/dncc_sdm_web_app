@@ -257,51 +257,88 @@ function dynamicBuildingForm() {
             $('#ctpt-toilet').hide();
         }
     });
+   const toiletCategoryMap = {
+    "Sewer Network": "WASA Sewerage Connection",
+    "Drain Network": "Directly Connected to Drain",
+    "Septic Tank": "",
+    "Pit/ Holding Tank": "Non-Functional Septic Tank",
+    "Onsite Treatment (Anaerobic Digestor/ Biogas, DEWATS, etc.)": "Onsite Treatment",
+    "Composting Toilets (Ecosan, UDDT, etc.)": "Onsite Treatment",
+    "Water Body": "Directly Connected to Drain",
+    "Open Ground": "Directly Connected to Drain",
+    "Community Toilet": "",
+    "Open Defecation": "",
+    "Shared Toilets": "",
+    "Shared Containment": ""
+};
 
-    $('#toilet-connection').on('change', function () {
-        if ($("#toilet-connection :selected").text() === "Septic Tank" || $(
-            "#toilet-connection :selected").text() === "Pit/ Holding Tank") {
-            $('#containment-info').show();
-            $('#containment-id').hide();
-            $('#drain-code').hide();
-            $('#sewer-code').hide();
-             $('#wasa-status').hide();
-            $('#vacutug-accessible').show();
+$('#toilet-connection').on('change', function () {
+    const selectedText = $("#toilet-connection :selected").text().trim();
 
+    // 🔹 Category Logic
+    const category = toiletCategoryMap[selectedText] ?? '';
+    if (category !== '') {
+        if ($('#toilet-category-group').length === 0) {
+            // Inject the field dynamically if not already present
+            $('#toilet-connection').closest('.form-group').after(`
+                <div class="form-group row" id="toilet-category-group">
+                    <label class="col-sm-3 control-label">Category</label>
+                    <div class="col-sm-5">
+                        <input type="text" id="toilet-category" class="form-control col-sm-10" readonly>
+                    </div>
+                </div>
+            `);
         }
-        else if ($("#toilet-connection :selected").text() == "Shared Containment") {
-            $('#containment-id').show();
-            $('#containment-info').hide();
-            $('#drain-code').hide();
-            $('#sewer-code').hide();
-             $('#wasa-status').hide();
-            $('#vacutug-accessible').hide();
-        }
-        else if ($("#toilet-connection :selected").text() == "Drain Network") {
-            $('#drain-code').show();
-            $('#containment-id').hide();
-            $('#containment-info').hide();
-            $('#sewer-code').hide();
-             $('#wasa-status').hide();
-            $('#vacutug-accessible').hide();
-        }
-        else if ($("#toilet-connection :selected").text() == "Sewer Network") {
-            $('#drain-code').hide();
-            $('#containment-id').hide();
-            $('#containment-info').hide();
-            $('#sewer-code').show();
-             $('#wasa-status').show();
-            $('#vacutug-accessible').hide();
-        }
-        else {
-            $('#containment-id').hide();
-            $('#containment-info').hide();
-            $('#drain-code').hide();
-            $('#sewer-code').hide();
-             $('#wasa-status').hide();
-            $('#vacutug-accessible').hide();
-        }
-    });
+        $('#toilet-category').val(category);
+        $('#toilet-category-group').show();
+    } else {
+        $('#toilet-category-group').hide();
+    }
+
+    // 🔹 Existing Logic
+    if (selectedText === "Septic Tank" || selectedText === "Pit/ Holding Tank") {
+        $('#containment-info').show();
+        $('#containment-id').hide();
+        $('#drain-code').hide();
+        $('#sewer-code').hide();
+        $('#wasa-status').hide();
+        $('#vacutug-accessible').show();
+
+    } else if (selectedText === "Shared Containment") {
+        $('#containment-id').show();
+        $('#containment-info').hide();
+        $('#drain-code').hide();
+        $('#sewer-code').hide();
+        $('#wasa-status').hide();
+        $('#vacutug-accessible').hide();
+
+    } else if (selectedText === "Drain Network") {
+        $('#drain-code').show();
+        $('#containment-id').hide();
+        $('#containment-info').hide();
+        $('#sewer-code').hide();
+        $('#wasa-status').hide();
+        $('#vacutug-accessible').hide();
+
+    } else if (selectedText === "Sewer Network") {
+        $('#drain-code').hide();
+        $('#containment-id').hide();
+        $('#containment-info').hide();
+        $('#sewer-code').show();
+        $('#wasa-status').show();
+        $('#vacutug-accessible').hide();
+
+    } else {
+        $('#containment-id').hide();
+        $('#containment-info').hide();
+        $('#drain-code').hide();
+        $('#sewer-code').hide();
+        $('#wasa-status').hide();
+        $('#vacutug-accessible').hide();
+    }
+});
+
+
 
     $('#containment-type').on('change', function () {
 
