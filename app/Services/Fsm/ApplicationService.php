@@ -1045,7 +1045,54 @@ class ApplicationService
     // }
     
 
-  
+  public function calculate_sequence()
+    {
+        $sequence = [];
+
+        // 1. Fetch all active service providers
+        $service_providers = DB::table('fsm.service_providers')
+                                ->where('status', true)
+                                ->get();
+
+        // 2. Fetch vehicle count for each active SP
+        $sp_vehicles = [];
+        foreach ($service_providers as $sp) {
+            $vehicle_count = DB::table('fsm.desludging_vehicles')
+                                ->where('status', true)
+                                ->where('service_provider_id', $sp->id)
+                                ->count();
+
+            if ($vehicle_count > 0) {
+                $sp_vehicles[] = [
+                    'id' => $sp->id,
+                    'vehicle' => $vehicle_count
+                ];
+            }
+        }
+
+        // 3. Randomize tie-breakers for equal vehicle counts
+        shuffle($sp_vehicles);
+
+        // 4. Sort by vehicle count descending, with shuffled order preserved for ties
+        usort($sp_vehicles, function($a, $b) {
+            return $b['vehicle'] <=> $a['vehicle'];
+        });
+
+        // 5. Determine number of rounds (max vehicle count)
+        $max_rounds = max(array_column($sp_vehicles, 'vehicle'));
+
+        // 6. Round-robin allocation
+        for ($round = 0; $round < $max_rounds; $round++) {
+            foreach ($sp_vehicles as &$sp) {
+                if ($sp['vehicle'] > 0) {
+                    $sequence[] = $sp['id'];
+                    $sp['vehicle'] -= 1;
+                }
+            }
+        }
+
+        return $sequence;
+    }
 
 
     /**
