@@ -95,7 +95,24 @@
                     ]) !!}
                 </div>
             </div>
-
+                <div class="form-group row">
+                {!! Form::label('road_name', __('Road Name'), ['class' => 'col-sm-2 control-label control-label ']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('road_name', $building->road_name, [
+                        'class' => 'form-control col-sm-10  font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group row">
+                {!! Form::label('block_number', __('Block Number'), ['class' => 'col-sm-2 control-label control-label ']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('block_number', $building->block_number, [
+                        'class' => 'form-control col-sm-10  font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
             <div class="form-group row">
                 {!! Form::label('house_number', __('House Number'), ['class' => 'col-sm-2 control-label control-label ']) !!}
                 <div class="col-sm-3">
@@ -362,6 +379,27 @@
                     ]) !!}
                 </div>
             </div>
+             <div class="form-group row">
+                {!! Form::label('water_bill', __('Water Bill Payment Status'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('water_bill', $building->water_bill, [
+                        'class' => 'form-control col-sm-10 font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
+           {{-- Show WASA Bill No. here ONLY if water_bill == 'Yes' and wasa_status != 'Yes' --}}
+        @if ($building->water_bill == 'Yes' && $building->wasa_status != 'Yes')
+            <div class="form-group row" id="wasa-bill">
+                {!! Form::label('wasa_bill_no', __('WASA Bill No.'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('wasa_bill_no', $building->wasa_bill_no, [
+                        'class' => 'form-control font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
+        @endif
 
             <div class="form-group row" id="well-presence">
                 {!! Form::label('well_presence_status', __('Well in Premises'), ['class' => 'col-sm-2 control-label']) !!}
@@ -464,6 +502,18 @@
                     @endif
                 </div>
             </div>
+           
+           @if (!empty($building->toilet_category))
+            <div class="form-group row" id="toilet-category">
+                {!! Form::label('toilet_category', __('Category'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('toilet_category', $building->toilet_category, [
+                        'class' => 'form-control font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
+        @endif
 
             <div class="form-group row">
                 {!! Form::label('ctpt_name',  __('Community Toilet Name'), ['class' => 'col-sm-2 control-label']) !!}
@@ -492,7 +542,26 @@
                     ]) !!}
                 </div>
             </div>
-
+            <div class="form-group row">
+                {!! Form::label('wasa_status', __('WASA Bill Payment Status'), ['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('wasa_status', $building->wasa_status, [
+                        'class' => 'form-control col-sm-10 font-weight-bold',
+                        'readonly' => 'readonly',
+                    ]) !!}
+                </div>
+            </div>
+            @if ($building->wasa_status == 'Yes')
+                <div class="form-group row" id="wasa-bill">
+                    {!! Form::label('wasa_bill_no', __('WASA Bill No.'), ['class' => 'col-sm-2 control-label']) !!}
+                    <div class="col-sm-3">
+                        {!! Form::text('wasa_bill_no', $building->wasa_bill_no, [
+                            'class' => 'form-control font-weight-bold',
+                            'readonly' => 'readonly',
+                        ]) !!}
+                    </div>
+                </div>
+            @endif
             <div class="form-group row">
                 {!! Form::label('drain_code', __('Drain Code'), ['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
