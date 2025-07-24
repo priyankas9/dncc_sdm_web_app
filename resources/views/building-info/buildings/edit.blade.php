@@ -460,7 +460,46 @@
             });
         });
 
+// 🟢 Start: TOILET CATEGORY MAPPING CODE
+    const toiletCategoryMap = {
+        "Sewer Network": "WASA Sewerage Connection",
+        "Drain Network": "Directly Connected to Drain",
+        "Septic Tank": "",
+        "Pit/ Holding Tank": "Non-Functional Septic Tank",
+        "Onsite Treatment (Anaerobic Digestor/ Biogas, DEWATS, etc.)": "Onsite Treatment",
+        "Composting Toilets (Ecosan, UDDT, etc.)": "Onsite Treatment",
+        "Water Body": "Directly Connected to Drain",
+        "Open Ground": "Directly Connected to Drain",
+        "Community Toilet": "",
+        "Open Defecation": "",
+        "Shared Toilets": "",
+        "Shared Containment": ""
+    };
 
+    $('#toilet-connection').on('change', function () {
+        const selectedText = $("#toilet-connection :selected").text().trim();
+
+        const category = toiletCategoryMap[selectedText] ?? '';
+        if (category !== '') {
+            if ($('#toilet-category-group').length === 0) {
+                $('#toilet-connection').closest('.form-group').after(`
+                    <div class="form-group row" id="toilet-category-group">
+                        <label class="col-sm-3 control-label">Category</label>
+                        <div class="col-sm-5">
+                            <input type="text" id="toilet-category" class="form-control col-sm-10" readonly>
+                        </div>
+                    </div>
+                `);
+            }
+            $('#toilet-category').val(category);
+            $('#toilet-category-group').show();
+        } else {
+            $('#toilet-category-group').hide();
+        }
+    });
+
+    // ✅ Trigger on page load so it works for edit too
+    $('#toilet-connection').trigger('change');
         // for dynamic dropdown for containment type acc to toilet connection
 
         $('#toilet-connection select').on('change', function() {
@@ -643,6 +682,7 @@
      $('#geom').on('change', function() {
         validateFileSize(document.querySelector('#geom'),'fileSizeHintKML','1');
     });
+    
 
     var usecatgs = JSON.parse('{!! $usecatgsJson !!}');
     // use category handled on initial load

@@ -42,7 +42,7 @@ class BuildingStructureService
     public function storeBuildingData(Request $request)
     {
         DB::beginTransaction();
-        try {
+        // try {
 
             $maxBIN = Building::withTrashed()->max('bin');
             $maxBIN = (int) str_replace('B', '', $maxBIN); // cast to integer
@@ -57,6 +57,8 @@ class BuildingStructureService
             }
             $building->ward = $request->ward ? $request->ward : null;
             $building->road_code = $request->road_code ? $request->road_code : null;
+            $building->road_name = $request->road_name ? $request->road_name : null;
+            $building->block_number = $request->block_number ? $request->block_number : null;
             $building->house_number = $request->house_number ? $request->house_number : null;
             $building->house_locality = $request->house_locality ? $request->house_locality : null;
             $building->tax_code = $request->tax_code ? $request->tax_code : null;
@@ -91,8 +93,11 @@ class BuildingStructureService
             // water source Municipal/Public water supply
             if(KeywordMatcher::matchKeywords($building->WaterSource->source, ["municipal","public"]))
             {
+              
                 $building->water_customer_id = $request->water_customer_id ? $request->water_customer_id : null;
                 $building->watersupply_pipe_code = $request->watersupply_pipe_code ? $request->watersupply_pipe_code : null;
+                $building->wasa_bill_no = $request->wasa_bill_no ? $request->wasa_bill_no : null;
+                $building->water_status = $request->water_status ? $request->water_status : null;
             }
             $building->well_presence_status = $request->well_presence_status;
             if ($building->well_presence_status == true) {
@@ -125,8 +130,11 @@ class BuildingStructureService
                 $building->population_with_private_toilet = $request->population_with_private_toilet ? $request->population_with_private_toilet : null;
                 $building->sanitation_system_id = $request->sanitation_system_id ? $request->sanitation_system_id : null;
                 $request->sanitation_system = SanitationSystem::find($building->sanitation_system_id)->sanitation_system;
+                $building->toilet_category = $request->toilet_category ? $request->toilet_category : null;
                 if (KeywordMatcher::matchKeywords($request->sanitation_system, ["sewer", "septic", "pit"])) {
                     $building->sewer_code = $request->sewer_code ? $request->sewer_code : null;
+                    $building->wasa_status = $request->wasa_status ? $request->wasa_status : null;
+                     $building->containment_category = $request->containment_category ? $request->containment_category : null;
                 } elseif (KeywordMatcher::matchKeywords($request->sanitation_system, ["drain", "septic", "pit"])) {
                     $building->drain_code = $request->drain_code ? $request->drain_code : null;
                 }
@@ -167,10 +175,10 @@ class BuildingStructureService
             }
             DB::commit();
             return redirect('building-info/buildings')->with('success', __("Building created successfully"));
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect('building-info/buildings')->with('error', __("Building could not be created"));
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return redirect('building-info/buildings')->with('error', __("Building could not be created"));
+        // }
     }
 
 

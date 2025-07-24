@@ -178,7 +178,7 @@ class BuildingRequest extends FormRequest
             'lic_id' => 'required_if:lic_status,1',
             //water source Information
             'water_source_id' => 'required',
-            'watersupply_pipe_code' => 'required_if:water_source_id,1',
+           
             //sanitation system Information
             'toilet_status' => ['required',
              function ($attribute, $value, $fail) use ($use_cat) {
@@ -210,8 +210,8 @@ class BuildingRequest extends FormRequest
             'pit_diameter' => 'numeric|nullable|min:0',
             'build_contain' => 'exclude_if:toilet_status,0 | required_if:sanitation_system_id,11',
             //drain and sewer code
-            'sewer_code' => 'exclude_if:toilet_status,0 |exclude_if:type_id,2,14 | required_if:sanitation_system_id,1| required_if:type_id,1,13',
-            'drain_code' => 'exclude_if:toilet_status,0 |exclude_if:type_id,1,13 |  required_if:sanitation_system_id,2 | required_if:type_id,2,14',
+            // 'sewer_code' => 'exclude_if:toilet_status,0 |exclude_if:type_id,2,14 | required_if:sanitation_system_id,1| required_if:type_id,1,13',
+            // 'drain_code' => 'exclude_if:toilet_status,0 |exclude_if:type_id,1,13 |  required_if:sanitation_system_id,2 | required_if:type_id,2,14',
             'geom' => 'required_if:kml,null|file_extension:kml|max:1024',
             'house_image' => 'nullable|image|mimes:jpeg,jpg|max:5120', // 5MB = 5120KB
 
@@ -276,7 +276,7 @@ class BuildingRequest extends FormRequest
             'lic_id' => 'required_if:lic_status,1',
             //water source Information
             'water_source_id' => 'required',
-            'watersupply_pipe_code' => 'required_if:water_source_id,1',
+            //'watersupply_pipe_code' => 'required_if:water_source_id,1',
 
             //sanitation system Information
             'toilet_status' => ['required',
@@ -294,8 +294,8 @@ class BuildingRequest extends FormRequest
             'population_with_private_toilet' => 'nullable|min:0| lte:population_served',
 
             //drain and sewer code
-            'sewer_code' => 'exclude_if:toilet_status,0 |required_if:sanitation_system_id,1',
-            'drain_code' => 'exclude_if:toilet_status,0 |required_if:sanitation_system_id,2',
+            // 'sewer_code' => 'exclude_if:toilet_status,0 |required_if:sanitation_system_id,1',
+            // 'drain_code' => 'exclude_if:toilet_status,0 |required_if:sanitation_system_id,2',
             'build_contain' => 'exclude_if:toilet_status,0 |required_if:sanitation_system_id,11',
             'house_image' => 'nullable|image|mimes:jpeg,jpg|max:5120', // 5MB = 5120KB
             'geom' => 'nullable|file_extension:kml|max:1024',

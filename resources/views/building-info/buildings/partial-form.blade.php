@@ -577,7 +577,7 @@
     <div class="form-group row" id="toilet-category-group" style="display: none;">
     <label class="col-sm-3 control-label">Category</label>
     <div class="col-sm-5">
-        <input type="text" id="toilet-category" class="form-control col-sm-10" readonly>
+        <input type="text" id="toilet-category" name="toilet_category" class="form-control col-sm-10" readonly>
     </div>
     </div>
     {{-- Hide containment ID if containment data is being edited --}}

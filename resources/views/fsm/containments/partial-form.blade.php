@@ -15,7 +15,7 @@
     <div class="form-group row" id="containment-category-group" style="display: none;">
     <label class="col-sm-3 control-label">Category</label>
     <div class="col-sm-5">
-        <input type="text" id="containment-category" class="form-control col-sm-10" readonly>
+        <input type="text" id="containment-category" name="containment_category" class="form-control col-sm-10" readonly>
     </div>
 </div>
 
