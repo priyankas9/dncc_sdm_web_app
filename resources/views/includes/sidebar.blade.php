@@ -1,22 +1,23 @@
 <!-- Last Modified Date: 07-05-2024
 Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    @if (request()->is('maps'))
+  @if (request()->is('maps'))
     <a href="{{ url('/') }}" class="brand-link">
-        <img src="" alt="">
-        <span class="brand-text font-weight-light ">
-            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
-            margin-right: 0.5rem;  height:50px; width:40%; margin-left : 20%">
+        <span class="brand-text font-weight-light">
+            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" 
+                 style="margin: 0 auto; display: block; height: 50px; width: auto;">
         </span>
     </a>
     @else
-    <a href="{{ url('/') }}" class="brand-link" id="sidebar-brand-link">
-        <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" style=" 
-        margin-right: 0.5rem; max-height:33px; width:70px">
-        <img src="{{ asset('/img/logo-dncc.png') }}" alt=" Municipality Logo" id="hello-text" style=" 
-         margin-right: 0.5rem; margin-left:20%; max-height:60px; width:50%; display: none; ">
-    </a>
+        <a href="{{ url('/') }}" class="brand-link" id="sidebar-brand-link">
+            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="sidebar-logo" 
+                style="margin-right: 0.5rem; height: 33px; width: auto;">
+            
+            <img src="{{ asset('/img/logo-dncc.png') }}" alt="Municipality Logo" id="hello-text" 
+                style="margin-left: 30%; height: 60px; width: auto; display: none;">
+        </a>
     @endif
+
     <div class="sidebar" style='overflow-y: scroll; font-family: Open Sans, sans-serif'>
         <nav class="mt-4">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -332,12 +333,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             </li>
             @endif
             </li>
-            <!-- <li class="nav-item">
+            <li class="nav-item">
                 <a href="{{ action('Pdf\PdfController@index') }}" class="nav-link {{ request()->is('pdf/pdf') ? 'active' : '' }}">
                 <img src="{{ asset('img/svg/imis-icons/sewerConnectionIMS.svg')}}" class="nav-icon" alt="Sewer Connection Icon">
                     <p>Pdf Generation</p>
                 </a>
-            </li> -->
+            </li>
             @if(Auth::user()->hasanyPermissionInGroup(['Sewer Connection']) || Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Municipality - Super Admin'))
             <li class="nav-item">
                 <a href="{{ action('SewerConnection\SewerConnectionController@index') }}" class="nav-link {{ request()->is('sewerconnection/sewerconnection') ? 'active' : '' }}">
