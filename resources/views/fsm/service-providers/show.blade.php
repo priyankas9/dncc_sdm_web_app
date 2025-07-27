@@ -44,6 +44,18 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 				{!! Form::label(null, $serviceProvider->contact_person, ['class' => 'form-control']) !!}
 			</div>
 		</div>
+		<div class="form-group row">
+			{!! Form::label('contract_document_pdf', __('Contract Document'), ['class' => 'col-sm-3 control-label']) !!}
+			<div class="col-sm-3">
+				@if (!empty($serviceProvider->contract_document_pdf))
+					<a href="{{ asset('storage/' . $serviceProvider->contract_document_pdf) }}" target="_blank" class="btn btn-outline-primary">
+						<i class="fa fa-file-pdf-o"></i> View PDF
+					</a>
+				@else
+					<span class="text-muted">No document uploaded</span>
+				@endif
+			</div>
+		</div>
 
 		<div class="form-group row">
 			{!! Form::label('contact_gender', __('Contact Person Gender'), ['class' => 'col-sm-3 control-label']) !!}
