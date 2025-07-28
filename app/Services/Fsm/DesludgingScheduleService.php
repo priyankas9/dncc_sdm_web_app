@@ -187,7 +187,7 @@ class DesludgingScheduleService
                 AND b.deleted_at IS NULL
             WHERE   
             -- checks if WASA status is not paid
-			    b.wasa_status = 'false' OR b.wasa_status IS NULL
+			    b.wasa_status = 'No' OR b.wasa_status IS NULL
                 -- this flag ensures that once containment is emptied through the schedule, it will not be selected again
 			AND c.emptied_status = false
             -- this flag checks for 0: not scheduled and 4: denied once only
@@ -201,6 +201,7 @@ class DesludgingScheduleService
         $containment_id = DB::select($fetch_id);
         // re-query all fetched ID's and order them by first priority then distance from FSTP
         $containments = Containment::whereIN('id',array_column($containment_id,'id'))->ORDERBY('priority')->ORDERBY('fstp_distance')->get();
+       
         return $containments;
         
     }
