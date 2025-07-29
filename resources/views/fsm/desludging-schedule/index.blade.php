@@ -134,7 +134,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         <th>{{__('Road Number')}}</th>
                         <th>{{__('Owner Name')}}</th>
                         <th>{{__('Owner Contact')}}</th>
-                        <th>{{__('Next Emptying Date')}}</th>
+                        <th>{{__('Proposed Emptying Date')}}</th>
                         <th>{{__('Actions')}}</th>
                     </tr>
                 </thead>
