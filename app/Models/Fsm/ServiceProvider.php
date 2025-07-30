@@ -39,6 +39,11 @@ class ServiceProvider extends Model
         return $this->hasMany(VacutugType::class, 'service_provider_id', 'id');
 
     }
+      public function serviceproviderSequence()
+    {
+        return $this->hasMany(ServiceProviderSequence::class, 'service_provider_id', 'id');
+
+    }
 
     public function employees()
     {

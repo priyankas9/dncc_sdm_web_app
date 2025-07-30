@@ -77,7 +77,8 @@ class ApplicationController extends Controller
     $serviceProviders = [];
 
     if ($autoAssign) {
-        $sequence = $this->applicationService->calculate_sequence();
+       $sequence = $this->applicationService->calculateSequence();
+
         if (!empty($sequence)) {
             $assignedServiceProviderId = $sequence[0];
 
@@ -109,10 +110,6 @@ class ApplicationController extends Controller
     ]);
 }
 
-
-
-
-
     /**
      * Get the building details for the selected address.
      *
@@ -134,6 +131,7 @@ class ApplicationController extends Controller
      */
     public function store(ApplicationRequest $request)
     {
+        
         return $this->applicationService->createApplication($request);
     }
 
