@@ -1,9 +1,9 @@
-<!-- Last Modified Date: 07-05-2024
+<!-- Last Modified Date: 18-04-2024
 Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 <style>
-         #map {
-        width: 800px;
-        height: 400px; /* 100% of the viewport height - navbar height */
+      #map {
+        width: 100px;
+        height: 200px; /* 100% of the viewport height - navbar height */
       }
       #olmap {
           border: 1px solid #000000;
@@ -25,16 +25,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         background-color: #fff;
         padding: 0.3em;
       }
-      .required-sign {
-    color: red; /* Change the color to your desired color */
-    margin-left: 5px; /* Adjust the margin to control spacing */
-  }
       #map:focus {
         outline: #4A74A8 solid 0.15em;
       }
+      #olmap{
+          width: 800px;
+      }
     </style>
-<link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-
 <link rel="stylesheet" href="https://unpkg.com/ol-layerswitcher@3.8.3/dist/ol-layerswitcher.css" />
 <style>
     .layer-switcher{
@@ -93,12 +90,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         {!! Form::submit(__('Save'), ['class' => 'btn btn-info']) !!}
     </div>
 
- 
-    @push('scripts')
-   
-    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+@push('scripts')
     <script src="https://unpkg.com/ol-layerswitcher@3.8.3"></script>
-    
     <script>
 
         var workspace = '<?php echo Config::get("constants.GEOSERVER_WORKSPACE"); ?>';
@@ -108,7 +101,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         var gurl_wfs = gurl + 'wfs';
         var authkey = '<?php echo Config::get("constants.AUTH_KEY"); ?>';
         // URL of GeoServer Legends
-        var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&BBOX=89.1281,23.502, 89.2068,23.5892&LAYER=";
+        var gurl_legend = gurl_wms + "?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=";
 
         var buildingsLayer = new ol.layer.Image({
             visible: false,
@@ -240,11 +233,10 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                 })
             ],
             view: new ol.View({
-                center: ol.proj.transform([85.37004580498977,27.643296216592432], 'EPSG:4326', 'EPSG:3857'),
-                // zoom: 12,
+                center: ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'),
                 minZoom: 12.5,
                 maxZoom: 19,
-                extent: ol.proj.transformExtent([85.32348539192756,27.58711426558866,85.44082675863419, 27.684646263435823 ], 'EPSG:4326', 'EPSG:3857')
+                extent: ol.proj.transformExtent([90.34, 23.75, 90.44, 23.84], 'EPSG:4326', 'EPSG:3857')
             })
         });
         map.addControl(layerSwitcher);
@@ -258,14 +250,45 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             map.addLayer(layer);
 
         }
-    
+        //            if(!eLayer.report_polygon_buffer) {
+        //                var reportPolygonBufferLayer = new ol.layer.Vector({
+        //
+        //                    source: new ol.source.Vector(),
+        //                    style: new ol.style.Style({
+        //                    fill: new ol.style.Fill({
+        //                      color: 'rgba(255, 255, 255, 0.2)',
+        //                    }),
+        //                    stroke: new ol.style.Stroke({
+        //                      color: '#ffcc33',
+        //                      width: 2,
+        //                    }),
+        //                    image: new ol.style.CircleStyle({
+        //                      radius: 7,
+        //                      fill: new ol.style.Fill({
+        //                        color: '#ffcc33',
+        //                      }),
+        //                    }),
+        //                  }),
+        //                });
+        //
+        //
+        //                addExtraLayer('report_polygon_buffer', 'Report Polygon Buffer', reportPolygonBufferLayer);
+        //            }
         map.on('singleclick', function (evt) {
-            var geom = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
-            displayPointByCoordinates(geom[1], geom[0]);
-            $('#geom').val(geom);
+            var coordinate = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+            displayPointByCoordinates(coordinate[1], coordinate[0]);
+            $('#latitude').val(coordinate[1]);
+            $('#longitude').val(coordinate[0]);
         });
         <?php if(@$geom) { ?>
-            displayPointByCoordinates({{$lat}}, {{$long}});
+        var format = new ol.format.WKT();
+        var feature = format.readFeature('<?php echo $geom; ?>', {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
+        });
+
+        eLayer.report_polygon_buffer.layer.getSource().addFeature(feature);
+
         <?php } ?>
         function displayPointByCoordinates(lat, long){
             if(eLayer.selected_pointcoordinate) {
@@ -303,14 +326,13 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         setInitialZoom();
 
         function setInitialZoom() {
-            map.getView().setCenter(ol.proj.transform([85.38334613018505,27.634613503939818], 'EPSG:4326', 'EPSG:3857'));
+            map.getView().setCenter(ol.proj.transform([90.388779, 23.792005], 'EPSG:4326', 'EPSG:3857'));
             map.getView().setZoom(12);
         }
         $(document).ready(function(){
+          
 
-            $('#create_user').on('change',function(){
-                    createUser();
-                });
+
             $('.date').datetimepicker({
                 format: "YYYY-MM-DD",
             });
