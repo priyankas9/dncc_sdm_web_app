@@ -41,9 +41,7 @@ class ApplicationRequest extends FormRequest
             'service_provider_id' => 'required|integer',
             'landmark' => '',
             'emergency_desludging_status' => 'required|boolean',
-            'household_served' => 'nullable|integer|min:1',
-            'population_served' => 'nullable|integer|min:1',
-            'toilet_count' => 'nullable|integer|min:1',
+            
         ];
     }
 
@@ -71,12 +69,6 @@ class ApplicationRequest extends FormRequest
             'landmark' => '',
             'emergency_desludging_status.required' => __('The Emergency Desludging is required.'),
             'emergency_desludging_status.boolean' => __('The Emergency Desludging must be Yes or No.'),
-            'household_served.integer' => __('The Household Served must be an integer.'),
-            'household_served.min' => __('The Household Served must be at least 1.'),
-            'population_served.integer' => __('The Population Served must be an integer.'),
-            'population_served.min' => __('The Population Served must be at least 1.'),
-            'toilet_count.integer' => __('The Toilet Count must be an integer.'),
-            'toilet_count.min' => __('The Toilet Count must be at least 1.'),
             'supervisory_assessment_date.required' => 'The Supervisory Assessment Date is required.',
             'supervisory_assessment_date.date' => 'The Supervisory Assessment Date must be a valid date.',
             'supervisory_assessment_date.before_or_equal' => 'The Supervisory Assessment Date must be before the Proposed Emptying Date.',

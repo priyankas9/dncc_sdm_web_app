@@ -160,7 +160,7 @@ class ApplicationService
                         label: __('Supervisory Assessment Date'),
                         labelFor: 'supervisory_assessment_date',
                         inputType: 'date',
-                        inputId: 'supervisory_asssessment_date',
+                        inputId: 'supervisory_assessment_date',
                         required: true,
                         placeholder: __('Supervisory Assessment Date'),
                     ),
@@ -190,38 +190,7 @@ class ApplicationService
                         required: true,
                         placeholder: __('Emergency Desludging'),
                     ),
-                ]],
-                ["title" => __('Household Details'),
-                "fields" => [
-                    new FormField(
-                        label: __('Number of Households'),
-                        labelFor: 'household_served',
-                        inputType: 'number',
-                        inputId: 'household_served',
-                        required: false,
-                        placeholder: __('Number of Households'),
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-
-                    ),
-                    new FormField(
-                        label: __('Population of Building'),
-                        labelFor: 'population_served',
-                        inputType: 'number',
-                        inputId: 'population_served',
-                        required: false,
-                        placeholder: __('Population of Building'),
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-                    ),
-                    new FormField(
-                        label: __('Number of Toilets'),
-                        labelFor: 'toilet_count',
-                        inputType: 'number',
-                        inputId: 'toilet_count',
-                        required: false,
-                        placeholder: __('Number of Toilets'),
-                        oninput: "this.value = this.value.replace(/[^0-9]/g, '')" , 
-                    ),
-                ]],
+                ]]
         ];
         $this->createFormAction = route('application.store');
         $this->indexAction = route('application.index');
@@ -1206,7 +1175,6 @@ class ApplicationService
                     $application->customer_name = $request->customer_name??$owner->owner_name;
                     $application->customer_contact = $request->customer_contact??$owner->owner_contact;
                     $application->customer_gender = $request->customer_gender??$owner->owner_gender;
-                    dd($application);
                     $owner->fill([
                             "owner_name" => $request->customer_name??$owner->owner_name,
                             "owner_gender" => $request->customer_gender??$owner->owner_gender,
