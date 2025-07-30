@@ -130,11 +130,11 @@ class BuildingStructureService
                 $building->population_with_private_toilet = $request->population_with_private_toilet ? $request->population_with_private_toilet : null;
                 $building->sanitation_system_id = $request->sanitation_system_id ? $request->sanitation_system_id : null;
                 $request->sanitation_system = SanitationSystem::find($building->sanitation_system_id)->sanitation_system;
-                $building->toilet_category = $request->toilet_category ? $request->toilet_category : null;
+                $building->category = $request->category ? $request->category : null;
                 if (KeywordMatcher::matchKeywords($request->sanitation_system, ["sewer", "septic", "pit"])) {
                     $building->sewer_code = $request->sewer_code ? $request->sewer_code : null;
                     $building->wasa_status = $request->wasa_status ? $request->wasa_status : null;
-                     $building->containment_category = $request->containment_category ? $request->containment_category : null;
+                     $building->category = $request->category ? $request->category : null;
                 } elseif (KeywordMatcher::matchKeywords($request->sanitation_system, ["drain", "septic", "pit"])) {
                     $building->drain_code = $request->drain_code ? $request->drain_code : null;
                 }
