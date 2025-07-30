@@ -257,7 +257,6 @@
             ]) !!}
         </div>
     </div>
-
     <!-- Building Population Information - Number of Households -->
     <div class="form-group row required" id="family-count">
         {!! Form::label('household_served', __('Number of Households'), ['class' => 'col-sm-3 control-label']) !!}
@@ -270,10 +269,6 @@
             ]) !!}
         </div>
     </div>
-
-
-
-
     <!-- Additional Population Fields (Optional) -->
     <div class="form-group row" id="male-population">
         {!! Form::label('male_population', __('Male Population'), ['class' => 'col-sm-3 control-label']) !!}
@@ -286,7 +281,6 @@
             ]) !!}
         </div>
     </div>
-
     <div class="form-group row" id="female-population">
         {!! Form::label('female_population', __('Female Population'), ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-5">
@@ -574,12 +568,7 @@
         </div>
     </div>
 
-    <div class="form-group row" id="toilet-category-group" style="display: none;">
-    <label class="col-sm-3 control-label">Category</label>
-    <div class="col-sm-5">
-        <input type="text" id="toilet-category" name="toilet_category" class="form-control col-sm-10" readonly>
-    </div>
-    </div>
+   
     {{-- Hide containment ID if containment data is being edited --}}
     <div class="form-group row required" id="containment-id" style="display:none">
         {!! Form::label('build_contain', __('BIN of Pre-Connected Building'), ['class' => 'col-sm-3 control-label']) !!}

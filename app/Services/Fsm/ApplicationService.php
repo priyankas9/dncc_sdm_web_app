@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use App\Models\BuildingInfo\Building;
 use App\Models\Fsm\Application;
 use App\Models\Fsm\Containment;
+use App\Models\Fsm\ServiceProviderSequence;
 use App\Models\Swm\Route;
 use App\Models\UtilityInfo\Roadline;
 use Carbon\Carbon;
@@ -52,7 +53,10 @@ class ApplicationService
      */
     public function __construct()
     {
-     $this->createPartialForm = 'fsm.application.partial-form';
+    $this->initializeServiceProviderSequence();
+   $this->createPartialForm = 'fsm.application.partial-form';
+   $nextSpId = $this->getNextServiceProviderId();
+   $nextSpName = $this->getNextServiceProviderName();
      $this->createFormFields = [
         ["title" =>__('Address'),
                 "fields" => [
@@ -1045,55 +1049,137 @@ class ApplicationService
     // }
     
 
-  public function calculate_sequence()
-    {
-        $sequence = [];
+ public function calculateSequence(): array
+   {
+       $sequence = [];
 
-        // 1. Fetch all active service providers
-        $service_providers = DB::table('fsm.service_providers')
-                                ->where('status', true)
-                                ->get();
 
-        // 2. Fetch vehicle count for each active SP
-        $sp_vehicles = [];
-        foreach ($service_providers as $sp) {
-            $vehicle_count = DB::table('fsm.desludging_vehicles')
-                                ->where('status', true)
-                                ->where('service_provider_id', $sp->id)
-                                ->count();
+       $service_providers = DB::table('fsm.service_providers')
+           ->where('status', true)->get();
 
-            if ($vehicle_count > 0) {
-                $sp_vehicles[] = [
-                    'id' => $sp->id,
-                    'vehicle' => $vehicle_count
-                ];
-            }
-        }
 
-        // 3. Randomize tie-breakers for equal vehicle counts
-        shuffle($sp_vehicles);
+       $sp_vehicles = [];
+       foreach ($service_providers as $sp) {
+           $vehicle_count = DB::table('fsm.desludging_vehicles')
+               ->where('status', true)
+               ->where('service_provider_id', $sp->id)
+               ->count();
 
-        // 4. Sort by vehicle count descending, with shuffled order preserved for ties
-        usort($sp_vehicles, function($a, $b) {
-            return $b['vehicle'] <=> $a['vehicle'];
-        });
 
-        // 5. Determine number of rounds (max vehicle count)
-        $max_rounds = max(array_column($sp_vehicles, 'vehicle'));
+           if ($vehicle_count > 0) {
+               $sp_vehicles[] = [
+                   'id' => $sp->id,
+                   'vehicle' => $vehicle_count,
+               ];
+           }
+       }
 
-        // 6. Round-robin allocation
-        for ($round = 0; $round < $max_rounds; $round++) {
-            foreach ($sp_vehicles as &$sp) {
-                if ($sp['vehicle'] > 0) {
-                    $sequence[] = $sp['id'];
-                    $sp['vehicle'] -= 1;
-                }
-            }
-        }
 
-        return $sequence;
-    }
+       shuffle($sp_vehicles);
 
+
+       usort($sp_vehicles, function ($a, $b) {
+           return $b['vehicle'] <=> $a['vehicle'];
+       });
+
+
+       $max_rounds = max(array_column($sp_vehicles, 'vehicle'));
+
+
+       for ($round = 0; $round < $max_rounds; $round++) {
+           foreach ($sp_vehicles as &$sp) {
+               if ($sp['vehicle'] > 0) {
+                   $sequence[] = $sp['id'];
+                   $sp['vehicle'] -= 1;
+               }
+           }
+       }
+
+
+       DB::transaction(function () use ($sequence) {
+       // Clear existing sequence before inserting new one
+       ServiceProviderSequence::query()->delete();
+
+
+           foreach ($sequence as $index => $sp_id) {
+               try {
+                   ServiceProviderSequence::create([
+                       'service_provider_id' => $sp_id,
+                       'sequence_order' => $index,
+                       'current_sequence' => $index === 0,
+                   ]);
+               } catch (\Throwable $e) {
+                   \Log::error("Failed to insert sequence row", [
+                       'sp_id' => $sp_id,
+                       'error' => $e->getMessage(),
+                   ]);
+               }
+           }
+       });
+
+
+       return $sequence;
+   }
+
+   public function getNextServiceProviderId(): ?int
+   {
+       $active = ServiceProviderSequence::where('current_sequence', true)->first();
+       return $active?->service_provider_id;
+   }
+
+
+   public function getNextServiceProviderName(): ?string
+   {
+       $active = ServiceProviderSequence::where('current_sequence', true)->with('service_provider')->first();
+       return $active?->service_provider?->company_name;
+   }
+    protected function initializeServiceProviderSequence()
+   {
+       $hasActive = ServiceProviderSequence::where('current_sequence', true)->exists();
+
+
+       if (!$hasActive) {
+           $this->calculateSequence();
+       }
+   }
+
+   public function rotateServiceProviderSequence()
+   {
+       // Get all sequence records ordered by ID (assumed as sequence)
+       $sequences = ServiceProviderSequence::orderBy('sequence_order')->get();
+
+
+       if ($sequences->isEmpty()) {
+           return; // Nothing to rotate
+       }
+
+
+       // Find current active index
+       $currentIndex = $sequences->search(function ($item) {
+           return $item->current_sequence === true;
+       });
+
+
+       // Reset all to false
+       foreach ($sequences as $item) {
+           $item->current_sequence = false;
+           $item->save();
+       }
+
+
+       // Calculate next index (wrap around if needed)
+       $nextIndex = ($currentIndex === false || $currentIndex === $sequences->count() - 1)
+                       ? 0
+                       : $currentIndex + 1;
+
+
+       // Set the next one to true
+       $sequences[$nextIndex]->current_sequence = true;
+       $sequences[$nextIndex]->save();
+   }
+
+
+  
 
     /**
      * Store new application.
@@ -1145,8 +1231,9 @@ class ApplicationService
                     };
                     $application->emergency_desludging_status = $request->emergency_desludging_status ?? $request->emergency_desludging_status ?? null;
                     $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
-                   dd($application);
+                   
                    $application->save();
+                $this->rotateServiceProviderSequence();
                 });
             } catch (\Throwable $e) {
                 return redirect()->back()->withInput()->with('error',__("Error! Application couldn't be created. ").$e);
