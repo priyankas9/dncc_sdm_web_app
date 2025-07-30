@@ -67,9 +67,7 @@
                 <div class="col-lg-4 d-flex ">
                     @include('dashboard.countBox._onsiteTreatmentCountBox')
                 </div>
-                <!-- <div class="col-lg-4 d-flex ">
-                    @include('dashboard.countBox._uncategorizedCountBox')
-                </div> -->
+               
             </div>
 @endcan
   @can('Sanitation CountBox')
