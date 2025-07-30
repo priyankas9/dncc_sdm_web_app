@@ -55,7 +55,7 @@
                         <th>{{ __('Holding Number') }}</th>
                         <th>{{ __('Owner Name') }}</th>
                         <th>{{ __('Advance Paid Amount') }}</th>
-                        <th>{{ __('Confirm Emptying Date') }}</th>
+                        <th>{{ __('Confirmed Emptying Date') }}</th>
                         <th>{{ __('Actions') }}</th>
                     </tr>
                 </thead>
