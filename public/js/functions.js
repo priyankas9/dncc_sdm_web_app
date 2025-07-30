@@ -257,13 +257,40 @@ function dynamicBuildingForm() {
             $('#ctpt-toilet').hide();
         }
     });
-
+   const toiletCategoryMap = {
+    "Sewer Network": "WASA Sewerage Connection",
+    "Drain Network": "Directly Connected to Drain",
+    "Septic Tank": "",
+    "Pit/ Holding Tank": "Non-Functional Septic Tank",
+    "Onsite Treatment (Anaerobic Digestor/ Biogas, DEWATS, etc.)": "Onsite Treatment",
+    "Composting Toilets (Ecosan, UDDT, etc.)": "Onsite Treatment",
+    "Water Body": "Directly Connected to Drain",
+    "Open Ground": "Directly Connected to Drain",
+    "Community Toilet": "",
+    "Open Defecation": "",
+    "Shared Toilets": "",
+    "Shared Containment": ""
+};
 
 $('#toilet-connection').on('change', function () {
     const selectedText = $("#toilet-connection :selected").text().trim();
 
     // 🔹 Category Logic
-   
+    const category = toiletCategoryMap[selectedText] ?? '';
+
+    if (category !== '') {
+        $('#toilet-category').val(category);
+        $('#toilet-category-group').show();
+
+        // ✅ Set final category value
+        $('#final-category').val(category);
+    } else {
+        $('#toilet-category-group').hide();
+        $('#toilet-category').val('');
+        
+        // ✅ Clear final category
+        $('#final-category').val('');
+    }
 
     // 🔹 Existing Logic
     if (selectedText === "Septic Tank" || selectedText === "Pit/ Holding Tank") {
@@ -307,8 +334,44 @@ $('#toilet-connection').on('change', function () {
         $('#vacutug-accessible').hide();
     }
 });
+const containmentCategoryMap = {
+    "Septic Tank connected to Sewer Network": "WASA Sewerage Connection",
+    "Septic Tank connected to Drain Network": "Non-Functional Septic Tank",
+    "Septic Tank connected to Soak Pit": "Functional Septic Tank",
+    "Septic Tank connected to Water Body": "Non-Functional Septic Tank",
+    "Septic Tank connected to Open Ground": "Non-Functional Septic Tank",
+    "Septic Tank without Outlet Connection": "Non-Functional Septic Tank",
+    "Septic Tank with Unknown Outlet Connection": "Non-Functional Septic Tank",
+    "Lined Pit connected to a Soak Pit": "Non-Functional Septic Tank",
+    "Lined Pit connected to Water Body": "Non-Functional Septic Tank",
+    "Lined Pit connected to Open Ground": "Non-Functional Septic Tank",
+    "Lined Pit connected to Sewer Network": "WASA Sewerage Connection",
+    "Lined Pit connected to Drain Network": "Non-Functional Septic Tank",
+    "Lined Pit without Outlet": "Non-Functional Septic Tank",
+    "Lined Pit with Unknown Outlet Connection": "Non-Functional Septic Tank",
+    "Lined Pit with Impermeable Walls and Open Bottom": "Non-Functional Septic Tank",
+    "Double Pit": "Non-Functional Septic Tank",
+    "Permeable/ Unlined Pit": "Non-Functional Septic Tank"
+};
 
+$('#containment-type').on('change', function () {
+    const selectedText = $("#containment-type option:selected").text().trim();
+    const category = containmentCategoryMap[selectedText] ?? '';
 
+    if (category !== '') {
+        $('#containment-category').val(category);
+        $('#containment-category-group').show();
+
+        // ✅ Set final category
+        $('#final-category').val(category);
+    } else {
+        $('#containment-category-group').hide();
+        $('#containment-category').val('');
+        
+        // ✅ Clear final category
+        $('#final-category').val('');
+    }
+});
 
 
 
@@ -1298,4 +1361,6 @@ function onloadDynamicContainmentType() {
     }
     }
 
+    $('#toilet-connection').trigger('change');
+    $('#containment-type').trigger('change');
 

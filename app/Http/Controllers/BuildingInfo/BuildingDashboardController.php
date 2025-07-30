@@ -49,6 +49,15 @@ class BuildingDashboardController extends Controller
             // Number of buildings with other functional uses (Displayed as "Others" in UI)
             $othersCount = $buildingCount - ($commercialBuildCount + $residentialBuildingCount + $mixedBuildCount  + $industrialBuildingCount + $institutionBuildingCount  + $educationBuildingCount);
 
+            //category
+         
+            $wasasewerageconnection = $this->buildingdashboardService->countBuildingsByCategory('WASA Sewerage Connection');
+            $directlyDrain = $this->buildingdashboardService->countBuildingsByCategory('Directly Connected to Drain');
+            $nonfunctionalSepticTank = $this->buildingdashboardService->countBuildingsByCategory('Non-Functional Septic Tank');
+            $functionalSepticTank = $this->buildingdashboardService->countBuildingsByCategory('Functional Septic Tank');
+            $onsiteTreatment = $this->buildingdashboardService->countBuildingsByCategory('Onsite Treatment');
+                // 'uncategorized' => $this->countBuildingsByCategory(''), // optional
+          
 
             //sanitation systems
             $containmentCount = Containment::whereNull('deleted_at')->count();
@@ -270,9 +279,15 @@ class BuildingDashboardController extends Controller
                 'institutionNames',
                 'educationBuildingCount',
                 'sanitationSystemOther',
-                'sanitationSystemOthername'
+                'sanitationSystemOthername',
+                'wasasewerageconnection',
+                'directlyDrain',
+                'nonfunctionalSepticTank',
+                'functionalSepticTank',
+                'onsiteTreatment'
+              
 
-            ));
+            ) );
         }
     }
 }

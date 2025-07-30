@@ -50,7 +50,31 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2024) -->
         </div> <!-- col div -->
     </div> <!-- row div -->
 @endcan
-
+@can('Category CountBox')
+  <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Category Systems") }}</h1>
+  <div class="row">
+        
+                <div class="col-lg-4 d-flex">
+                    @include('dashboard.countBox._wasasewerageconnectionCountBox')
+                </div> <!--sub col div -->
+                <div class="col-lg-4  d-flex">
+                    @include('dashboard.countBox._directlyDrainCountBox')
+                </div> <!--sub col div -->
+                <div class="col-lg-4  d-flex">
+                    @include('dashboard.countBox._nonfunctionalSepticTankCountBox')
+                </div> <!--sub col div -->
+           
+                <div class="col-lg-4  d-flex">
+                    @include('dashboard.countBox._functionalSepticTankCountBox')
+                </div> <!--sub col div -->
+                <div class="col-lg-4 d-flex ">
+                    @include('dashboard.countBox._onsiteTreatmentCountBox')
+                </div>
+                <!-- <div class="col-lg-4 d-flex ">
+                    @include('dashboard.countBox._uncategorizedCountBox')
+                </div> -->
+            </div>
+@endcan
 @can('Sanitation CountBox')
     <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Sanitation Systems") }}</h1>
     <div class="row">

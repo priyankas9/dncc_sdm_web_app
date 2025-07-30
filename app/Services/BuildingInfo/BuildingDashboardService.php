@@ -1263,4 +1263,11 @@ class  BuildingDashboardService
         return ['total' => $results->sum('bin_count'), 'sanitation_system_names' => $sanitation_systems];
 
     }
+    //category 
+    public function countBuildingsByCategory($categoryName)
+{
+    return Building::where('category', $categoryName)
+        ->whereNull('deleted_at')
+        ->count();
+}
 }

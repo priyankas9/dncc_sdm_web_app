@@ -307,6 +307,13 @@ class HomeController extends Controller
         $taxCodePresenceward = $this->dashboardService->taxCodePresencebyWard();
         $pipeCodePresenceWard = $this->dashboardService->waterSupplyPipeCodePresenceByWard();
         $treatmentPlantTest = $this->dashboardService->treatmentPlantTestResultsByYear();
+
+        $wasasewerageconnection = $this->dashboardService->countBuildingsByCategory('WASA Sewerage Connection');
+            $directlyDrain = $this->dashboardService->countBuildingsByCategory('Directly Connected to Drain');
+            $nonfunctionalSepticTank = $this->dashboardService->countBuildingsByCategory('Non-Functional Septic Tank');
+            $functionalSepticTank = $this->dashboardService->countBuildingsByCategory('Functional Septic Tank');
+            $onsiteTreatment = $this->dashboardService->countBuildingsByCategory('Onsite Treatment');
+
         return view('dashboard.indexAdmin', compact(
             'page_title',
             'buildingCount',
@@ -380,6 +387,11 @@ class HomeController extends Controller
             'taxCodePresenceward',
             'pipeCodePresenceWard',
             'treatmentPlantTest',
+             'wasasewerageconnection',
+                'directlyDrain',
+                'nonfunctionalSepticTank',
+                'functionalSepticTank',
+                'onsiteTreatment'
         ));
     }
 

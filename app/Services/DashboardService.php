@@ -1744,4 +1744,11 @@ ORDER BY
 
         return $results;
     }
+
+    public function countBuildingsByCategory($categoryName)
+{
+    return Building::where('category', $categoryName)
+        ->whereNull('deleted_at')
+        ->count();
+}
 }
