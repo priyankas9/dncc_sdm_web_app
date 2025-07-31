@@ -49,6 +49,8 @@ class DesludgingScheduleService
                     o.owner_name, 
                     o.owner_gender,
                     o.owner_contact, 
+                    o.respondent_name,
+                    o.respondent_contact,
                     c.next_emptying_date,
                     c.status,
                     c.id,
@@ -80,7 +82,12 @@ class DesludgingScheduleService
     $buildingResults = DB::select($fetch_id);
     
     // Convert to collection
-    $collection = collect($buildingResults);
+    $collection = collect($buildingResults)->map(function ($item) {
+    $item->display_name = $item->owner_name ?: ($item->respondent_name ? $item->respondent_name . ' *' : '');
+    $item->display_contact = $item->owner_contact ?: ($item->respondent_contact ? $item->respondent_contact . '*': '');
+    $item->used_respondent = empty($item->owner_name) && !empty($item->respondent_name);
+    return $item;
+    });
     
     // Apply filters if they exist
     if (!empty($data['owner_name'])) {
