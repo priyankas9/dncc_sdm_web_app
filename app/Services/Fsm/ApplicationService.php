@@ -157,14 +157,6 @@ class ApplicationService
             ["title" =>  __('Applicant Details'),
                 "fields" => [
                     new FormField(
-                        label: __('Supervisory Assessment Date'),
-                        labelFor: 'supervisory_assessment_date',
-                        inputType: 'date',
-                        inputId: 'supervisory_assessment_date',
-                        required: true,
-                        placeholder: __('Supervisory Assessment Date'),
-                    ),
-                    new FormField(
                         label:  __('Proposed Emptying Date'),
                         labelFor: 'proposed_emptying_date',
                         inputType: 'date',
@@ -172,6 +164,15 @@ class ApplicationService
                         required: true,
                         placeholder: __('Proposed Emptying Date'),
                     ),
+                    new FormField(
+                        label: __('Supervisory Assessment Date'),
+                        labelFor: 'supervisory_assessment_date',
+                        inputType: 'date',
+                        inputId: 'supervisory_assessment_date',
+                        required: true,
+                        placeholder: __('Supervisory Assessment Date'),
+                    ),
+                    
                     new FormField(
                         label: __('Service Provider Name'),
                         labelFor: 'service_provider_id',
@@ -453,19 +454,19 @@ class ApplicationService
 
             ["title" => __("Application Details"),
                 "fields" => [
+                     new FormField(
+                        label: __('Proposed Emptying Date'),
+                        labelFor: 'proposed_emptying_date',
+                        inputType: 'label',
+                        inputId: 'proposed_emptying_date',
+                        labelValue: date('m/d/Y', strtotime($application->proposed_emptying_date)),
+                    ),
                     new FormField(
                         label:  __('Supervisory Assessment Date'),
                         labelFor: 'supervisory_assessment_date',
                         inputType: 'label',
                         inputId: 'supervisory_assessment_date',
                         labelValue: date('m/d/Y', strtotime($application->supervisory_assessment_date)),
-                    ),
-                    new FormField(
-                        label: __('Proposed Emptying Date'),
-                        labelFor: 'proposed_emptying_date',
-                        inputType: 'label',
-                        inputId: 'proposed_emptying_date',
-                        labelValue: date('m/d/Y', strtotime($application->proposed_emptying_date)),
                     ),
                     new FormField(
                         label: __('Service Provider Name'),
@@ -614,6 +615,16 @@ class ApplicationService
     
             ["title" => __("Application Details"),
                 "fields" => [
+                     new FormField(
+                        label: __('Proposed Emptying Date'),
+                        labelFor: 'proposed_emptying_date',
+                        inputType: 'date',
+                        inputId: 'proposed_emptying_date',
+                        inputValue: Carbon::parse($application->proposed_emptying_date)->format('Y-m-d'), // Correct date format for HTML date input
+                        required: true,
+                        disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
+                        placeholder: __('Proposed Emptying Date'),
+                    ),
                     new FormField(
                         label:  __('Supervisory Assessment Date'),
                         labelFor: 'supervisory_assessment_date',
@@ -624,17 +635,6 @@ class ApplicationService
                         disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
                         placeholder:  __('Supervisory Assessment Date'),
                     ),
-                    new FormField(
-                        label: __('Proposed Emptying Date'),
-                        labelFor: 'proposed_emptying_date',
-                        inputType: 'date',
-                        inputId: 'proposed_emptying_date',
-                        inputValue: Carbon::parse($application->proposed_emptying_date)->format('Y-m-d'), // Correct date format for HTML date input
-                        required: true,
-                        disabled: $application->emptying_status ? true : false, // Correct logic for disabling the field
-                        placeholder: __('Proposed Emptying Date'),
-                    ),
-                    
                     new FormField(
                         label: __('Service Provider Name'),
                         labelFor: 'service_provider_id',

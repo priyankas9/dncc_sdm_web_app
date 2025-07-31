@@ -372,7 +372,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         flatpickr('.flatpickr-reschedule', {
             dateFormat: 'Y-m-d',
             allowInput: true,
-
+            minDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
             onChange: function(selectedDates, dateStr, instance) {
                 if (instance.input.id === 'proposed_emptying_date') {
                     // Check if a date was selected
