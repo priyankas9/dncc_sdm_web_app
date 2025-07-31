@@ -95,14 +95,18 @@ class EmptyingServiceController extends Controller
     
             // Base query
             $query = Application::select(
-                'applications.*',
-                'buildings.house_number as building_house_number',
-                'roads.carrying_width',
-                'containments.size as containment_size',
-                'containments.tank_length',
-                'containments.tank_width',
-                'containments.depth',
-                'containments.type_id'
+                'applications.id as application_id',
+                'applications.supervisory_assessment_date',
+                'applications.customer_name as owner_name',
+                'applications.customer_contact as owner_contact',
+                'applications.customer_gender as owner_gender',
+                'applications.bin',
+                'applications.ward',
+                'buildings.house_locality as area_name',
+                'buildings.block_number',
+                'applications.road_code as road_number',
+                'buildings.house_number',
+                
                  // Directly fetch containment size
             )
             ->join('building_info.buildings', function ($join) {
@@ -152,7 +156,130 @@ class EmptyingServiceController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
-    }   
+    } 
+    
+    public function getFormFields()
+{
+    return [
+        // Prefilled, disabled building & owner info
+        [
+            'label' => 'Area Name',
+            'name' => 'house_locality',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Block Number',
+            'name' => 'block_number',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Road Number / Road Name',
+            'name' => 'road_name',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Road Code',
+            'name' => 'road_code',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Building Number',
+            'name' => 'bin',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Owner Name',
+            'name' => 'customer_name',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Owner Contact',
+            'name' => 'customer_contact',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string',
+        ],
+        [
+            'label' => 'Owner Gender',
+            'name' => 'customer_gender',
+            'input_type' => 'text',
+            'disabled' => true,
+            'prefilled' => true,
+            'validation' => 'nullable|string|in:Male,Female,Other',
+        ],
+        // ✅ Containment Section (only if building_toilet_connection in [3,4])
+         [
+                    'label' => 'Containment Volume (m³)',
+                    'name' => 'containment_volume',
+                    'input_type' => 'number',
+                    'required' => true,
+                    'validation' => 'required|numeric|min:0',
+         ],
+        // ✅ Remaining supervisory fields
+        [
+            'label' => 'Road Width (m)',
+            'name' => 'road_width',
+            'input_type' => 'number',
+            'validation' => 'required|numeric|min:0',
+        ],
+        [
+            'label' => 'Distance from Nearest Motorable Road (m)',
+            'name' => 'distance_from_road',
+            'input_type' => 'number',
+            'validation' => 'required|numeric|min:0',
+        ],
+        [
+            'label' => 'Appropriate Desludging Vehicle Size',
+            'name' => 'desludging_vehicle_size',
+            'input_type' => 'select',
+            'options' => [], // populated from API
+            'validation' => 'required|string',
+        ],
+        [
+            'label' => 'Confirmed Emptying Date',
+            'name' => 'confirmed_emptying_date',
+            'input_type' => 'date',
+            'max_date' => now()->format('Y-m-d'),
+            'validation' => 'required|date|before_or_equal:' . now()->format('Y-m-d'),
+        ],
+        [
+            'label' => 'Advance Paid Amount',
+            'name' => 'advance_paid_amount',
+            'input_type' => 'number',
+            'validation' => 'nullable|integer|min:0',
+        ],
+        [
+            'label' => 'Advance Payment Receipt',
+            'name' => 'advance_payment_receipt',
+            'input_type' => 'file',
+            'accept' => 'image/*',
+            'validation' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ],
+    ];
+}
+
+
+
+
       public function fetchContainmentType()
     {
         $containmenttype = DB::table('fsm.containment_types')->get();
