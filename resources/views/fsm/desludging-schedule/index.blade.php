@@ -132,8 +132,8 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         <th>{{__('House Number')}}</th>
                         <th>{{__('Area Name')}}</th>
                         <th>{{__('Road Number')}}</th>
-                        <th>{{__('Owner Name')}}</th>
-                        <th>{{__('Owner Contact')}}</th>
+                        <th>{{__('Owner / Respondent Name')}}</th>
+                        <th>{{__('Owner / Respondent Contact')}}</th>
                         <th>{{__('Proposed Emptying Date')}}</th>
                         <th>{{__('Actions')}}</th>
                     </tr>
@@ -203,11 +203,11 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2022) -->
                         name: 'road_code'
                     },
                     {
-                        data: 'owner_name',
+                        data: 'display_name',
                         name: 'owner_name'
                     },
                     {
-                        data: 'owner_contact',
+                        data: 'display_contact',
                         name: 'owner_contact'
                     },
                     {
