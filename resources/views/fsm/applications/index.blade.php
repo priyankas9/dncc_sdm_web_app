@@ -178,17 +178,17 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             <th>{{ __('BIN') }}</th>
                             <th>{{ __('House Number') }}</th>
                             <th>{{ __('Containment ID') }}</th>
+                            <th>{{ __('Applicant Name') }}</th>
+                            <th>{{ __('Applicant Contact') }}</th>
                             <th>{{ __('Application Date') }}</th>
                             <th>{{ __('Supervisory Assessment Date') }}</th>
-                            <th>{{ __('Proposed Emptying Date') }}</th>
+                            <th>{{ __('Confrimed Emptying Date') }}</th>
                             <th>{{ __('Street Code') }}</th>
-                             <th>{{ __('Supervisory Assessment Status') }}</th>
+                            <th>{{ __('Supervisory Assessment Status') }}</th>
                             <th>{{ __('Emptying Status') }}</th>
                             <th>{{ __('Sludge Collection Status') }}</th>
                             <th>{{ __('Feedback Status') }}</th>
-                            <th>{{ __('Owner Name') }}</th>
                             <th>{{ __('Ward Number') }}</th>
-                            <th>{{ __('Contact') }}</th>
                             <th>{{ __('Service Provider Name') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
@@ -278,7 +278,16 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         data: 'containment_id',
                         name: 'containment_id',
                     },
+                   
                     {
+                        data: 'customer_name',
+                        name: 'customer_name'
+                    },
+                    {
+                        data: 'customer_contact',
+                        name: 'customer_contact'
+                    },
+                     {
                         data: 'application_date',
                         name: 'application_date',
                         render: function(data) {
@@ -320,18 +329,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                         data: 'feedback_status',
                         name: 'feedback_status'
                     },
-                    {
-                        data: 'customer_name',
-                        name: 'customer_name'
-                    },
+                    
                     {
                         data: 'ward',
                         name: 'ward'
                     },
-                    {
-                        data: 'customer_contact',
-                        name: 'customer_contact'
-                    },
+                   
                     {
                         data: 'service_provider_id',
                         name: 'service_provider_id'
