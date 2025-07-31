@@ -368,11 +368,12 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
         });
         
         let tripData = {}; // global store
-
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
         flatpickr('.flatpickr-reschedule', {
             dateFormat: 'Y-m-d',
             allowInput: true,
-            minDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            minDate: "today",
             onChange: function(selectedDates, dateStr, instance) {
                 if (instance.input.id === 'proposed_emptying_date') {
                     // Check if a date was selected
@@ -455,94 +456,122 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
             },
 
             onDayCreate: function (dObj, dStr, fp, dayElem) {
-                const dateObj = dayElem.dateObj;
-                if (!dateObj) return;
+            const dateObj = dayElem.dateObj;
+            if (!dateObj) return;
 
-                const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const dateStrKey = `${year}-${month}-${day}`;
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const dateStrKey = `${year}-${month}-${day}`;
 
-                if (tripData.hasOwnProperty(dateStrKey)) {
-                    const { trips, is_holiday, is_weekend } = tripData[dateStrKey];
+            // Disable past dates visually
+            const isPast = dateObj < today;
 
-                    // Clear previous styles
-                    dayElem.removeAttribute("style");
-                    dayElem.style.cursor = "pointer";
+            // Add basic style for disabled past dates
+            if (isPast) {
+                dayElem.classList.add('flatpickr-disabled');
+                dayElem.style.backgroundColor = "#eee";
+                dayElem.style.color = "#888";
+                dayElem.style.cursor = "not-allowed";
 
-                    // Set tooltip
-                    let tooltip = `Trips Available: ${trips}`;
-                    if (is_holiday) tooltip += " (Holiday)";
-                    if (is_weekend) tooltip += " (Weekend)";
-                    dayElem.setAttribute("title", tooltip);
+                dayElem.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                    // Priority coloring: Holiday > Weekend > Trips
-                    if (is_holiday) {
-                        dayElem.style.backgroundColor = "rgb(228, 173, 56)";
-                        dayElem.style.color = "#000000";
-                    } else if (is_weekend) {
-                        dayElem.style.backgroundColor = "#cce5ff";
-                        dayElem.style.color = "#004085";
-                    } else if (trips === 0) {
-                        dayElem.style.backgroundColor = "#f8d7da";
-                        dayElem.style.color = "#721c24";
-                    } else if (trips === 1) {
-                        dayElem.style.backgroundColor = "rgb(245, 157, 130)";
-                        dayElem.style.color = "#856404";
-                    } else if (trips === 2) {
-                        dayElem.style.backgroundColor = "#fff3cd";
-                        dayElem.style.color = "#856404";
-                    } else {
-                        dayElem.style.backgroundColor = "#d4edda";
-                        dayElem.style.color = "#155724";
-                    }
-                    dayElem.style.borderRadius = "50%";
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'warning',
+                        title: 'Cannot select a past date.',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                });
+                return;
+            }
 
-                    // Add click event to invalid dates
-                    if (is_holiday || is_weekend || trips === 0) {
-                        dayElem.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
+            // --- Your existing tripData coloring logic ---
+            if (tripData.hasOwnProperty(dateStrKey)) {
+                const { trips, is_holiday, is_weekend } = tripData[dateStrKey];
 
-                            let message = '';
-                            if (is_holiday) {
-                                message = 'Cannot select a holiday date.';
-                            } else if (is_weekend) {
-                                message = 'Cannot select a weekend date.';
-                            } else {
-                                message = 'No trips available for this date.';
-                            }
+                // Clear previous styles
+                dayElem.removeAttribute("style");
+                dayElem.style.cursor = "pointer";
 
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'warning',
-                                title: message,
-                                showConfirmButton: false,
-                                timer: 2000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            });
-                        });
-                    }
+                // Set tooltip
+                let tooltip = `Trips Available: ${trips}`;
+                if (is_holiday) tooltip += " (Holiday)";
+                if (is_weekend) tooltip += " (Weekend)";
+                dayElem.setAttribute("title", tooltip);
+
+                // Priority coloring
+                if (is_holiday) {
+                    dayElem.style.backgroundColor = "rgb(228, 173, 56)";
+                    dayElem.style.color = "#000000";
+                } else if (is_weekend) {
+                    dayElem.style.backgroundColor = "#cce5ff";
+                    dayElem.style.color = "#004085";
+                } else if (trips === 0) {
+                    dayElem.style.backgroundColor = "#f8d7da";
+                    dayElem.style.color = "#721c24";
+                } else if (trips === 1) {
+                    dayElem.style.backgroundColor = "rgb(245, 157, 130)";
+                    dayElem.style.color = "#856404";
+                } else if (trips === 2) {
+                    dayElem.style.backgroundColor = "#fff3cd";
+                    dayElem.style.color = "#856404";
+                } else {
+                    dayElem.style.backgroundColor = "#d4edda";
+                    dayElem.style.color = "#155724";
                 }
-            },
+
+                dayElem.style.borderRadius = "50%";
+
+                if (is_holiday || is_weekend || trips === 0) {
+                    dayElem.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        let message = '';
+                        if (is_holiday) {
+                            message = 'Cannot select a holiday date.';
+                        } else if (is_weekend) {
+                            message = 'Cannot select a weekend date.';
+                        } else {
+                            message = 'No trips available for this date.';
+                        }
+
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'warning',
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                    });
+                }
+            }
+        },
+
 
             disable: [
                 function(date) {
+                    if (date < today) return true; 
+
                     const year = date.getFullYear();
                     const month = String(date.getMonth() + 1).padStart(2, '0');
                     const day = String(date.getDate()).padStart(2, '0');
                     const dateKey = `${year}-${month}-${day}`;
 
+                    
                     if (tripData[dateKey]) {
                         const { trips, is_holiday, is_weekend } = tripData[dateKey];
                         return is_holiday || is_weekend || trips === 0;
                     }
-                    return false;
+                return false;
                 }
             ]
         });
