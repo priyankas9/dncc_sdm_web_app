@@ -578,12 +578,18 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 
         // Supervisory assessment date picker initialized separately
         window.isConfirm = {{ $isConfirm ? 'true' : 'false' }};
-        if (window.isConfirm === false) {
+       if (window.isConfirm === false) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             flatpickr("#supervisory_assessment_date", {
                 dateFormat: 'Y-m-d',
-                allowInput: true
+                allowInput: true,
+                minDate: today, // Prevent selection of past dates
+                defaultDate: today // Optional: pre-fill today's date
             });
         }
+
 
         function fetchAndDisplayTrips(instance) {
             const calendarContainer = instance.calendarContainer;
