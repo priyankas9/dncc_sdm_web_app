@@ -52,7 +52,7 @@
                     <tr>
                         <th>{{ __('ID') }}</th>
                         <th>{{ __('Application ID') }}</th>
-                        <th>{{ __('Holding Number') }}</th>
+                        <th>{{ __('Area Name') }}</th>
                         <th>{{ __('Owner Name') }}</th>
                         <th>{{ __('Advance Paid Amount') }}</th>
                         <th>{{ __('Confirmed Emptying Date') }}</th>
@@ -90,8 +90,8 @@ $(function() {
                 name: 'application_id'
             },
             {
-                data: 'holding_number',
-                name: 'holding_number'
+                data: 'house_locality',
+                name: 'house_locality'
             },
             {
                 data: 'owner_name',

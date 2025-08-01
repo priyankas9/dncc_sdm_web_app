@@ -1,5 +1,3 @@
-<!-- Last Modified Date: 18-04-2024
-Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
 @extends('layouts.dashboard')
 @section('title', $page_title)
 @section('content')
@@ -9,146 +7,119 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
     </div><!-- /.card-header -->
     <div class="form-horizontal">
         <div class="card-body">
-        <div class="form-group row ">
-    {!! Form::label('holding_number', __('Holding Number'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('holding_number', $supervisoryassessment->holding_number, ['class' => 'form-control', 'placeholder' =>  __('Holding Number'), 'disabled' => 'disabled']) !!}
+
+            <div class="form-group row">
+                {!! Form::label('house_locality', __('Area Name'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('house_locality', $supervisoryassessment->house_locality, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('block_number', __('Block Number'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('block_number', $supervisoryassessment->block_number, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('road_name', __('Road Number / Road Name'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('road_name', $supervisoryassessment->road_name, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('road_code', __('Road Code'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('road_code', $supervisoryassessment->road_code, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('bin', __('BIN'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('bin', $supervisoryassessment->bin, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('owner_name', __('Owner Name'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('owner_name', $supervisoryassessment->owner_name, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('owner_gender', __('Owner Gender'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('owner_gender', $supervisoryassessment->owner_gender, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('owner_contact', __('Owner Contact'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('owner_contact', $supervisoryassessment->owner_contact, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('containment_volume', __('Containment Volume (m³)'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('containment_volume', $supervisoryassessment->containment_volume, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('road_width', __('Road Width (m)'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('road_width', $supervisoryassessment->road_width, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('distance_from_nearest_road', __('Distance from Nearest Motorable Road (m)'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('distance_from_nearest_road', $supervisoryassessment->distance_from_nearest_road, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('appropriate_desludging_vehicle_size', __('Appropriate Desludging Vehicle Size'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('appropriate_desludging_vehicle_size', $supervisoryassessment->appropriate_desludging_vehicle_size, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('confirmed_emptying_date', __('Confirmed Emptying Date'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::date('confirmed_emptying_date', $supervisoryassessment->confirmed_emptying_date, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('advance_paid_amount', __('Advance Paid Amount'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('advance_paid_amount', $supervisoryassessment->advance_paid_amount, ['class' => 'form-control', 'disabled']) !!}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                {!! Form::label('advance_payment_receipt', __('Advance Payment Receipt'), ['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
+                    @if($supervisoryassessment->advance_payment_receipt)
+                        <a href="{{ asset('storage/supervisoryassessment/receipts/' . $supervisoryassessment->advance_payment_receipt) }}" target="_blank">
+                            <img src="{{ asset('storage/supervisoryassessment/receipts/' . $supervisoryassessment->advance_payment_receipt) }}" width="150" alt="Receipt Image" />
+                        </a>
+                    @else
+                        <p>{{ __('No receipt uploaded') }}</p>
+                    @endif
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
-
-<div class="form-group row ">
-    {!! Form::label('owner_name',  __('Owner Name'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('owner_name', $supervisoryassessment->owner_name, ['class' => 'form-control', 'placeholder' =>  __('Owner Name'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('owner_gender',  __('Owner Gender'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::select('owner_gender', ['Male' => 'Male', 'Female' => 'Female', 'Other' => 'Other'], $supervisoryassessment->owner_gender, ['class' => 'form-control', 'placeholder' => __('Owner Gender'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('owner_contact',  __('Owner Contact'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('owner_contact', $supervisoryassessment->owner_contact, ['class' => 'form-control', 'placeholder' =>  __('Owner Contact'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-
-   <div class="form-group row">
-    {!! Form::label('containment_type',  __('Containment Type'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('containment_type_display', 
-            $supervisoryassessment->containmentType->type ?? 'Unknown Type', 
-            ['class' => 'form-control', 'readonly' => true]) !!}
-    </div>
-</div>
-
-
-<div class="form-group row ">
-    {!! Form::label('containment_outlet_connection', __('Containment Outlet Connection'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('containment_outlet_connection', $supervisoryassessment->containment_outlet_connection, ['class' => 'form-control', 'placeholder' => __('Containment Outlet Connection'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('containment_volume', __('Containment Volume (m³)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('containment_volume', $supervisoryassessment->containment_volume, ['class' => 'form-control', 'placeholder' => __('Containment Volume (m³)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('road_width', __('Road Width (m)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('road_width', $supervisoryassessment->road_width, ['class' => 'form-control', 'placeholder' => __('Road Width (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('distance_from_nearest_road', __('Distance from Nearest Road (m)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('distance_from_nearest_road', $supervisoryassessment->distance_from_nearest_road, ['class' => 'form-control', 'placeholder' => __('Distance from Nearest Road (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('septic_tank_length', __('Septic Tank Length (m)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('septic_tank_length', $supervisoryassessment->septic_tank_length, ['class' => 'form-control', 'placeholder' => __('Septic Tank Length (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('septic_tank_width', __('Septic Tank Width (m)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('septic_tank_width', $supervisoryassessment->septic_tank_width, ['class' => 'form-control', 'placeholder' =>  __('Septic Tank Width (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('septic_tank_depth', __('Septic Tank Depth (m)'),['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('septic_tank_depth', $supervisoryassessment->septic_tank_depth, ['class' => 'form-control', 'placeholder' => __('Septic Tank Depth (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('number_of_pit_rings',  __('Number of Pit Rings'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::number('number_of_pit_rings', $supervisoryassessment->number_of_pit_rings, ['class' => 'form-control', 'placeholder' =>  __('Number of Pit Rings'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('pit_diameter',  __('Pit Diameter (m)'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('pit_diameter', $supervisoryassessment->pit_diameter, ['class' => 'form-control', 'placeholder' => __('Pit Diameter (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('pit_depth',  __('Pit Depth (m)'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('pit_depth', $supervisoryassessment->pit_depth, ['class' => 'form-control', 'placeholder' => __('Pit Depth (m)'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('appropriate_desludging_vehicle_size',  __('Appropriate Desludging Vehicle Size'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::text('appropriate_desludging_vehicle_size', $supervisoryassessment->appropriate_desludging_vehicle_size, ['class' => 'form-control', 'placeholder' => __('Appropriate Desludging Vehicle Size'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('number_of_trips',  __('Number of Trips'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::number('number_of_trips', $supervisoryassessment->number_of_trips, ['class' => 'form-control', 'placeholder' => __('Number of Trips'), 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('confirmed_emptying_date',  __('Confirmed Emptying Date'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::date('confirmed_emptying_date', $supervisoryassessment->confirmed_emptying_date, ['class' => 'form-control', 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-<div class="form-group row ">
-    {!! Form::label('advance_paid_amount',  __('Advance Paid Amount'), ['class' => 'col-sm-3 control-label']) !!}
-    <div class="col-sm-3">
-        {!! Form::number('advance_paid_amount', $supervisoryassessment->advance_paid_amount, ['class' => 'form-control', 'placeholder' => __('Advance Paid Amount'), 'step' => '0.01', 'disabled' => 'disabled']) !!}
-    </div>
-</div>
-
-
-</div>
-    </div>
-</div><!-- /.box -->
 @stop
-

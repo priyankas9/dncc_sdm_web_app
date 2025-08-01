@@ -132,29 +132,37 @@ class SupervisoryAssessmentController extends Controller
     
         // Store the data
         $assessment = new SupervisoryAssessment();
-        $assessment->application_id = $application->id;
-        $assessment->holding_number = $request->holding_number;
-        $assessment->owner_name = $request->owner_name;
-        $assessment->owner_gender = $request->owner_gender;
-        $assessment->owner_contact = $request->owner_contact;
-        $assessment->containment_type = $request->containment_type;
-        $assessment->containment_outlet_connection = $request->containment_outlet_connection;
-        $assessment->containment_volume = $request->containment_volume;
-        $assessment->road_width = $request->road_width;
-        $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
-        $assessment->septic_tank_length = $request->septic_tank_length;
-        $assessment->septic_tank_width = $request->septic_tank_width;
-        $assessment->septic_tank_depth = $request->septic_tank_depth;
-        $assessment->number_of_pit_rings = $request->number_of_pit_rings;
-        $assessment->pit_diameter = $request->pit_diameter;
-        $assessment->pit_depth = $request->pit_depth;
-        $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
-        $assessment->number_of_trips = $request->number_of_trips;
-        $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
-        $assessment->advance_paid_amount = $request->advance_paid_amount;
-        
-        // Save the assessment
-        $assessment->save();
+        $assessment->application_id = $request->application_id;
+            $assessment->house_locality = $request->house_locality;
+            $assessment->block_number = $request->block_number;
+            $assessment->road_name = $request->road_name;
+            $assessment->road_code = $request->road_code;
+            $assessment->bin = $request->bin;
+            $assessment->owner_name = $request->owner_name;
+            $assessment->owner_gender = $request->owner_gender;
+            $assessment->owner_contact = $request->owner_contact;
+            $assessment->containment_volume = $request->containment_volume;
+            $assessment->road_width = $request->road_width;
+            $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
+            $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
+            $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
+            $assessment->advance_paid_amount = $request->advance_paid_amount;
+
+            // Save the record first to get an ID
+            $assessment->save();
+
+            // Save uploaded image (simple way)
+          if ($request->hasFile('advance_payment_receipt')) {
+            $file = $request->file('advance_payment_receipt');
+            $filename = $assessment->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            
+            // Save file to storage/app/public/supervisoryassessment/receipts
+            $file->storeAs('supervisoryassessment/receipts', $filename, 'public');
+
+            // Save file name in DB
+            $assessment->advance_payment_receipt = $filename;
+            $assessment->save();
+        }
     
         // Update the application status
 
@@ -236,25 +244,27 @@ public function edit($id)
     {
         $assessment = SupervisoryAssessment::find($id);
         if ($assessment) {
-            $assessment->holding_number = $request->holding_number;
+            $assessment->house_locality = $request->house_locality;
+            $assessment->block_number = $request->block_number;
+            $assessment->road_name = $request->road_name;
+            $assessment->road_code = $request->road_code;
+            $assessment->bin = $request->bin;
             $assessment->owner_name = $request->owner_name;
             $assessment->owner_gender = $request->owner_gender;
             $assessment->owner_contact = $request->owner_contact;
-            $assessment->containment_type = $request->containment_type;
-            $assessment->containment_outlet_connection = $request->containment_outlet_connection;
             $assessment->containment_volume = $request->containment_volume;
             $assessment->road_width = $request->road_width;
             $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
-            $assessment->septic_tank_length = $request->septic_tank_length;
-            $assessment->septic_tank_width = $request->septic_tank_width;
-            $assessment->septic_tank_depth = $request->septic_tank_depth;
-            $assessment->number_of_pit_rings = $request->number_of_pit_rings;
-            $assessment->pit_diameter = $request->pit_diameter;
-            $assessment->pit_depth = $request->pit_depth;
             $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
-            $assessment->number_of_trips = $request->number_of_trips;
             $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
             $assessment->advance_paid_amount = $request->advance_paid_amount;
+            if ($request->hasFile('advance_payment_receipt')) {
+                    $file = $request->file('advance_payment_receipt');
+                    $filename = $assessment->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('supervisoryassessment/receipts', $filename, 'public');
+                    $assessment->advance_payment_receipt = $filename;
+                }
+
             $assessment->save();
             return redirect('fsm/supervisory-assessment')->with('success',__('Supervisory Assessment updated successfully'));
         } else {
