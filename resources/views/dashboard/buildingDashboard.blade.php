@@ -48,7 +48,7 @@
   </div>
   @endcan
   @can('Category CountBox')
-  <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Category Systems") }}</h1>
+  <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Sanitation System Category") }}</h1>
   <div class="row">
         
                 <div class="col-lg-4 d-flex">
@@ -66,6 +66,9 @@
                 </div> <!--sub col div -->
                 <div class="col-lg-4 d-flex ">
                     @include('dashboard.countBox._onsiteTreatmentCountBox')
+                </div>
+                 <div class="col-lg-4 d-flex ">
+                    @include('dashboard.countBox._uncategorizedCountBox')
                 </div>
                
             </div>

@@ -313,7 +313,8 @@ class HomeController extends Controller
             $nonfunctionalSepticTank = $this->dashboardService->countBuildingsByCategory('Non-Functional Septic Tank');
             $functionalSepticTank = $this->dashboardService->countBuildingsByCategory('Functional Septic Tank');
             $onsiteTreatment = $this->dashboardService->countBuildingsByCategory('Onsite Treatment');
-
+            $uncategorized = $this->dashboardService->countBuildingsByCategory(''); // optional
+          
         return view('dashboard.indexAdmin', compact(
             'page_title',
             'buildingCount',
@@ -391,7 +392,8 @@ class HomeController extends Controller
                 'directlyDrain',
                 'nonfunctionalSepticTank',
                 'functionalSepticTank',
-                'onsiteTreatment'
+                'onsiteTreatment',
+                'uncategorized'
         ));
     }
 

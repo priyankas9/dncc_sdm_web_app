@@ -3,11 +3,11 @@
 
 <div class="info-box">
   <span class="info-box-icon bg-info">
-    <img src="{{ asset('img/svg/imis-icons/other_building.svg') }}" alt="Residential Icon">
+  <i class="fa fa-building"></i>
   </span>
   <div class="info-box-content">
     <span class="info-box-text">
-      <h3>{{ number_format($othersCount) }}</h3>
+      <h3>{{ number_format($uncategorized) }}</h3>
     </span>
     <span class="info-box-number">{{__('Uncategorized')}}</span>
   </div>
