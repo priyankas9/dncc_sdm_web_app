@@ -54,9 +54,9 @@ class ApplicationService
     public function __construct()
     {
     $this->initializeServiceProviderSequence();
-   $this->createPartialForm = 'fsm.application.partial-form';
-   $nextSpId = $this->getNextServiceProviderId();
-   $nextSpName = $this->getNextServiceProviderName();
+    $this->createPartialForm = 'fsm.application.partial-form';
+    $nextSpId = $this->getNextServiceProviderId();
+    $nextSpName = $this->getNextServiceProviderName();
      $this->createFormFields = [
         ["title" =>__('Address'),
                 "fields" => [
@@ -766,7 +766,7 @@ class ApplicationService
      * @return DataTables
      * @throws Exception
      */
-    public function getDatatable(Request $request)
+     public function getDatatable(Request $request)
     {
         
         return DataTables::of($this->getAllApplications($request))
@@ -818,37 +818,37 @@ class ApplicationService
                 $content = \Form::open(['method' => 'DELETE', 'route' => ['application.destroy', $model->id]]);
                 $content .= '<div class="">';
                 if (Auth::user()->can('Edit Application')){
-                    $content .= '<a title="' . __('Edit Application Details') . '" href="' . route('application.edit', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status? ' anchor-disabled' : '') . '"><i class="fa fa-edit"></i></a> ';
+                    $content .= '<a title="Edit  Application Details" href="' . route('application.edit', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->supervisory_assessment_status? ' anchor-disabled' : '') . '"><i class="fa fa-edit"></i></a> ';
                 }
 
                 if (Auth::user()->can('View Application')){
-                    $content .= '<a title="' . __('View Application Details') . '" href="' . route('application.show', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-list"></i></a> ';
+                    $content .= '<a title="View Application Details" href="' . route('application.show', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-list"></i></a> ';
                 }
                 
                 if (Auth::user()->can('Edit Emptying') && $model->emptying_status){
-                    $content .= '<a title="' . __("Edit Emptying Service Details") . '" href="' . route("emptying.edit", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->sludge_collection_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-recycle"></i></a> ';
+                    $content .= '<a title="Edit Emptying Service Details" href="' . route("emptying.edit", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->sludge_collection_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-recycle"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Sludge Collection') && $model->sludge_collection_status){
-                   $content .= '<a title="' . __("Edit Sludge Collection Details") . '" href="' . route("sludge-collection.edit", [$model->sludge_collection->id]) . '" class="btn btn-info btn-sm mb-1' . ($model->feedback_status ? ' anchor-disabled' : '') . '"><i class="fa fa-truck-moving"></i></a> ';
-
+                    $content .= '<a title="Edit Sludge Collection Details" href="' . route("sludge-collection.edit", [$model->sludge_collection->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->feedback_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-truck-moving"></i></a> ';
                 }
                 if (Auth::user()->can('Edit Feedback') && $model->feedback_status){
-                    $content .= '<a title="' . __("Edit Feedback Details") . '" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn-info btn-sm mb-1' . ($model->feedback_status ? ' anchor-disabled' : '') . '"><i class="fa fa-pencil"></i></a> ';
+                    $content .= '<a title="Edit Feedback Details" href="' . route("feedback.edit", [$model->feedback->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1'. ( $model->feedback_status  ? ' anchor-disabled' : '') . '"><i class="fa fa-pencil"></i></a> ';
                 }
-                if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status){
-                   
-                    $content .= '<a title="' . __("Edit Supervisory Assessment") . '"href="' . route("supervisory-assessment.edit", [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-truck-moving"></i></a> ';
+                if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status && $model->supervisory_assessment) {
+                    $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", $model->supervisory_assessment->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status ? ' anchor-disabled' : '') . '"> <i class="fa-solid fa-clipboard-list"></i></a> ';
                 }
+                
 
                 if (Auth::user()->can('View Application History')){
-                $content .= '<a title="' . __("History") . '" href="' . route('application.history', $model->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-history"></i></a> ';
+                $content .= '<a title="History" href="' . route('application.history', $model->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-history"></i></a> ';
+                
                 if (Auth::user()->can('Delete Application')){
-                    $content .= '<a title="' . __("Delete") . '"   class="delete btn btn-danger  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
+                    $content .= '<a title="Delete"  class="delete btn btn-danger  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
                 }
             }
                 if (Auth::user()->can('Generate Application Report')){
                     if ($model->emptying_status == TRUE) {
-                    $content .= '<a title="' . __("Generate Report") . '" href="' . route('application.report', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa-regular fa-file-pdf"></i></a> ';
+                    $content .= '<a title="Generate Report" href="' . route('application.report', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa-regular fa-file-pdf"></i></a> ';
                     }
                 }
 
@@ -857,53 +857,56 @@ class ApplicationService
 
                 return $content;
             })
+        ->editColumn('supervisory_assessment_status', function($model) {
+                    $content = '<div class="application-quick__actions">';
+                    
+                    // Check if assessment exists (relation not null)
+                    $assessmentExists = $model->supervisory_assessment !== null;
+                    
+                    // Show check or cross based on assessment existence
+                    $content .= $assessmentExists 
+                        ? '<i class="fa fa-check"></i>' 
+                        : '<i class="fa fa-times"></i>';
 
+                    if ($assessmentExists) {
+                        // Assessment exists → show view button
+                        $content .= '<a title="View Supervisory Assessment Details" href="' 
+                                . route('supervisory-assessment.show', [$model->supervisory_assessment->id])
+                                . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
+                    } else {
+                        // No assessment exists → show Add button
+                        $content .= '<a title="Add Supervisory Assessment" href="' 
+                                . route("supervisory-assessment.create", [$model->bin])
+                                . '" class="btn btn-info btn-sm mb-1"> <i class="fa-solid fa-clipboard-list"></i></a> ';
+                    }
 
-            ->editColumn('supervisory_assessment_status', function($model) {
+                    $content .= '</div>';
+                    return $content;
+                })
+            ->editColumn('emptying_status', function($model) {
                 $content = '<div class="application-quick__actions">';
-                $content .= $model->supervisory_assessment_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
-                
-                if ($model->supervisory_assessment_status !== true) {
-                    if (Auth::user()->can('View Emptying') && $model->emptying) {
-                        // Disabled link when status is true
-                        $content .= '<a title="' . __("Add Supervisory Assessment") . '" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
-                                       <i class="fa-solid fa-clipboard-list"></i>
-                                    </a> ';
+                $content .= $model->emptying_status ? '<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
+            
+                if ($model->emptying_status == TRUE) {
+                    if (Auth::user()->can('View Emptying')) {
+                        $content .= '<a title="View Emptying Service Details" href="' 
+                                    . route("emptying.show", [$model->with('emptying')->where('id', $model->id)->first()->emptying->id]) 
+                                    . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
                     }
-                }
-                if ($model->supervisory_assessment_status == true) {
-                    $content .= '<a title="' . __("View Emptying Service Details") . '" href="#" class="btn btn-info btn-sm mb-1 disabled">
-                   <i class="fa-solid fa-clipboard-list"></i>
-                </a> ';
-              
-                }
-                 else {
+                } else {
                     if (Auth::user()->can('Add Emptying')) {
-                        $content .= '<a title="' . __("Add Supervisory Assessment") . '" href="' . route("supervisory-assessment.create", [$model->bin]) . '" class="btn btn-info btn-sm mb-1">
-                       <i class="fa-solid fa-clipboard-list"></i>
-                    </a> ';
+                        // Disable "Add Emptying" if supervisory_assessment_status is false
+                        $disabledClass = $model->supervisory_assessment_status ? '' : ' anchor-disabled';
+                        $content .= '<a title="Add Emptying Service Details" href="' 
+                                    . route("emptying.create-id", [$model->id]) 
+                                    . '" class="btn btn-info btn-sm mb-1' . $disabledClass . '"><i class="fa fa-recycle"></i></a> ';
                     }
                 }
-                
+            
                 $content .= '</div>';
                 return $content;
             })
             
-            ->editColumn('emptying_status',function($model){
-                $content = '<div class="application-quick__actions">';
-                $content .= $model->emptying_status?'<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
-                if ($model->emptying_status == TRUE) {
-                    if (Auth::user()->can('View Emptying')){
-                        $content .= '<a title="' . __("View Emptying Service Details") . '" href="' . route("emptying.show", [$model->with('emptying')->where('id',$model->id)->get()->first()->emptying->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
-                    }
-                } else {
-                    if (Auth::user()->can('Add Emptying')){
-                        $content .= '<a title="' . __("Add Emptying Service Details") . '" href="' . route("emptying.create-id", [$model->id]) . '" class="btn btn-info btn-sm mb-1"><i class="fa fa-recycle"></i></a> ';
-                    }
-                }
-                $content .= '</div>';
-                return $content;
-            })
             ->editColumn('feedback_status',function ($model){
                 $content = '<div class="application-quick__actions">';
                 $content .= $model->feedback_status?'<i class="fa fa-check"></i>' : '<i class="fa fa-times"></i>';
@@ -911,13 +914,13 @@ class ApplicationService
                 if($model->feedback_status == FALSE)
                 {
                     if (Auth::user()->can('Add Feedback')){
-                        $content .= '<a title="' . __("Add Feedback Details" ) . '"href="' . route("feedback.create-Feedback", [$model->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-pencil"></i></a> ';
+                        $content .= '<a title="Add Feedback Details" href="' . route("feedback.create-Feedback", [$model->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-pencil"></i></a> ';
                     }
                 }
                 else
                 {
                     if (Auth::user()->can('View Feedback')){
-                        $content .= '<a title="' . __("View Feedback Details") . '"href="' . route("feedback.show", [$model->feedback->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-pencil"></i></a> ';
+                        $content .= '<a title="View Feedback Details" href="' . route("feedback.show", [$model->feedback->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-pencil"></i></a> ';
                     }
                 }
                 $content .= '</div>';
@@ -930,13 +933,13 @@ class ApplicationService
                 if($model->sludge_collection_status == FALSE)
                 {
                     if (Auth::user()->can('Add Sludge Collection')){
-                        $content .= '<a title="' . __("Add Sludge Collection Details") . '" href="' . route("sludge-collection.create-id", [$model->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-truck-moving"></i></a> ';
+                        $content .= '<a title="Add Sludge Collection Details" href="' . route("sludge-collection.create-id", [$model->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-truck-moving"></i></a> ';
                     }
                 }
                 else
                 {
                     if (Auth::user()->can('View Sludge Collection')){
-                        $content .= '<a title="' . __("View Sludge Collection Details") . '" href="' . route("sludge-collection.show", [$model->sludge_collection->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-truck-moving"></i></a> ';
+                        $content .= '<a title="View Sludge Collection Details" href="' . route("sludge-collection.show", [$model->sludge_collection->id]) . '" class="btn btn-info btn-sm mb-1'. ( $model->emptying_status ? '' : ' anchor-disabled') . '"><i class="fa fa-truck-moving"></i></a> ';
                     }
                 }
                 $content .= '</div>';
@@ -1114,6 +1117,7 @@ class ApplicationService
 
    public function rotateServiceProviderSequence()
    {
+    
        // Get all sequence records ordered by ID (assumed as sequence)
        $sequences = ServiceProviderSequence::orderBy('sequence_order')->get();
 
@@ -1144,6 +1148,7 @@ class ApplicationService
 
        // Set the next one to true
        $sequences[$nextIndex]->current_sequence = true;
+       dd($sequences[$nextIndex]->save());
        $sequences[$nextIndex]->save();
    }
 
@@ -1199,9 +1204,9 @@ class ApplicationService
                     };
                     $application->emergency_desludging_status = $request->emergency_desludging_status ?? $request->emergency_desludging_status ?? null;
                     $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
-                   
+                   $this->rotateServiceProviderSequence();
                    $application->save();
-                $this->rotateServiceProviderSequence();
+                
                 });
             } catch (\Throwable $e) {
                 return redirect()->back()->withInput()->with('error',__("Error! Application couldn't be created. ").$e);

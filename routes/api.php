@@ -85,7 +85,7 @@ Route::group([
     Route::group(['name' => 'emptyingService'],function (){
         Route::get('/assessed-applications',[EmptyingServiceController::class,'getAssessedApplications']);
         Route::get('/assessedsupervisory-applications',[EmptyingServiceController::class,'getAssessedSupervisoryApplications']);
-        Route::get('/assessedsupervisory-applications-fields',[EmptyingServiceController::class,'getFormFields']);
+        Route::get('/assessedsupervisory-applications-fields',[EmptyingServiceController::class,'getSupervisoryFormFields']);
         Route::post('/trips-allocatedRange/{start_date}/{end_date}',[EmptyingServiceController::class,'tripsAllocatedRange']);
         Route::get('/containment-type',[EmptyingServiceController::class,'fetchContainmentType']);
         Route::get('/treatment-plants',[EmptyingServiceController::class,'getTreatmentPlants']);

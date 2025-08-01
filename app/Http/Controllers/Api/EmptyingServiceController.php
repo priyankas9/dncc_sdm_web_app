@@ -158,7 +158,7 @@ class EmptyingServiceController extends Controller
         }
     } 
     
-    public function getFormFields()
+    public function getSupervisoryFormFields()
 {
     return [
         // Prefilled, disabled building & owner info
@@ -168,7 +168,8 @@ class EmptyingServiceController extends Controller
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Area Name',
         ],
         [
             'label' => 'Block Number',
@@ -176,7 +177,8 @@ class EmptyingServiceController extends Controller
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Block Number',
         ],
         [
             'label' => 'Road Number / Road Name',
@@ -184,7 +186,8 @@ class EmptyingServiceController extends Controller
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Road Number / Road Name',
         ],
         [
             'label' => 'Road Code',
@@ -192,87 +195,101 @@ class EmptyingServiceController extends Controller
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Road Code',
         ],
         [
-            'label' => 'Building Number',
+            'label' => 'BIN',
             'name' => 'bin',
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'BIN',
         ],
         [
             'label' => 'Owner Name',
-            'name' => 'customer_name',
+            'name' => 'owner_name',
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Owner Name',
         ],
         [
             'label' => 'Owner Contact',
-            'name' => 'customer_contact',
+            'name' => 'owner_contact',
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string',
+            'validation' => 'required|string',
+            'placeholder' => 'Owner Contact',
         ],
         [
             'label' => 'Owner Gender',
-            'name' => 'customer_gender',
+            'name' => 'owner_gender',
             'input_type' => 'text',
             'disabled' => true,
             'prefilled' => true,
-            'validation' => 'nullable|string|in:Male,Female,Other',
+            'validation' => 'required|string|in:Male,Female,Other',
+            'placeholder' => 'Owner Gender '
         ],
         // ✅ Containment Section (only if building_toilet_connection in [3,4])
          [
-                    'label' => 'Containment Volume (m³)',
-                    'name' => 'containment_volume',
-                    'input_type' => 'number',
-                    'required' => true,
-                    'validation' => 'required|numeric|min:0',
+            'label' => 'Containment Volume (m³)',
+            'name' => 'containment_volume',
+            'input_type' => 'number',
+            'required' => true,
+            'validation' => 'required|numeric|min:0',
+            'placeholder' => 'Containment Volume (m³)',
          ],
         // ✅ Remaining supervisory fields
         [
             'label' => 'Road Width (m)',
             'name' => 'road_width',
             'input_type' => 'number',
+             'required' => true,
             'validation' => 'required|numeric|min:0',
+            'placeholder' => 'Road Width (m)',
         ],
         [
             'label' => 'Distance from Nearest Motorable Road (m)',
-            'name' => 'distance_from_road',
+            'name' => 'distance_from_nearest_road',
             'input_type' => 'number',
+             'required' => true,
             'validation' => 'required|numeric|min:0',
+            'placeholder' => 'Distance from Nearest Motorable Road (m)',
         ],
         [
             'label' => 'Appropriate Desludging Vehicle Size',
-            'name' => 'desludging_vehicle_size',
-            'input_type' => 'select',
-            'options' => [], // populated from API
-            'validation' => 'required|string',
+            'name' => 'appropriate_desludging_vehicle_size',
+            'input_type' => 'number',
+             'required' => true,
+             'validation' => 'required|numeric|min:1',
+             'placeholder' => 'Appropriate Desludging Vehicle Size (m³)',
         ],
         [
             'label' => 'Confirmed Emptying Date',
             'name' => 'confirmed_emptying_date',
             'input_type' => 'date',
-            'max_date' => now()->format('Y-m-d'),
-            'validation' => 'required|date|before_or_equal:' . now()->format('Y-m-d'),
+             'required' => true,
+            'validation' => 'required|date',
         ],
         [
             'label' => 'Advance Paid Amount',
             'name' => 'advance_paid_amount',
             'input_type' => 'number',
-            'validation' => 'nullable|integer|min:0',
+             'required' => true,
+            'validation' => 'required|integer|min:1',
+            'placeholder' => 'Advance Paid Amount',
         ],
         [
             'label' => 'Advance Payment Receipt',
             'name' => 'advance_payment_receipt',
             'input_type' => 'file',
             'accept' => 'image/*',
-            'validation' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+             'required' => true,
+            'validation' => 'required|image|mimes:jpg,jpeg,png|max:5048',
         ],
     ];
 }
@@ -571,63 +588,67 @@ class EmptyingServiceController extends Controller
         ];
     }
     
-    public function saveSupervisoryAssessment(SupervisoryAssessmentRequest $request)
-    {
-       
-    
-        DB::beginTransaction();
-        $assessment = null;
-    
-        try {
-            // Validate the request data
-            if ($request->validated()) {
-                $assessment = new SupervisoryAssessment();
-                $assessment->application_id = $request->application_id;
-                $assessment->holding_number = $request->holding_number;
-                $assessment->owner_name = $request->owner_name;
-                $assessment->owner_gender = $request->owner_gender;
-                $assessment->owner_contact = $request->owner_contact;
-                $assessment->containment_type = $request->containment_type;
-                $assessment->containment_outlet_connection = $request->containment_outlet_connection;
-                $assessment->containment_volume = $request->containment_volume;
-                $assessment->road_width = $request->road_width;
-                $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
-                $assessment->septic_tank_length = $request->septic_tank_length;
-                $assessment->septic_tank_width = $request->septic_tank_width;
-                $assessment->septic_tank_depth = $request->septic_tank_depth;
-                $assessment->number_of_pit_rings = $request->number_of_pit_rings;
-                $assessment->pit_diameter = $request->pit_diameter;
-                $assessment->pit_depth = $request->pit_depth;
-                $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
-                $assessment->number_of_trips = $request->number_of_trips;
-                $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
-                $assessment->advance_paid_amount = $request->advance_paid_amount;
-                
-                // Save the assessment
-                $assessment->save();
-                $application = Application::where('id', $request->application_id)->first();
-                $application->supervisory_assessment_status = true;
-                $application->save();
-            }
-    
-            DB::commit();
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            if ($assessment) {
-                $assessment->forceDelete();
-                $assessment->emptying_status = false;
+ public function saveSupervisoryAssessment(SupervisoryAssessmentRequest $request)
+{
+    DB::beginTransaction();
+    $assessment = null;
+
+    try {
+        if ($request->validated()) {
+            // Create assessment
+            $assessment = new SupervisoryAssessment();
+            $assessment->application_id = $request->application_id;
+            $assessment->house_locality = $request->house_locality;
+            $assessment->block_number = $request->block_number;
+            $assessment->road_name = $request->road_name;
+            $assessment->road_code = $request->road_code;
+            $assessment->bin = $request->bin;
+            $assessment->owner_name = $request->owner_name;
+            $assessment->owner_gender = $request->owner_gender;
+            $assessment->owner_contact = $request->owner_contact;
+            $assessment->containment_volume = $request->containment_volume;
+            $assessment->road_width = $request->road_width;
+            $assessment->distance_from_nearest_road = $request->distance_from_nearest_road;
+            $assessment->appropriate_desludging_vehicle_size = $request->appropriate_desludging_vehicle_size;
+            $assessment->confirmed_emptying_date = $request->confirmed_emptying_date;
+            $assessment->advance_paid_amount = $request->advance_paid_amount;
+
+            // Save the record first to get an ID
+            $assessment->save();
+
+            // Save uploaded image (simple way)
+            if ($request->hasFile('advance_payment_receipt')) {
+                $file = $request->file('advance_payment_receipt');
+                $filename = $assessment->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/supervisoryassessment/receipts', $filename);
+                $assessment->advance_payment_receipt = $filename;
                 $assessment->save();
             }
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
+
+            // Update application status
+            Application::where('id', $request->application_id)->update([
+                'supervisory_assessment_status' => true
+            ]);
         }
-    
-        return [
-            'success' => true,
-            'message' => 'Supervisory assessment saved successfully.'
-        ];
+
+        DB::commit();
+    } catch (\Throwable $th) {
+        DB::rollBack();
+        if ($assessment) {
+            $assessment->forceDelete();
+        }
+        return response()->json([
+            'status' => false,
+            'message' => $th->getMessage()
+        ], 500);
     }
+
+    return [
+        'success' => true,
+        'message' => 'Supervisory assessment saved successfully.'
+    ];
+}
+
+
 
 }
