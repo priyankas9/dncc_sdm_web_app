@@ -10,6 +10,7 @@
     'method' => 'PATCH',
     'action' => ['Fsm\SupervisoryAssessmentController@update', $supervisoryassessment->id],
     'class' => 'form-horizontal',
+     'enctype'=>"multipart/form-data"
    
 ]) !!}
     @include('fsm/supervisory-assessment.partial-form', ['submitButtomText' => __('Update')])

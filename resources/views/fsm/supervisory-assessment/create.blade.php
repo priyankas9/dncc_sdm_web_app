@@ -6,7 +6,8 @@
 @include('layouts.components.error-alert')
 
 <div class="card card-info">
-    {!! Form::open(['url' => 'fsm/supervisory-assessment', 'class' => 'form-horizontal']) !!}
+  
+    {!! Form::open(['url' => 'fsm/supervisory-assessment', 'class' => 'form-horizontal' ,  'enctype'=>"multipart/form-data"]) !!}
     
     <!-- Hidden input to pass the slug value -->
     <input type="hidden" name="slug" value="{{ $value }}">
