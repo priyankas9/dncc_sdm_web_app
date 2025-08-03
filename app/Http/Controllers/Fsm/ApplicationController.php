@@ -103,6 +103,7 @@ class ApplicationController extends Controller
         'formFields' => $this->applicationService->getCreateFormFields(), 
         'indexAction' => $this->applicationService->getIndexAction(),
         'bin' => $bin,
+        'action_type' => $action_type, // 👈 pass to Blade
         'assignedServiceProviderId' => $assignedServiceProviderId,
         'assignedServiceProviderName' => $assignedServiceProviderName, // 👈 pass to Blade
         'autoAssign' => $autoAssign,
