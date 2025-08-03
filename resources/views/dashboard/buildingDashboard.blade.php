@@ -51,24 +51,27 @@
   <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Sanitation System Category") }}</h1>
   <div class="row">
         
-                <div class="col-lg-4 d-flex">
+                <div class="col-lg-3 col-xs-6">
                     @include('dashboard.countBox._wasasewerageconnectionCountBox')
                 </div> <!--sub col div -->
-                <div class="col-lg-4  d-flex">
+                <div class="col-lg-3 col-xs-6">
                     @include('dashboard.countBox._directlyDrainCountBox')
                 </div> <!--sub col div -->
-                <div class="col-lg-4  d-flex">
+                <div class="col-lg-3 col-xs-6">
                     @include('dashboard.countBox._nonfunctionalSepticTankCountBox')
                 </div> <!--sub col div -->
            
-                <div class="col-lg-4  d-flex">
+                <div class="col-lg-3 col-xs-6">
                     @include('dashboard.countBox._functionalSepticTankCountBox')
                 </div> <!--sub col div -->
-                <div class="col-lg-4 d-flex ">
+                <div class="col-lg-3 col-xs-6 ">
                     @include('dashboard.countBox._onsiteTreatmentCountBox')
                 </div>
-                 <div class="col-lg-4 d-flex ">
+                 <div class="col-lg-3 col-xs-6 ">
                     @include('dashboard.countBox._uncategorizedCountBox')
+                </div>
+                 <div class="col-lg-3 col-xs-6 ">
+                    @include('dashboard.countBox._noDataSanitation')
                 </div>
                
             </div>
@@ -103,6 +106,9 @@
       <div class="col-lg-3 col-xs-6">
           @include('dashboard.countBox._sanitationOffsiteContainmentCountBox')
       </div> <!-- sub col div -->
+       <div class="col-lg-3 col-xs-6">
+                    @include('dashboard.countBox._noDataSanitation')
+                </div>
   </div> <!-- row div -->
 @endcan
 

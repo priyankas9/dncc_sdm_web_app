@@ -57,7 +57,7 @@ class BuildingDashboardController extends Controller
             $functionalSepticTank = $this->buildingdashboardService->countBuildingsByCategory('Functional Septic Tank');
             $onsiteTreatment = $this->buildingdashboardService->countBuildingsByCategory('Onsite Treatment');
              $uncategorized = $this->buildingdashboardService->countBuildingsByCategory(''); // optional
-          
+             $noData = $this->buildingdashboardService->countNoData(); // optional
 
             //sanitation systems
             $containmentCount = Containment::whereNull('deleted_at')->count();
@@ -285,7 +285,8 @@ class BuildingDashboardController extends Controller
                 'nonfunctionalSepticTank',
                 'functionalSepticTank',
                 'onsiteTreatment',
-                'uncategorized'
+                'uncategorized',
+                'noData'
               
 
             ) );
