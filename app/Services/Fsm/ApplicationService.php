@@ -27,6 +27,7 @@ use App\Models\UtilityInfo\Roadline;
 use Carbon\Carbon;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Collection;
+use App\Http\Controllers\Fsm\DesludgingScheduleController;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Auth;
 use Venturecraft\Revisionable\Revision;
@@ -347,8 +348,87 @@ class ApplicationService
      */
     public function getCreateFormFields()
     {
+        
+         $nextEmptyingDate = session('next_emptying_date');
+        $bin = session('bin');
+        $ownerName = session('owner_name');
+        $ownerContact = session('owner_contact');
+        $containmentId = session('containment_id');
+        $ownerGender = session('owner_gender');
+        $ward = session('ward');
+        $population_served = session('population_served');
+        $household_served = session('household_served');
+        $toilet_count = session('toilet_count');
+        $road_code = session('road_code');
+        $action_type = session('action_type');
+    
+        // Process each field in the form
+        foreach ($this->createFormFields as &$section) {
+            foreach ($section['fields'] as &$field) {
+                switch ($field->inputId) {
+                    case 'proposed_emptying_date':
+                        $field->inputValue = $nextEmptyingDate;
+                        $field->disabled = ($action_type == "confirm");
+                        break;
+                        
+                    case 'population_served':
+                        $field->inputValue = $population_served;
+                        $field->disabled = !empty($population_served);
+                        break;
+                        
+                    case 'household_served':
+                        $field->inputValue = $household_served;
+                        $field->disabled = !empty($household_served);
+                        break;
+                        
+                    case 'toilet_count':
+                        $field->inputValue = $toilet_count;
+                        $field->disabled = !empty($toilet_count);
+                        break;
+                        
+                case 'bin':
+                        $selectedBin = is_array($bin) ? $bin : (is_null($bin) ? [] : [$bin]);
+                        $field->selectedValue = $selectedBin;
+                        $field->disabled = !empty($selectedBin);
+                        break;
+                        
+                    case 'customer_name':
+                        $field->inputValue = $ownerName;
+                        $field->disabled = !empty($ownerName);
+                        break;
+                        
+                    case 'road_code':
+                        $selectedRoadCode = is_array($road_code) ? $road_code : (is_null($road_code) ? [] : [$road_code]);
+                        $field->selectedValue = $selectedRoadCode;
+                        $field->disabled = !empty($selectedRoadCode);
+                        break;
+                        
+                    case 'customer_contact':
+                        $field->inputValue = $ownerContact;
+                        $field->disabled = !empty($ownerContact);
+                        break;
+                        
+                    case 'customer_gender':
+                        $field->selectedValue = $ownerGender;
+                        $field->disabled = !empty($ownerGender);
+                        break;
+                        
+                    case 'containment_id':
+                        $field->inputValue = $containmentId;
+                        $field->disabled = !empty($containmentId);
+                        break;
+                        
+                    case 'ward':
+                        $field->selectedValue = $ward;
+                        $field->disabled = !empty($ward);
+                        break;
+                }
+            }
+        }
+        
         return $this->createFormFields;
     }
+    
 
 
     
@@ -1206,6 +1286,19 @@ class ApplicationService
                     $application->supervisory_assessment_date = $request->supervisory_assessment_date ?? $request->supervisory_assessment_date ?? null;
                    $this->rotateServiceProviderSequence();
                    $application->save();
+
+                    $containmentRecord = Containment::find($request->containment_id);
+                  if ($request->action_type == 'confirm')
+                  {
+                    $containmentRecord->status = 1;
+                    $containmentRecord->save();
+                  } 
+                  else if ($request-> action_type == 'reschedule' || empty($request->action_type))
+                    {
+                        $containmentRecord->status = 2;
+                        app(DesludgingScheduleController::class)->set_emptying_date();
+                        $containmentRecord->save();
+                    }
                 
                 });
             } catch (\Throwable $e) {
@@ -1651,6 +1744,7 @@ class ApplicationService
         
                 // Use the `getContainmentIds` function to fetch filtered containment IDs
                 $containmentIds = $building->containments->pluck('id');
+                 
                 // Fetch additional related data
                 $owner = $building->owners;
                 $road = $building->roadlines;

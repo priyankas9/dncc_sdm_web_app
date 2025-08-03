@@ -29,17 +29,17 @@ class ApplicationRequest extends FormRequest
             'road_code' => request()->isMethod('post') ? 'required' : 'nullable',
             'bin' => request()->isMethod('post') ? 'required' : 'nullable',
             'ward' => 'nullable|integer|min:1',
-            'customer_name' => '',
-            'customer_gender' => '',
-            'customer_contact' => 'nullable|integer',
+            'customer_name' => 'required',
+            'customer_gender' => 'required',
+            'customer_contact' => 'required',
             'applicant_name' => 'required',
             'applicant_gender' => 'required',
-            'applicant_contact' => 'required|integer',
+            'applicant_contact' => 'required',
             'containment_code' => '',
             'proposed_emptying_date' => 'required|date',
             'supervisory_assessment_date' => 'required|date|before_or_equal:proposed_emptying_date',
             'service_provider_id' => 'required|integer',
-            'landmark' => '',
+           
             'emergency_desludging_status' => 'required|boolean',
             
         ];
