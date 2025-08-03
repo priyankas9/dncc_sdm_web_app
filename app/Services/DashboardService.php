@@ -1751,4 +1751,11 @@ ORDER BY
         ->whereNull('deleted_at')
         ->count();
 }
+public function countNoData()
+{
+    return Building::whereNull('sanitation_system_id')
+    ->whereNull('deleted_at')
+    ->count();
+
+}
 }
