@@ -182,7 +182,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)   -->
                             <th>{{ __('Applicant Contact') }}</th>
                             <th>{{ __('Application Date') }}</th>
                             <th>{{ __('Supervisory Assessment Date') }}</th>
-                            <th>{{ __('Confrimed Emptying Date') }}</th>
+                            <th>{{ __('Confirmed Emptying Date') }}</th>
                             <th>{{ __('Street Code') }}</th>
                             <th>{{ __('Supervisory Assessment Status') }}</th>
                             <th>{{ __('Emptying Status') }}</th>
