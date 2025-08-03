@@ -47,7 +47,7 @@
         </div> <!-- col div -->
   </div>
   @endcan
-  @can('Category CountBox')
+  @can('Sanitation CountBox')
   <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Sanitation System Category") }}</h1>
   <div class="row">
         

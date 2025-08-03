@@ -50,7 +50,7 @@ Developed By: Innovative Solution Pvt. Ltd. (ISPL)  (© ISPL, 2024) -->
         </div> <!-- col div -->
     </div> <!-- row div -->
 @endcan
-@can('Category CountBox')
+@can('Sanitation CountBox')
   <h1 style="padding: 15px 0 15px 0; font-size: 24px;">{{ __("Sanitation System Category") }}</h1>
   <div class="row">
         
