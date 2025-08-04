@@ -885,15 +885,13 @@ class ApplicationService
                 if (Auth::user()->can('Edit Sludge Collection') && $model->supervisory_assessment_status && $model->supervisory_assessment) {
                     $content .= '<a title="Edit Supervisory Assessment" href="' . route("supervisory-assessment.edit", $model->supervisory_assessment->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1 '. ($model->emptying_status ? ' anchor-disabled' : '') . '"> <i class="fa-solid fa-clipboard-list"></i></a> ';
                 }
-                
-
                 if (Auth::user()->can('View Application History')){
                 $content .= '<a title="History" href="' . route('application.history', $model->id) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa fa-history"></i></a> ';
                 
                 if (Auth::user()->can('Delete Application')){
                     $content .= '<a title="Delete"  class="delete btn btn-danger  btn-sm mb-1"><i class="fa fa-trash"></i></a> ';
                 }
-            }
+                }
                 if (Auth::user()->can('Generate Application Report')){
                     if ($model->emptying_status == TRUE) {
                     $content .= '<a title="Generate Report" href="' . route('application.report', [$model->id]) . '" class="btn btn btn-info btn-sm mb-1 mb-1"><i class="fa-regular fa-file-pdf"></i></a> ';

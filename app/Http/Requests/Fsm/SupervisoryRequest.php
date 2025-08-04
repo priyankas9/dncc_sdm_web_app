@@ -24,15 +24,15 @@ class SupervisoryRequest extends FormRequest
      public function rules()
     {
         return [
-          
-            'house_locality' => 'required',
-            'block_number' => 'required',
-            'road_name' => 'required',
-            'road_code' => 'required',
-            'bin' => 'required',
-            'owner_name' => 'required',
-            'owner_gender' => 'required',
-            'owner_contact' => 'required|integer',
+            'application_id' => 'required|exists:fsm.applications,id',
+            'house_locality' => 'nullable',
+            'block_number' => 'nullable',
+            'road_name' => 'nullable',
+            'road_code' => 'nullable',
+            'bin' => 'nullable',
+            'owner_name' => 'nullable',
+            'owner_gender' => 'nullable',
+            'owner_contact' => 'nullable|integer',
             'containment_volume' => 'required|numeric|gt:0',
             'road_width' => 'required|numeric|gt:0',
             'distance_from_nearest_road' => 'required|integer|gt:0',

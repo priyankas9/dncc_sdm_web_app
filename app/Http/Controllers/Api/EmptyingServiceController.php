@@ -117,7 +117,7 @@ class EmptyingServiceController extends Controller
                 'applications.road_code',
                 'buildings.road_name',
                 'buildings.house_number',
-                
+                'applications.proposed_emptying_date as confirmed_emptying_date',
                  // Directly fetch containment size
             )
             ->join('building_info.buildings', function ($join) {
@@ -179,7 +179,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Area Name',
             ],
             [
@@ -188,7 +188,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Block Number',
             ],
             [
@@ -197,7 +197,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Road Number / Road Name',
             ],
             [
@@ -206,7 +206,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Road Code',
             ],
             [
@@ -215,7 +215,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'BIN',
             ],
             [
@@ -224,7 +224,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Owner Name',
             ],
             [
@@ -233,7 +233,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string',
+                'validation' => 'nullable|string',
                 'placeholder' => 'Owner Contact',
             ],
             [
@@ -242,7 +242,7 @@ class EmptyingServiceController extends Controller
                 'input_type' => 'text',
                 'disabled' => true,
                 'prefilled' => true,
-                'validation' => 'required|string|in:Male,Female,Other',
+                'validation' => 'nullable|string|in:Male,Female,Other',
                 'placeholder' => 'Owner Gender '
             ],
             // ✅ Containment Section (only if building_toilet_connection in [3,4])
@@ -284,6 +284,7 @@ class EmptyingServiceController extends Controller
                 'name' => 'confirmed_emptying_date',
                 'input_type' => 'date',
                 'required' => true,
+                'prefilled' => true,
                 'validation' => 'required|date',
             ],
             [
