@@ -167,158 +167,221 @@ An Edit Layout for all forms
 
         });
 
-          let tripData = {}; // global store
+           let tripData = {}; // global store
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    flatpickr('.flatpickr-reschedule', {
-    dateFormat: 'Y-m-d',
-    allowInput: true,
+        flatpickr('.flatpickr-reschedule', {
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            minDate: "today",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (instance.input.id === 'proposed_emptying_date') {
+                    if (selectedDates.length > 0) {
+                        const selectedDate = selectedDates[0];
+                        const year = selectedDate.getFullYear();
+                        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(selectedDate.getDate()).padStart(2, '0');
+                        const dateKey = `${year}-${month}-${day}`;
 
-    onChange: function(selectedDates, dateStr, instance) {
-        // Restrict supervisory_assessment_date when proposed_emptying_date changes
-        if (instance.input.id === 'proposed_emptying_date') {
-            if (selectedDates.length) {
-                let selectedDate = selectedDates[0];
-                flatpickr("#supervisory_assessment_date").set('maxDate', selectedDate);
-            } else {
-                flatpickr("#supervisory_assessment_date").set('maxDate', null);
-            }
-        }
-    },
+                        if (tripData[dateKey]) {
+                            const { trips, is_holiday, is_weekend } = tripData[dateKey];
+                            if (is_holiday || is_weekend || trips === 0) {
+                                instance.clear();
+                                let message = '';
+                                if (is_holiday) {
+                                    message = 'Cannot select a holiday date.';
+                                } else if (is_weekend) {
+                                    message = 'Cannot select a weekend date.';
+                                } else {
+                                    message = 'No trips available for this date.';
+                                }
+                                alert(message);
+                                return;
+                            }
+                        }2
 
-    onReady: function (selectedDates, dateStr, instance) {
-        if (instance.input.id === 'proposed_emptying_date') {
-            // Inject legend at the top
-            const legendHTML = `
-                <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
-                    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color:rgb(228, 173, 56); border-radius: 50%;"></span> Holiday
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #cce5ff; border-radius: 50%;"></span> Weekend
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color:rgb(245, 157, 130); border-radius: 50%;"></span> 1 Trip
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #fff3cd; border-radius: 50%;"></span> 2 Trips
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #d4edda; border-radius: 50%;"></span> 3+ Trips
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span style="width: 10px; height: 10px; background-color: #f8d7da; border-radius: 50%;"></span> 0 Trips
-                        </span>
-                    </div>
-                </div>
-            `;
-            const calendarContainer = instance.calendarContainer;
-            calendarContainer.insertAdjacentHTML("afterbegin", legendHTML);
-            fetchAndDisplayTrips(instance);
-        }
-    },
+                        // Update supervisory_assessment_date flatpickr range
+                       const now = new Date();
+                        now.setHours(0, 0, 0, 0);
 
-    onMonthChange: function (selectedDates, dateStr, instance) {
-        if (instance.input.id === 'proposed_emptying_date') {
-            fetchAndDisplayTrips(instance);
-        }
-    },
+                        // Make sure maxDate is not earlier than minDate
+                        const min = selectedDate;
+                        const max = now < selectedDate ? selectedDate : now;
 
-    onDayCreate: function (dObj, dStr, fp, dayElem) {
-        const dateObj = dayElem.dateObj;
-        if (!dateObj) return;
+                        flatpickr("#supervisory_assessment_date", {
+                            dateFormat: 'Y-m-d',
+                            allowInput: true,
+                            minDate: min,
+                            maxDate: max,
+                            defaultDate: min // You can change this to null if you don’t want to prefill
+                        });
 
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const dateStr = `${year}-${month}-${day}`;
 
-        if (tripData.hasOwnProperty(dateStr)) {
-            const { trips, is_holiday, is_weekend } = tripData[dateStr];
+                    } else {
+                        flatpickr("#supervisory_assessment_date", {
+                            dateFormat: 'Y-m-d',
+                            allowInput: true,
+                            minDate: null,
+                            maxDate: null
+                        });
+                    }
+                }
+            },
 
-            // Clear previous styles
-            dayElem.removeAttribute("style");
-            dayElem.style.cursor = "pointer";
+            onReady: function (selectedDates, dateStr, instance) {
+                if (instance.input.id === 'proposed_emptying_date') {
+                    const legendHTML = `
+                        <div class="flatpickr-legend" style="padding: 5px 8px; font-size: 12px; border-bottom: 1px solid #ccc;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color:rgb(228, 173, 56); border-radius: 50%;"></span> Holiday
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color: #cce5ff; border-radius: 50%;"></span> Weekend
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color:rgb(245, 157, 130); border-radius: 50%;"></span> 1 Trip
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color: #fff3cd; border-radius: 50%;"></span> 2 Trips
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color: #d4edda; border-radius: 50%;"></span> 3+ Trips
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 10px; height: 10px; background-color: #f8d7da; border-radius: 50%;"></span> 0 Trips (Unavailable)
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    const calendarContainer = instance.calendarContainer;
+                    calendarContainer.insertAdjacentHTML("afterbegin", legendHTML);
+                    fetchAndDisplayTrips(instance);
+                }
+            },
 
-            // Set tooltip
-            let tooltip = `Trips Available: ${trips}`;
-            if (is_holiday) tooltip += " (Holiday)";
-            if (is_weekend) tooltip += " (Weekend)";
-            dayElem.setAttribute("title", tooltip);
+            onMonthChange: function (selectedDates, dateStr, instance) {
+                if (instance.input.id === 'proposed_emptying_date') {
+                    fetchAndDisplayTrips(instance);
+                }
+            },
 
-            // Priority coloring: Holiday > Weekend > Trips
-            if (is_holiday) {
-                dayElem.style.backgroundColor = "rgb(228, 173, 56)"; // pink
-                dayElem.style.color = "#000000";
-            } else if (is_weekend) {
-                dayElem.style.backgroundColor = "#cce5ff"; // light blue
-                dayElem.style.color = "#004085";
-            } else if (trips === 0) {
-                dayElem.style.backgroundColor = "#f8d7da";
-                dayElem.style.color = "#721c24";
-            } else if (trips === 1) {
-                dayElem.style.backgroundColor = "rgb(245, 157, 130)";
-                dayElem.style.color = "#856404";
-            } else if (trips === 2) {
-                dayElem.style.backgroundColor = "#fff3cd";
-                dayElem.style.color = "#856404";
-            } else {
-                dayElem.style.backgroundColor = "#d4edda";
-                dayElem.style.color = "#155724";
-            }
-            dayElem.style.borderRadius = "50%";
-             if (is_holiday || is_weekend || trips === 0) {
-    dayElem.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+            onDayCreate: function (dObj, dStr, fp, dayElem) {
+                const dateObj = dayElem.dateObj;
+                if (!dateObj) return;
 
-        let message = '';
-        if (is_holiday) {
-            message = 'Cannot select a holiday date.';
-        } else if (is_weekend) {
-            message = 'Cannot select a weekend date.';
-        } else {
-            message = 'No trips available for this date.';
-        }
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const dateStrKey = `${year}-${month}-${day}`;
 
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'warning',
-            title: message,
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
+                const isPast = dateObj < today;
+                if (isPast) {
+                    dayElem.classList.add('flatpickr-disabled');
+                    dayElem.style.backgroundColor = "#eee";
+                    dayElem.style.color = "#888";
+                    dayElem.style.cursor = "not-allowed";
+                    dayElem.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'warning',
+                            title: 'Cannot select a past date.',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                    });
+                    return;
+                }
+
+                if (tripData.hasOwnProperty(dateStrKey)) {
+                    const { trips, is_holiday, is_weekend } = tripData[dateStrKey];
+                    dayElem.removeAttribute("style");
+                    dayElem.style.cursor = "pointer";
+
+                    let tooltip = `Trips Available: ${trips}`;
+                    if (is_holiday) tooltip += " (Holiday)";
+                    if (is_weekend) tooltip += " (Weekend)";
+                    dayElem.setAttribute("title", tooltip);
+
+                    if (is_holiday) {
+                        dayElem.style.backgroundColor = "rgb(228, 173, 56)";
+                        dayElem.style.color = "#000000";
+                    } else if (is_weekend) {
+                        dayElem.style.backgroundColor = "#cce5ff";
+                        dayElem.style.color = "#004085";
+                    } else if (trips === 0) {
+                        dayElem.style.backgroundColor = "#f8d7da";
+                        dayElem.style.color = "#721c24";
+                    } else if (trips === 1) {
+                        dayElem.style.backgroundColor = "rgb(245, 157, 130)";
+                        dayElem.style.color = "#856404";
+                    } else if (trips === 2) {
+                        dayElem.style.backgroundColor = "#fff3cd";
+                        dayElem.style.color = "#856404";
+                    } else {
+                        dayElem.style.backgroundColor = "#d4edda";
+                        dayElem.style.color = "#155724";
+                    }
+
+                    dayElem.style.borderRadius = "50%";
+
+                    if (is_holiday || is_weekend || trips === 0) {
+                        dayElem.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            let message = '';
+                            if (is_holiday) {
+                                message = 'Cannot select a holiday date.';
+                            } else if (is_weekend) {
+                                message = 'Cannot select a weekend date.';
+                            } else {
+                                message = 'No trips available for this date.';
+                            }
+
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'warning',
+                                title: message,
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+                        });
+                    }
+                }
+            },
+
+            disable: [
+                function(date) {
+                    if (date < today) return true;
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const dateKey = `${year}-${month}-${day}`;
+                    if (tripData[dateKey]) {
+                        const { trips, is_holiday, is_weekend } = tripData[dateKey];
+                        return is_holiday || is_weekend || trips === 0;
+                    }
+                    return false;
+                }
+            ]
         });
-    });
-}
-        
-        }
-    },
-    disable: [
-    function(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const dateKey = `${year}-${month}-${day}`;
 
-        if (tripData[dateKey]) {
-            const { trips, is_holiday, is_weekend } = tripData[dateKey];
-            return is_holiday || is_weekend || trips === 0;
-        }
-        return false;
-    }
-]
-});
-  window.isConfirm = {{ $isConfirm ? 'true' : 'false' }};
-    if (window.isConfirm === false) {
+        // Only initialize if needed; now supervisory date is reconfigured dynamically
+        window.isConfirm = {{ $isConfirm ? 'true' : 'false' }};
+        if (window.isConfirm === false) {
+            // Don't initialize here — it'll be set dynamically when proposed_emptying_date is selected
             flatpickr("#supervisory_assessment_date", {
                 dateFormat: 'Y-m-d',
-                allowInput: true
+                allowInput: true,
+                minDate: null,
+                maxDate: null
             });
         }
     function fetchAndDisplayTrips(instance) {

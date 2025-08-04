@@ -40,7 +40,7 @@ class ApplicationRequest extends FormRequest
             'supervisory_assessment_date' => 'required|date|before_or_equal:proposed_emptying_date',
             'service_provider_id' => 'required|integer',
            
-            'emergency_desludging_status' => 'required|boolean',
+           
             
         ];
     }
@@ -67,8 +67,7 @@ class ApplicationRequest extends FormRequest
             'proposed_emptying_date.required' => __('The Proposed Emptying Date is required.'),
             'service_provider_id.required' => __('The Service Provider Name is required.'),
             'landmark' => '',
-            'emergency_desludging_status.required' => __('The Emergency Desludging is required.'),
-            'emergency_desludging_status.boolean' => __('The Emergency Desludging must be Yes or No.'),
+           
             'supervisory_assessment_date.required' => 'The Supervisory Assessment Date is required.',
             'supervisory_assessment_date.date' => 'The Supervisory Assessment Date must be a valid date.',
             'supervisory_assessment_date.before_or_equal' => 'The Supervisory Assessment Date must be before the Proposed Emptying Date.',

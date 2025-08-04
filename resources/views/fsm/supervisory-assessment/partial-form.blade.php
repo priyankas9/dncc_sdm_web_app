@@ -6,6 +6,7 @@
         </div>
     </div>
 
+    {!! Form::hidden('application_id', $application->id) !!}
     <div class="form-group row required">
         {!! Form::label('block_number', 'Block Number', ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">

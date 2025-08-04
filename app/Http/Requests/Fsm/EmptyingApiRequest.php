@@ -43,7 +43,8 @@ class EmptyingApiRequest extends FormRequest
             'service_receiver_contact' => 'required|integer',
             'service_receiver_gender' => 'required',
             'service_receiver_name' => 'required',
-
+            'advance_paid_amount' => 'required|integer|min:1',
+            'additional_paid' => 'nullable|integer'
 
         ];
     }
@@ -88,6 +89,10 @@ class EmptyingApiRequest extends FormRequest
             'emptier1.integer' => __('The emptier1 name must be a number.'),
             'emptier2.integer' => __('The emptier2 name must be a number.'),
             'service_receiver_contact.integer' => __('The service receiver contact number must be a number.'),
+             'advance_paid_amount.required' => 'The advance payment amount is required.',
+            'advance_paid_amount.integer' => 'The advance payment must be a whole number.',
+            'advance_paid_amount.min' => 'The advance payment must be at least 1.',
+            'additional_paid.integer' => 'Any additional payment must be a whole number.'
 
 
 

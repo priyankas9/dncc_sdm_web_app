@@ -54,10 +54,10 @@ class ApplicationService
      */
     public function __construct()
     {
-    $this->initializeServiceProviderSequence();
-    $this->createPartialForm = 'fsm.application.partial-form';
-    $nextSpId = $this->getNextServiceProviderId();
-    $nextSpName = $this->getNextServiceProviderName();
+        $this->initializeServiceProviderSequence();
+        $this->createPartialForm = 'fsm.application.partial-form';
+        $nextSpId = $this->getNextServiceProviderId();
+        $nextSpName = $this->getNextServiceProviderName();
      $this->createFormFields = [
         ["title" =>__('Address'),
                 "fields" => [
@@ -183,15 +183,7 @@ class ApplicationService
                         required: true,
                         placeholder: __('Service Provider Name'),
                     ),
-                    new FormField(
-                        label: __('Emergency Desludging'),
-                        labelFor: 'emergency_desludging_status',
-                        inputType: 'select',
-                        inputId: 'emergency_desludging_status',
-                        selectValues: array("1" => "Yes" , "0" => "No"),
-                        required: true,
-                        placeholder: __('Emergency Desludging'),
-                    ),
+                
                 ]]
         ];
         $this->createFormAction = route('application.store');
@@ -428,10 +420,6 @@ class ApplicationService
         
         return $this->createFormFields;
     }
-    
-
-
-    
     /**
      * Get form fields for showing application.
      *
@@ -555,20 +543,12 @@ class ApplicationService
                         inputId: 'service_provider_id',
                         labelValue: $application->service_provider ? $application->service_provider()->withTrashed()->first()->company_name : 'Not Assigned',
                     ),
-                     new FormField(
-                        label: __('Emergency Desludging'),
-                        labelFor: 'emergency_desludging_status',
-                        inputType: 'label',
-                        inputId: 'emergency_desludging_status',
-                        labelValue: $application->emergency_desludging_status ? 'Yes' : 'No',
-
-                    ),
+                  
                 ]],
         ];
 
         return $this->showFormFields;
     }
-
     /**
      * Get form fields for editing application.
      *
@@ -726,21 +706,11 @@ class ApplicationService
                         disabled:$application->emptying_status?true:'',
                         placeholder: __('Service Provider Name'),
                     ),
-                     new FormField(
-                        label: __('Emergency Desludging'),
-                        labelFor: 'emergency_desludging_status',
-                        inputType: 'select',
-                        inputId: 'emergency_desludging_status',
-                        selectValues: array("1" => "Yes" , "0" => "No"),
-                        selectedValue: $application->emergency_desludging_status ? "1" : "0",
-                        required: true,
-                        placeholder: __('Emergency Desludging'),
-                    ),
+                   
                 ]],
         ];
         return $this->editFormFields;
     }
-
     /**
      * Get action/route for create form.
      *
@@ -750,7 +720,6 @@ class ApplicationService
     {
         return $this->createFormAction;
     }
-
     /**
      * Get action/route for index page of Applications.
      *
@@ -760,7 +729,6 @@ class ApplicationService
     {
         return $this->indexAction;
     }
-
     /**
      * Get action/route for create page of Applications.
      *
