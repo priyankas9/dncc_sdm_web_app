@@ -19,6 +19,9 @@
 @endsection
 @push('scripts')
 <script> 
+
+  
+
         let tripData = {}; // global store
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -30,6 +33,7 @@
             allowInput: true,
             minDate: "today",
             onReady: function (selectedDates, dateStr, instance) {
+                
                 if (instance.input.id === 'confirmed_emptying_date') {
                     // Inject legend
                     const legendHTML = `
