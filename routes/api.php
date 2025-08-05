@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\ApiServiceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingSurveyController;
+use App\Http\Controllers\Api\ApiBuildingController;
+use App\Http\Controllers\Api\ApiContainmentController;
 use App\Http\Controllers\Api\SewerConnectionController;
 use App\Http\Controllers\Api\EmptyingServiceController;
 use App\Http\Controllers\Api\LanguageController;
@@ -154,4 +156,26 @@ Route::group([
 
         });
 
+    Route::group([
+        'name' => 'building',
+        'prefix' => 'building',
+        'namespace' => 'Building',
+        'middleware' => 'auth'
+    ], function () {
+        Route::get('edit-Building-form/{id}', [ApiBuildingController::class, 'getBuildingFormAPI']);
+        Route::put('{id}/update', [ApiBuildingController::class, 'updateBuildingDataApi']);
+    });
+
+      Route::group([
+        'name' => 'containment',
+        'prefix' => 'containment',
+        'namespace' => 'Containment',
+        'middleware' => 'auth'
+    ], function () {
+        Route::get('create-Containment-form/{id}', [ApiContainmentController::class, 'getAddContainmentFormAPI']);
+         Route::get('containment/edit/{id}', [ApiContainmentController::class, 'editContainmentApi']);
+        Route::post('{id}/store', [ApiContainmentController::class, 'updateContainmentDataApi']);
+    });
 });
+
+
