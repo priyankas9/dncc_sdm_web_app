@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\SewerConnectionController;
 use App\Http\Controllers\Api\EmptyingServiceController;
 use App\Http\Controllers\Api\LanguageController;
 use App\Http\Controllers\BuildingInfo\BuildingController;
+use App\Http\Controllers\UtilityInfo\RoadlineController;
+use App\Http\Controllers\UtilityInfo\WaterSupplysController;
+use App\Http\Controllers\UtilityInfo\SewerLineController;
+use App\Http\Controllers\UtilityInfo\DrainController;
 use App\Http\Controllers\BuildingSearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -163,6 +167,9 @@ Route::group([
         'middleware' => 'auth'
     ], function () {
         Route::get('edit-Building-form/{id}', [ApiBuildingController::class, 'getBuildingFormAPI']);
+        Route::get('get-house-numbers-all',  [BuildingController::class, 'getHouseNumbersAll']);
+        Route::get('get-house-numbers',  [BuildingController::class, 'getHouseNumbers']);
+        Route::get('get-containment-septic', [ApiBuildingController::class, 'getContainmentTypes']);
         Route::put('{id}/update', [ApiBuildingController::class, 'updateBuildingDataApi']);
     });
 
@@ -176,6 +183,19 @@ Route::group([
          Route::get('containment/edit/{id}', [ApiContainmentController::class, 'editContainmentApi']);
         Route::post('{id}/store', [ApiContainmentController::class, 'updateContainmentDataApi']);
     });
+
+    Route::group([
+    'name' => 'utilityinfo',
+    'prefix' => 'utilityinfo',
+    'namespace' => 'UtilityInfo',
+    'middleware' => 'auth'
+], function () {
+    Route::get('roadlines/get-road-names', [RoadlineController::class, 'getRoadNames']);
+    Route::get('watersupplys/get-watersupply-codes',  [WaterSupplysController::class, 'getWaterSupplyCode']);
+    Route::get('sewerlines/get-sewer-names', [SewerLineController::class, 'getSewerNames']);
+    Route::get('drains/get-drain-names',  [DrainController::class, 'getDrainNames']); 
+
+});
 });
 
 
