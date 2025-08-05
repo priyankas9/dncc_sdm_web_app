@@ -95,7 +95,7 @@
     <div class="form-group row required">
         {!! Form::label('confirmed_emptying_date', 'Confirmed Emptying Date', ['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
-            {!! Form::text('confirmed_emptying_date', null, ['class' => 'form-control flatpickr-reschedule', 'placeholder' => 'Confirmed Emptying Date', 'required', 'autocomplete' => 'off']) !!}
+            {!! Form::text('confirmed_emptying_date', $application->proposed_emptying_date ?? '', ['class' => 'form-control flatpickr-reschedule', 'placeholder' => 'Confirmed Emptying Date', 'required', 'autocomplete' => 'off']) !!}
         </div>
     </div>
 
