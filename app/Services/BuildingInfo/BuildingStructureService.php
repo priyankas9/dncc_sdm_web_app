@@ -384,8 +384,10 @@ class BuildingStructureService
     }
 
 
-    public function updateBuildingData($request, $id)
+   public function updateBuildingData($request, $id, $mode = 'web')
+
     {
+        
         DB::beginTransaction();
         try {
             // settting error flag as no error initially
@@ -574,6 +576,9 @@ class BuildingStructureService
 
             if ($err == 'containment_mismatch') {
                 DB::rollback();
+                if ($mode === 'api') {
+                return response()->json(['status' => 'error', 'message' => __("Sanitation System does not match with existing containment data.")], 400);
+            }
                 return Redirect::back()->with('error', __("Sanitation System does not match with existing containment data, please update containment information and try again"));
             } else if ($err == 'false') {
                 // no error so do nothing
@@ -596,9 +601,19 @@ class BuildingStructureService
             // store owner
             $this->storeOwnerInfo($request);
             DB::commit();
+             if ($mode === 'api') {
+            return response()->json(['status' => 'success', 'message' => __("Building Information updated successfully")]);
+        }
             return Redirect("building-info/buildings")->with('success', __("Building Information updated successfully"));
         } catch (\Exception $e) {
             DB::rollback();
+             if ($mode === 'api') {
+            return response()->json([
+                'status' => 'error',
+                'message' => __("Failed to update building structure"),
+                'error' => $e->getMessage()
+            ], 500);
+        }
             return Redirect("building-info/buildings")->with('error', __("Failed to update building structure") . $e);
         }
     }

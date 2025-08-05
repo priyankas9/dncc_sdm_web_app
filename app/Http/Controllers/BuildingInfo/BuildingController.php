@@ -27,7 +27,7 @@ use App\Models\LayerInfo\Ward;
 use App\Models\LayerInfo\Lic;
 use App\Models\UtilityInfo\WaterSupplys;
 use App\Models\Fsm\ContaimentType;
-use App\Enums\LicStatus;
+use App\Enums\LicStatus; 
 use App\Services\BuildingInfo\BuildingStructureService;
 use App\Http\Requests\BuildingInfo\BuildingRequest;
 use DOMDocument;
@@ -235,7 +235,6 @@ class BuildingController extends Controller
             $building->owner_gender = $building->Owners->owner_gender;
             $building->owner_contact = $building->Owners->owner_contact;
             $building->nid = $building->Owners->nid;
-
         }
         $building->main_building = $building->building_associated_to ? false : true;
         $structure_type = StructureType::orderBy('type', 'asc')->pluck('type', 'id')->all();
@@ -340,7 +339,7 @@ class BuildingController extends Controller
      */
     public function update(BuildingRequest $request, $id)
     {
-        return ($this->buildingStructureService->updateBuildingData($request, $id));
+           return $this->buildingStructureService->updateBuildingData($request, $id, 'web');
     }
     public function history($id)
     {
